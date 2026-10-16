@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greek Statue &amp; Weather Hub</title>
+<style>
+:root{--bg-color:#121212;--card-bg:#1e1e1e;--accent:#d4af37;--text-main:#f0f0f0;--text-muted:#aaa;--border:#333}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg-color);color:var(--text-main);margin:0 auto;padding:16px;max-width:600px}
+h1,h2{color:var(--accent);text-align:center;font-size:1.5rem}
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 4px 6px rgba(0,0,0,.3)}
+label{display:block;margin-bottom:8px;font-weight:bold;color:var(--accent)}
+select,input{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--border);color:#fff;border-radius:8px;font-size:1rem;margin-bottom:12px;box-sizing:border-box}
+button{background:var(--accent);color:#121212;border:none;padding:12px;font-weight:bold;border-radius:8px;width:100%;font-size:1rem;cursor:pointer;margin-top:8px}
+button:active{opacity:.8}
+.protocol-box{background:#252525;border-left:4px solid var(--accent);padding:12px;margin-top:10px;border-radius:0 8px 8px 0;font-size:.95rem;line-height:1.4}
+.exercise-item{display:flex;justify-content:space-between;align-items:center;background:#252525;padding:10px;border-radius:8px;margin-bottom:8px;gap:8px}
+.exercise-info{flex-grow:1}
+.exercise-info div:first-child{font-weight:bold}
+.exercise-info div:last-child{font-size:.85rem;color:var(--text-muted)}
+.weight-input{width:70px!important;padding:6px!important;margin:0!important;text-align:center}
+.badge{display:inline-block;padding:4px 8px;font-size:.75rem;background:#333;border-radius:4px;color:var(--accent);margin-bottom:8px}
+.privacy-footer{text-align:center;font-size:.75rem;color:var(--text-muted);margin-top:24px}
+</style>
+</head>
+<body>
+<h1>Greek Statue &amp; Weather Hub</h1>
+<div style="text-align:center;font-size:.85rem;color:#aaa;margin-bottom:16px">100% Local • Private • iPhone Optimized</div>
+
+<div class="card">
+  <label for="weatherSelect">1. Select Current Conditions:</label>
+  <select id="weatherSelect">
+    <option value="dry_porch">Dry &amp; Mild (Porch / Open Air)</option>
+    <option value="cold_wind">Cold &amp; Windy (Porch Protected)</option>
+    <option value="pouring_rain">Pouring Rain / Freezing (Move to Garage)</option>
+  </select>
+
+  <label for="splitSelect" style="margin-top:12px">2. Select Training Session:</label>
+  <select id="splitSelect">
+    <option value="push">Push Session (Chest, Shoulders, Triceps)</option>
+    <option value="pull">Pull Session (Lats, Rear Delts, Biceps, Forearms)</option>
+    <option value="legs">Legs &amp; Core Session (Quads, Hamstrings, Calves, Abs)</option>
+  </select>
+
+  <div id="envAdvice" class="protocol-box"></div>
+</div>
+
+<div class="card">
+  <h2>Active Protocol Checklist</h2>
+  <div id="workoutList"></div>
+  <button id="saveBtn">Save Local Weights &amp; Sets</button>
+  <div id="saveStatus" style="text-align:center;font-size:.8rem;margin-top:8px"></div>
+</div>
+
+<div class="privacy-footer">Zero Cloud Transmission. All logs stay on your device.</div>
+
+<script>
+const protocols = {
+  push: { title: "Push Focus (Chest, Shoulders, Triceps)", exercises: [
+    { name: "Incline Hands-Elevated Deficit Push-Ups", target: "3 Sets x Near Failure (3-sec lower)" },
+    { name: "Standing / Seated Overhead Press", target: "3 Sets x 8-12 Reps" },
+    { name: "Standing Single-Arm Cross-Body Scoop Flys", target: "3 Sets x 12-15 Reps/side (8-12kg)" },
+    { name: "Strict Lateral Raises (Slight Forward Lean)", target: "4 Sets x 15-20 Reps (6-10kg)" },
+    { name: "Braced / Self-Spotted Tricep Kickbacks", target: "3 Sets x 12-15 Reps" }
+  ]},
+  pull: { title: "Pull Focus (Lats, Rear Delts, Biceps, Forearms)", exercises: [
+    { name: "Single-Arm Tripod Rows (Sweeping to Hip)", target: "4 Sets x 10-12 Reps (24kg)" },
+    { name: "Bent-Over Rear Delt Pulls / Flys", target: "3 Sets x 15-20 Reps" },
+    { name: "Superset: Standard Curls + Wide Curls", target: "3 Sets x 10-12 Reps" },
+    { name: "Hammer Curls (Brachialis Focus)", target: "3 Sets x 10-12 Reps" },
+    { name: "Forearm Splayers & Donut Squeezers", target: "2-3 Sets to pump" }
+  ]},
+  legs: { title: "Legs & Core Focus (Quads, Hamstring, Calves, Abs)", exercises: [
+    { name: "Bulgarian Split Squats OR Goblet Squats", target: "3 Sets x 10-12 Reps (20-24kg)" },
+    { name: "B-Stance Single-Leg RDLs (3-sec slow lower)", target: "3 Sets x 10-12 Reps" },
+    { name: "Single-Leg Step Calf Raises (Toes in/out)", target: "4 Sets x 12-15 Reps (20kg)" },
+    { name: "Weighted Hollow-Body Floor/Mat Crunches", target: "3 Sets x 12-15 Reps (10-14kg)" },
+    { name: "Standing Suitcase Core Marches", target: "3 Sets x 12 steps (24kg)" }
+  ]}
+};
+
+const advice = {
+  dry_porch: "Environment: Ideal conditions. Keep your plastic dumbbells on the dry porch, do your warm-up in your hoodie, and enjoy the open-air movement.",
+  cold_wind: "Environment: Cold air detected. Rule: Do a 3-minute indoor warm-up (arm circles, bodyweight squats) before stepping out. Use the towel over plastic handles to maintain grip.",
+  pouring_rain: "Environment: Wet/Freezing conditions. Action: Move your selected dumbbells directly into the Garage workspace. Use seated chair variations if headroom is tight."
+};
+
+// Storage that never throws (localStorage can be blocked on file:// and data: pages)
+const memStore = {};
+let persistent = true;
+function storeGet(k) {
+  try { const v = localStorage.getItem(k); return v === null ? (memStore[k] || "") : v; }
+  catch (e) { persistent = false; return memStore[k] || ""; }
+}
+function storeSet(k, v) {
+  memStore[k] = v;
+  try { localStorage.setItem(k, v); } catch (e) { persistent = false; }
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+}
+
+function updateEnvironment() {
+  const weather = document.getElementById('weatherSelect').value;
+  const splitKey = document.getElementById('splitSelect').value;
+  document.getElementById('envAdvice').textContent = advice[weather];
+
+  const split = protocols[splitKey];
+  let html = `<div class="badge">${esc(split.title)}</div>`;
+  split.exercises.forEach((ex, i) => {
+    html += `
+      <div class="exercise-item">
+        <div class="exercise-info">
+          <div>${esc(ex.name)}</div>
+          <div>${esc(ex.target)}</div>
+        </div>
+        <div>
+          <input type="text" inputmode="decimal" class="weight-input" id="weight_${splitKey}_${i}" value="${esc(storeGet(`ex_${splitKey}_${i}`))}" placeholder="KG">
+        </div>
+      </div>`;
+  });
+  document.getElementById('workoutList').innerHTML = html;
+}
+
+function saveProgress() {
+  const splitKey = document.getElementById('splitSelect').value;
+  protocols[splitKey].exercises.forEach((ex, i) => {
+    storeSet(`ex_${splitKey}_${i}`, document.getElementById(`weight_${splitKey}_${i}`).value);
+  });
+  const status = document.getElementById('saveStatus');
+  status.style.color = persistent ? "#4caf50" : "#ff9800";
+  status.textContent = persistent
+    ? "Saved to this device"
+    : "Saved for this session only (browser blocked permanent storage)";
+  setTimeout(() => { status.textContent = ""; }, 3500);
+}
+
+document.getElementById('weatherSelect').addEventListener('change', updateEnvironment);
+document.getElementById('splitSelect').addEventListener('change', updateEnvironment);
+document.getElementById('saveBtn').addEventListener('click', saveProgress);
+updateEnvironment();
+</script>
+</body>
+</html>
