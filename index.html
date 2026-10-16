@@ -354,14 +354,26 @@ $("logBtn").addEventListener("click",()=>{
 // ---- CSV & Log ----
 const q=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
 const toCSV=(h,rows)=>[h.join(","),...rows.map(r=>r.map(q).join(","))].join("\r\n");
-async function exportCSV(name,text){
-  const f=new File([text],name,{type:"text/csv"});
-  try{
-    if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:name});return}
-  }catch(e){if(e.name==="AbortError")return}
-  const a=document.createElement("a");a.href=URL.createObjectURL(f);a.download=name;
-  document.body.appendChild(a);a.click();a.remove();
+
+async function exportCSV(name, text) {
+  const f = new File([text], name, { type: "text/csv" });
+  try {
+    // Sharing strictly the single file object prevents iOS from generating a companion text.txt file
+    if (navigator.canShare && navigator.canShare({ files: [f] })) {
+      await navigator.share({ files: [f] });
+      return;
+    }
+  } catch (e) {
+    if (e.name === "AbortError") return;
+  }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(f);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
 }
+
 $("lExp").addEventListener("click",()=>{
   const log=get("log",[]);
   if(!log.length)return msg("lMsg","Nothing logged yet.",false);
