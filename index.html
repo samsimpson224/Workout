@@ -19,7 +19,7 @@ button:active{opacity:.8}
 button.alt{background:#333;color:var(--acc)}
 button.danger{background:#3a1d1d;color:#ff6b6b;margin-top:10px}
 .tabs{display:flex;gap:6px;margin:12px 0}
-.tabs button{margin:0;background:#2a2a2a;color:var(--mu);padding:10px}
+.tabs button{margin:0;background:#2a2a2a;color:var(--mu);padding:10px 2px;font-size:.85rem}
 .tabs button.on{background:var(--acc);color:var(--bg)}
 .timer-bar{display:flex;gap:6px;align-items:center;justify-content:center;margin-bottom:12px;flex-wrap:wrap}
 .timer-bar button{margin:0;padding:6px 11px;font-size:.8rem;width:auto;background:#252525;color:var(--acc);border:1px solid var(--bd)}
@@ -32,6 +32,26 @@ button.danger{background:#3a1d1d;color:#ff6b6b;margin-top:10px}
   animation: pulseAlert 0.7s infinite ease-in-out;
   border: 2px solid var(--acc) !important;
 }
+#alarm{position:fixed;inset:0;z-index:99;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#000;font-size:3.2rem;font-weight:900;text-align:center;animation:flash .3s infinite alternate}
+#alarm[hidden]{display:none}
+#alarm small{font-size:1.1rem;font-weight:700;margin-top:12px}
+@keyframes flash{from{background:#ff1a1a}to{background:#ffee00}}
+code{word-break:break-all}
+.poke{position:sticky;top:0;z-index:50;background:var(--acc);color:#121212;padding:10px;border-radius:8px;margin-bottom:8px;font-weight:bold;text-align:center}
+.poke[hidden]{display:none}.poke button{background:#121212;color:var(--acc)}
+.bw-warn{background:#262010;border:1px solid var(--acc);color:#f5df8d;padding:10px 12px;border-radius:8px;margin-bottom:12px;font-size:.83rem;line-height:1.4;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.bw-warn[hidden]{display:none}
+.bw-warn button{width:auto;margin:0;padding:6px 10px;font-size:.78rem;flex-shrink:0}
+.conn-pill{display:inline-block;padding:2px 8px;border-radius:99px;font-size:.72rem;font-weight:bold;margin-left:6px;background:#1e3a24;color:#4caf50}
+.conn-pill.err{background:#3a1d1d;color:#ff6b6b}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.stat{background:#252525;border-radius:8px;padding:10px;text-align:center}
+.stat b{display:block;font-size:1.4rem;color:var(--acc)}.stat small{color:var(--mu)}
+.dg{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 12px}
+.dd{width:18px;height:18px;border-radius:4px;background:#2a2a2a}.dd.on{background:var(--acc)}.dd.td{outline:2px solid #fff}
+.bar{fill:var(--acc)}.ax{stroke:#444}.tx{fill:#aaa;font-size:9px}
+textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);color:#fff;border-radius:8px;font-size:.85rem;margin-bottom:8px;min-height:90px}
+.sub{display:flex;gap:6px;margin:8px 0}.sub button{margin:0;background:#2a2a2a;color:var(--mu);padding:10px}.sub button.on{background:var(--acc);color:#121212}
 .box{background:#252525;border-left:4px solid var(--acc);padding:12px;border-radius:0 8px 8px 0;font-size:.95rem;line-height:1.4}
 .info-panel{background:#181818;border:1px solid var(--bd);border-left:3px solid var(--acc);padding:12px;border-radius:8px;margin:8px 0;font-size:.85rem;line-height:1.45;color:#ddd}
 .info-panel b{color:var(--acc)}
@@ -57,18 +77,21 @@ button.danger{background:#3a1d1d;color:#ff6b6b;margin-top:10px}
 <body>
 <h1>Training &amp; Weather Hub</h1>
 
+<div id="alarm" hidden>REST OVER<small>Tap anywhere to dismiss</small></div>
+<div id="pokeBar" class="poke" hidden></div>
 <div class="timer-bar">
   <button data-sec="60">Rest 60s</button>
   <button data-sec="120">Rest 2m</button>
   <button data-sec="180">Rest 3m</button>
   <button id="tStop" hidden>Stop (<span id="tDisp">0s</span>)</button>
+  <button id="tTest">Test alert</button>
   <button id="tInfoBtn" title="Timer info">? Timer</button>
 </div>
 <div id="tInfoBox" class="info-panel" hidden>
   <b>Rest Timer Guide (Audio &amp; Visual Alert):</b>
   <ul>
-    <li><b>Rest 60s / 2m / 3m:</b> Tap any preset to start the countdown.</li>
-    <li><b>Alerts:</b> When time expires, the button flashes and pulses visually, your phone vibrates (if supported), and a synthesized chime plays to signal your next set.</li>
+    <li><b>Rest 60s / 2m / 3m:</b> Tap any preset to start the countdown. Keeps your screen awake while active.</li>
+    <li><b>Alerts:</b> When time expires, the full-screen red/yellow strobe flashes, the button pulses, your phone vibrates (if supported), and a loud repeating square-wave alarm plays until dismissed.</li>
   </ul>
 </div>
 
@@ -76,9 +99,31 @@ button.danger{background:#3a1d1d;color:#ff6b6b;margin-top:10px}
   <button class="on" data-t="tW">Workout</button>
   <button data-t="tB">BMR</button>
   <button data-t="tL">Log</button>
+  <button data-t="tC">Clan</button>
+  <button data-t="tS">Stats</button>
 </div>
 
 <section id="tW">
+  <div id="bwWarnBox" class="bw-warn" hidden>
+    <span id="bwWarnTxt">Update your bodyweight in the BMR tab to keep bodyweight-exercise volume accurate.</span>
+    <button id="gotoBmr">Update BW</button>
+  </div>
+  <div class="card" style="padding:10px 16px"><label style="display:flex;align-items:center;gap:10px;margin:0"><input type="checkbox" id="advToggle" style="width:auto;margin:0"> Advanced mode (build your own workouts)</label></div>
+  <div class="card" id="advCard" hidden>
+    <h2>Custom Workout Builder</h2>
+    <label>Workout name</label><input id="cTitle" placeholder="e.g. Upper Body B">
+    <div id="cList"></div>
+    <label>Add an exercise</label>
+    <input id="cName" placeholder="Exercise name (must be unique from defaults)">
+    <input id="cTarget" placeholder="Target, e.g. 3 Sets x 8-12 Reps">
+    <input id="cCue" placeholder="Form notes (optional)">
+    <select id="cType"><option value="a">1 dumbbell</option><option value="b">2 dumbbells (enter kg of one)</option><option value="c">1 dumbbell, each side</option><option value="d">2 dumbbells, each side</option></select>
+    <input id="cBw" inputmode="numeric" placeholder="% of bodyweight moved (0 = none, ~55 push-ups)">
+    <button id="cAdd" class="alt">Add exercise</button>
+    <button id="cSave">Save workout</button>
+    <div id="cMsg" class="msg"></div>
+    <div id="cSaved"></div>
+  </div>
   <div class="card">
     <label for="weather">1. Current conditions</label>
     <select id="weather">
@@ -122,7 +167,7 @@ button.danger{background:#3a1d1d;color:#ff6b6b;margin-top:10px}
       <b>How This Tab Works:</b>
       <ul>
         <li><b>BMR &amp; TDEE:</b> Estimates resting energy expenditure and maintenance calories using the Mifflin-St Jeor formula.</li>
-        <li><b>Local Bodyweight Sync:</b> Saving an entry syncs your weight with the Workout tab locally on your device.</li>
+        <li><b>Local Bodyweight Sync:</b> Saving an entry syncs your weight with the Workout tab locally on your device and resets the 30-day weigh-in reminder.</li>
       </ul>
     </div>
     <label>Sex</label>
@@ -161,8 +206,110 @@ button.danger{background:#3a1d1d;color:#ff6b6b;margin-top:10px}
     <div id="lSum" class="hint"></div>
     <button id="lExp">Export all workouts (CSV)</button>
     <button id="lUndo" class="danger">Delete most recent workout</button>
+    <button id="lBak" class="alt">Export full backup (JSON)</button>
+    <button id="lRes" class="alt">Restore from backup</button>
+    <input type="file" id="lFile" accept=".json,application/json" hidden>
+    <div class="hint">The backup holds workouts, custom workouts and body entries. It never includes clan logins or passwords.</div>
     <div id="lMsg" class="msg"></div>
     <div id="lHist"></div>
+  </div>
+</section>
+
+<section id="tS" hidden>
+  <div class="card">
+    <h2>Progress</h2>
+    <select id="sRange"><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="90">Last 90 days</option></select>
+    <div id="sCards" class="cards"></div>
+    <div class="hint">Days trained (gold = trained, outline = today)</div>
+    <div id="sGrid" class="dg"></div>
+    <div class="hint">Estimated volume moved per day (kg)</div>
+    <div id="sVol"></div>
+    <div class="hint" style="margin-top:12px">Volume by session type</div>
+    <div id="sType"></div>
+    <div class="hint">Volume is an estimate (bodyweight share + weights). Use it to compare yourself over time.</div>
+  </div>
+</section>
+
+<section id="tC" hidden>
+  <div class="card">
+    <h2>Clan Leaderboard</h2>
+    <button id="kGuideBtn" class="alt" style="padding:8px;font-size:.85rem">? Setup guide (iPhone &amp; Android)</button>
+    <div id="kGuide" class="info-panel" hidden>
+      <b>A. Friends: join in 3 steps</b>
+      <ol>
+        <li><b>Install the app.</b> Open the link your clan creator sent.<br><i>iPhone:</i> in Safari tap Share &rarr; Add to Home Screen &rarr; Add.<br><i>Android:</i> in Chrome tap the &#8942; menu &rarr; Add to Home screen (or Install app) &rarr; Add. Open it from the new icon.</li>
+        <li><b>Paste the invite code.</b> Tap the Clan tab &rarr; Join a clan. Copy the long code starting <code>CLAN1.</code> from your creator's message, then press and hold in the code box and tap Paste. Type a display name.</li>
+        <li><b>Tap Join.</b> Log a workout and your name appears on the board. That's it. No accounts or passwords for you.</li>
+      </ol>
+      <b>B. Clan creator: one-time setup (about 10 minutes, free)</b>
+      <p>Easiest on a computer. On a phone, switch the page to desktop view first:<br><i>iPhone Safari:</i> tap <b>aA</b> in the address bar &rarr; Request Desktop Website.<br><i>Android Chrome:</i> tap &#8942; &rarr; tick Desktop site. Pinch to zoom as needed. On a phone, open Firebase's &#9776; menu to see Build.</p>
+      <ol>
+        <li>Go to <code>console.firebase.google.com</code> and sign in with a Google account. Tap <b>Create a project</b>, name it (e.g. clan), Continue, switch Google Analytics <b>off</b>, Create project, Continue.</li>
+        <li>Menu &rarr; <b>Build &rarr; Authentication &rarr; Get started</b>.</li>
+        <li>Open the <b>Sign-in method</b> tab &rarr; <b>Email/Password</b> &rarr; turn on the first switch (not &quot;Email link&quot;) &rarr; <b>Save</b>.</li>
+        <li>Menu &rarr; <b>Build &rarr; Realtime Database &rarr; Create Database</b>. Pick the closest location, choose <b>Start in locked mode</b>, tap Enable.</li>
+        <li>In Realtime Database open the <b>Rules</b> tab. Delete everything in the box. Tap <b>Copy rules</b> below, paste into the Firebase box, tap <b>Publish</b>. Set this up before? Copy the rules again: the new ones also support older clans.<br><button id="kCopyRules" class="alt" style="padding:8px;font-size:.85rem">Copy rules</button><textarea id="kRules" readonly style="min-height:60px"></textarea></li>
+        <li>Go to Project overview (home) &rarr; tap the web icon <b>&lt;/&gt;</b> &rarr; nickname &rarr; leave Hosting unticked &rarr; <b>Register app</b>. Select and copy the whole <code>const firebaseConfig = {...}</code> block. It must contain a <code>databaseURL</code> line; if not, step 4 isn't finished.</li>
+        <li>Come back here: <b>Start a clan</b> &rarr; paste the block, enter your name and a <b>master password</b> &rarr; Create. Then tap <b>Share invite code</b> and send it to your friends.</li>
+      </ol>
+      <p>Everything stays on Firebase's free plan. If Firebase asks for a card or a plan upgrade, stop and cancel. Button names occasionally change; pick the closest match.</p>
+      <b>C. How editing is protected</b>
+      <ul>
+        <li>Everyone can only change their own entries. This is enforced by the database, not just the app.</li>
+        <li>Only you, with the master password, can hide a member or remove any entry (Unlock admin tools on the board). Your master password is never stored on your phone or shared.</li>
+        <li>Anyone holding the invite code can see the board, so only send it to your clan. Shared: display name plus each session's date, type, sets and estimated volume. Not shared: bodyweight or measurements. Note that estimated volume is calculated from bodyweight, so it reflects your size indirectly; untick &quot;Share my estimated volume&quot; on the board to keep that private.</li>
+      </ul>
+      <b>D. Pokes</b>
+      <ul>
+        <li>Tap <b>Poke</b> next to a member. They see a banner the next time they open the app, or within about a minute if it's already open. Pokes can't wake a closed app. For an instant phone notification, use <b>Send a nudge by message</b>.</li>
+        <li>Everyone in the clan can see who poked whom. You can poke the same person once every 30 minutes.</li>
+        <li>Pokes only work in clans created with the newest version.</li>
+      </ul>
+      <b>E. Troubleshooting</b>
+      <ul>
+        <li><i>Email/Password sign-in isn't switched on:</i> redo step 3.</li>
+        <li><i>Firebase rules missing:</i> redo step 5 and make sure you tapped Publish.</li>
+        <li><i>Invite code isn't valid:</i> copy the whole code, with no spaces cut off.</li>
+        <li><i>Board empty:</i> log a workout, then tap Sync my logs &amp; refresh.</li>
+      </ul>
+    </div>
+
+    <div id="kJoin">
+      <div class="sub"><button id="kTabJoin" class="on">Join a clan</button><button id="kTabNew">Start a clan</button></div>
+      <div id="kPJoin">
+        <label>Invite code</label><textarea id="kCode" placeholder="Paste the code starting CLAN1."></textarea>
+        <label>Your display name</label><input id="kName" maxlength="20">
+        <button id="kJoinBtn">Join</button>
+      </div>
+      <div id="kPNew" hidden>
+        <label>Firebase config (paste the whole block)</label><textarea id="kCfg" placeholder="const firebaseConfig = {...}"></textarea>
+        <label>Your display name</label><input id="kName2" maxlength="20">
+        <label>Master password (12+ characters, only you)</label><input id="kMP" type="password" autocomplete="new-password">
+        <button id="kCreate">Create clan</button>
+      </div>
+    </div>
+
+    <div id="kBoard" hidden>
+      <div id="kTitle" class="hint"></div>
+      <label style="display:flex;align-items:center;gap:10px;margin:8px 0;font-weight:normal"><input type="checkbox" id="kShareVol" style="width:auto;margin:0"> Share my estimated volume (reflects bodyweight)</label>
+      <select id="kRange"><option value="7">Last 7 days</option><option value="30">Last 30 days</option></select>
+      <select id="kMetric"><option value="w">Rank by workouts</option><option value="sets">Rank by hard sets</option><option value="vol">Rank by est. volume</option></select>
+      <h2 style="font-size:1.1rem">Standard workouts</h2>
+      <div id="kRows"></div>
+      <h2 style="font-size:1.1rem;margin-top:16px">Custom exercises</h2>
+      <div class="hint">One table per exercise, ranked by est. volume.</div>
+      <div id="kCust"></div>
+      <div id="kManage"></div>
+      <button id="kSync">Sync my logs &amp; refresh</button>
+      <button id="kNudge" class="alt">Send a nudge by message</button>
+      <button id="kInvite" class="alt">Share invite code</button>
+      <div id="kAdminBox" hidden>
+        <label>Master password (clan creator only)</label><input id="kMaster" type="password" autocomplete="current-password">
+        <button id="kUnlock" class="alt">Unlock admin tools</button>
+      </div>
+      <button id="kLeave" class="danger">Leave clan</button>
+    </div>
+    <div id="kMsg" class="msg"></div>
   </div>
 </section>
 
@@ -207,6 +354,14 @@ legs:{title:"Legs & Core Focus (Quads, Hamstring, Calves, Abs)",ex:[
 {bw:0,db:1,m:2,ph:"1-DB kg",note:"1-DB weight x 2 sides",desc:"Unilateral anti-lateral flexion carry. Enter ONE dumbbell weight and marches per side."}]]}
 };
 
+// Normalize exercise names to prevent custom vs. default collisions
+const normExName=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+const DEFAULT_EX_NAMES=new Set();
+["push","pull","legs"].forEach(k=>P[k].ex.forEach(x=>{
+  DEFAULT_EX_NAMES.add(normExName(x[1]));
+  DEFAULT_EX_NAMES.add(normExName(x[1].split("(")[0]));
+}));
+
 const EX_MAP={};
 Object.values(P).forEach(s=>s.ex.forEach(x=>{EX_MAP[x[0]]=x[4];EX_MAP[x[1]]=x[4]}));
 
@@ -220,84 +375,102 @@ const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"
 const mem={};let stored=true;
 function get(k,d){try{const v=localStorage.getItem(k);if(v!==null)return JSON.parse(v)}catch(e){stored=false}return k in mem?mem[k]:d}
 function set(k,v){mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v))}catch(e){stored=false}}
-function msg(id,t,good){const e=$(id);e.style.color=good?"#4caf50":"#ff9800";e.textContent=t;setTimeout(()=>{e.textContent=""},4000)}
+function msg(id,t,good){const e=$(id);if(!e)return;e.style.color=good?"#4caf50":"#ff9800";e.textContent=t;setTimeout(()=>{if(e.textContent===t)e.textContent=""},4000)}
 function getBW(){const b=get("bmrIn",null);return b&&parseFloat(b.kg)>0?parseFloat(b.kg):70}
 function hasSavedBW(){const b=get("bmrIn",null);return Boolean(b&&parseFloat(b.kg)>0)}
+function sessTag(title){
+  const s=String(title||"Workout");
+  return /^(Push|Pull|Legs)\s+Focus\b/.test(s)?s.split(" ")[0]:s.slice(0,18);
+}
+
+// ---- 30-Day Bodyweight Staleness Banner ----
+function checkBwStale(){
+  const b=get("bmrIn",null),all=get("bmr",[]);
+  const lastD=(b&&b.d)||(all.length?all[all.length-1].d:null);
+  const box=$("bwWarnBox"),txt=$("bwWarnTxt");
+  if(!lastD){
+    txt.textContent="No bodyweight saved in the BMR tab yet (using 70 kg default). Tap to set yours.";
+    box.hidden=false;return;
+  }
+  const days=Math.floor((Date.now()-new Date(lastD).getTime())/864e5);
+  if(days>30){
+    txt.textContent=`Bodyweight last updated ${days} days ago (${b?b.kg:70} kg). Re-weigh to keep volume accurate.`;
+    box.hidden=false;
+  }else box.hidden=true;
+}
+$("gotoBmr").addEventListener("click",()=>document.querySelector('[data-t="tB"]').click());
 
 // ---- Info Drawers ----
 [["tInfoBtn","tInfoBox"],["normHelpBtn","normHelpBox"],["bmrHelpBtn","bmrHelpBox"],["logHelpBtn","logHelpBox"]].forEach(([b,x])=>{
   $(b).addEventListener("click",()=>{$(x).hidden=!$(x).hidden});
 });
 
-// ---- Audio & Visual Alert Rest Timer ----
-let tInt=null,tEnd=0;
+// ---- Rest timer: full-screen flash + loud repeating beeps ----
+let tInt=null,tEnd=0,actx=null,tNodes=[],aInt=null,wake=null;
+function audio(){
+  try{
+    if(navigator.audioSession)navigator.audioSession.type="playback";
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!actx&&AC)actx=new AC();
+    if(actx&&actx.state!=="running")actx.resume();
+  }catch(e){}
+}
+// Unlock Web Audio context on first user touch anywhere in the app
+window.addEventListener("pointerdown",()=>audio(),{once:true});
 
-function playAlertSound(){
-  try {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if(!AudioCtx) return;
-    const ctx = new AudioCtx();
-    
-    // Play a dual-tone chime
-    [523.25, 659.25, 783.99].forEach((freq, index) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, ctx.currentTime + index * 0.12);
-      gain.gain.setValueAtTime(0.15, ctx.currentTime + index * 0.12);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + index * 0.12 + 0.3);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(ctx.currentTime + index * 0.12);
-      osc.stop(ctx.currentTime + index * 0.12 + 0.3);
-    });
-  } catch(e) {
-    // Audio context restricted or not supported
+function beeps(){
+  if(!actx)return;
+  const t0=actx.currentTime+0.05;
+  for(let i=0;i<6;i++){
+    const o=actx.createOscillator(),g=actx.createGain(),t=t0+i*0.35;
+    o.type="square";o.frequency.value=i%2?1175:880;
+    g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.6,t+0.01);g.gain.exponentialRampToValueAtTime(0.0001,t+0.28);
+    o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+0.3);tNodes.push(o);
   }
 }
-
+function releaseWake(){try{wake&&wake.release()}catch(e){}wake=null}
+function stopAlarm(){
+  clearInterval(aInt);aInt=null;
+  tNodes.forEach(o=>{try{o.stop()}catch(e){}});tNodes=[];
+  $("alarm").hidden=true;releaseWake();
+}
 function triggerAlert(){
-  playAlertSound();
-  if(navigator.vibrate) {
-    try { navigator.vibrate([300, 150, 300, 150, 400]); } catch(e){}
-  }
-  const stopBtn = $("tStop");
-  stopBtn.classList.add("timer-done");
+  audio();beeps();
+  let n=0;clearInterval(aInt);
+  aInt=setInterval(()=>{if(++n>18)return stopAlarm();beeps()},2400);
+  $("alarm").hidden=false;
+  try{navigator.vibrate&&navigator.vibrate([400,150,400,150,600])}catch(e){}
+  $("tStop").classList.add("timer-done");
 }
-
 function tickTimer(){
   if(!tEnd)return;
   const rem=Math.ceil((tEnd-Date.now())/1000);
-  if(rem<=0){
-    clearInterval(tInt);tInt=null;tEnd=0;
-    $("tDisp").textContent="DONE!";
-    triggerAlert();
-  }else{
-    $("tDisp").textContent=rem+"s";
-  }
+  if(rem<=0){clearInterval(tInt);tInt=null;tEnd=0;$("tDisp").textContent="DONE!";triggerAlert()}
+  else $("tDisp").textContent=rem+"s";
 }
-
+function wakeOn(){try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(l=>{wake=l}).catch(()=>{})}catch(e){}}
 document.querySelector(".timer-bar").addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b||b.id==="tInfoBtn")return;
-  clearInterval(tInt);tInt=null;
-  $("tStop").classList.remove("timer-done");
+  stopAlarm();clearInterval(tInt);tInt=null;$("tStop").classList.remove("timer-done");
+  if(b.id==="tTest"){audio();triggerAlert();msg("wMsg","Audio & visual alert armed. Tap screen to dismiss.",true);return}
   if(b.id==="tStop"){tEnd=0;$("tStop").hidden=true;return}
-  const sec=parseInt(b.dataset.sec,10);
-  tEnd=Date.now()+sec*1000;
-  $("tStop").hidden=false;
-  tickTimer();
-  tInt=setInterval(tickTimer,250);
+  audio();
+  tEnd=Date.now()+parseInt(b.dataset.sec,10)*1000;
+  $("tStop").hidden=false;tickTimer();tInt=setInterval(tickTimer,250);wakeOn();
 });
-document.addEventListener("visibilitychange",()=>{if(!document.hidden&&tEnd)tickTimer()});
+$("alarm").addEventListener("click",()=>{stopAlarm();$("tStop").hidden=true;$("tStop").classList.remove("timer-done")});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&tEnd){tickTimer();wakeOn()}});
 
 // ---- Tabs ----
 document.querySelector(".tabs").addEventListener("click",e=>{
   const b=e.target.closest("[data-t]");if(!b)return;
   document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));
-  ["tW","tB","tL"].forEach(id=>{$(id).hidden=id!==b.dataset.t});
+  ["tW","tB","tL","tC","tS"].forEach(id=>{$(id).hidden=id!==b.dataset.t});
   if(b.dataset.t==="tL")renderLog();
+  if(b.dataset.t==="tC")renderClan();
+  if(b.dataset.t==="tS")renderStats();
   if(b.dataset.t==="tB")renderBmr();
-  if(b.dataset.t==="tW")render();
+  if(b.dataset.t==="tW"){render();checkBwStale()}
 });
 
 // ---- Dynamic Normalization Math ----
@@ -322,7 +495,7 @@ function vol(x,bwUsed){
 // ---- Workout ----
 let draft={};
 function render(){
-  const sk=$("split").value,p=P[sk],last=get("last",{}),bw=getBW();
+  const sk=$("split").value,p=P[sk]||P.push,last=get("last",{}),bw=getBW();
   $("advice").textContent=ADV[$("weather").value];
   $("bwNotice").innerHTML=hasSavedBW()
     ?`Synced Bodyweight: <b>${bw} kg</b> (from BMR tab).`
@@ -341,8 +514,8 @@ function render(){
     <div class="inp">${f("kg",meta.ph,"decimal",defKg)}${f("sets","sets","numeric",v.sets)}${f("reps","reps","numeric",v.reps)}</div>
     <div class="guide" id="m${i}" hidden><b>Biomechanical Estimate:</b><br>${esc(meta.desc)}<br><small style="color:var(--acc)">Est. BW lever: ${bwPart} kg (${Math.round((meta.bw||0)*100)}% of ${bw} kg) &bull; DBs held: ${meta.db}x &bull; Side/Set mult: ${meta.m}x</small></div>
     <div class="guide" id="g${i}" hidden><p style="margin:0 0 6px">${esc(x[3])}</p>
-    <a class="lnk" target="_blank" rel="noopener" href="https://www.google.com/search?tbm=isch&q=${q}+exercise+illustration">Illustrations</a>
-    <a class="lnk" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${q}+form+guide">Video guide</a></div></div>`;
+    <a class="lnk" target="_blank" rel="noopener" href="https://www.google.com/search?tbm=isch&q=${q}+exercise+form">Illustrations</a>
+    <a class="lnk" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${q}+exercise+form">Video guide</a></div></div>`;
   });
   $("list").innerHTML=h;
 }
@@ -379,38 +552,26 @@ $("logBtn").addEventListener("click",()=>{
     const setsVal=v.sets!==undefined?String(v.sets).trim():"";
     const repsVal=v.reps!==undefined?String(v.reps).trim():"";
     if(parseFloat(setsVal)>0 && parseFloat(repsVal)>0 && (kgVal!=="" || meta.bw>0)){
-      ex.push({id,n:x[1],kg:kgVal,sets:setsVal,reps:repsVal});
+      ex.push({id,n:x[1],kg:kgVal,sets:setsVal,reps:repsVal,...(id.startsWith("cx_")?{meta}:{})});
       last[id]={kg:kgVal,sets:setsVal,reps:repsVal};
     }else{
       delete last[id];
     }
   });
   if(!ex.length)return msg("wMsg","Enter valid sets & reps for at least one exercise.",false);
-  log.push({d:new Date().toISOString(),s:p.title,w:$("weather").selectedOptions[0].text,bw,ex});
-  set("log",log);set("last",last);draft={};render();
+  log.push({sid:rnd(10),d:new Date().toISOString(),s:p.title,w:$("weather").selectedOptions[0].text,bw,ex});
+  set("log",log);set("last",last);draft={};render();syncClan(true);
   msg("wMsg",stored?`Workout logged (${log.length} total)`:"Logged for this session only",stored);
 });
 
-// ---- CSV & Log ----
+// ---- CSV, JSON Export & Log ----
 const q=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
 const toCSV=(h,rows)=>[h.join(","),...rows.map(r=>r.map(q).join(","))].join("\r\n");
 
-async function exportCSV(name, text) {
-  const f = new File([text], name, { type: "text/csv" });
-  try {
-    if (navigator.canShare && navigator.canShare({ files: [f] })) {
-      await navigator.share({ files: [f] });
-      return;
-    }
-  } catch (e) {
-    if (e.name === "AbortError") return;
-  }
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(f);
-  a.download = name;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
+async function exportFile(name,text,type){
+  const f=new File([text],name,{type});
+  try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}}catch(e){if(e.name==="AbortError")return}
+  const a=document.createElement("a");a.href=URL.createObjectURL(f);a.download=name;document.body.appendChild(a);a.click();a.remove();
 }
 
 $("lExp").addEventListener("click",()=>{
@@ -422,14 +583,14 @@ $("lExp").addEventListener("click",()=>{
     const eff=calcEffKg(x.kg,meta,bwUsed);
     rows.push([s.d.slice(0,10),s.d.slice(11,16),s.s,s.w,bwUsed,x.n,x.kg,eff,x.sets,x.reps,vol(x,bwUsed)]);
   }));
-  exportCSV("workout-log.csv",toCSV(["Date","Time_UTC","Session","Conditions","Bodyweight_kg","Exercise","Entered_1DB_kg","Est_Effective_Load_kg","Hard_Sets","Avg_Reps","Est_Normalized_Volume_kg"],rows));
+  exportFile("workout-log.csv",toCSV(["Date","Time_UTC","Session","Conditions","Bodyweight_kg","Exercise","Entered_1DB_kg","Est_Effective_Load_kg","Hard_Sets","Avg_Reps","Est_Normalized_Volume_kg"],rows),"text/csv");
 });
 $("lUndo").addEventListener("click",()=>{
   const log=get("log",[]);
   if(!log.length)return msg("lMsg","No workouts to delete.",false);
   const lastSess=log[log.length-1];
-  if(!confirm(`Delete most recent workout (${lastSess.d.slice(0,10)} - ${lastSess.s.split(" ")[0]})?`))return;
-  log.pop();set("log",log);renderLog();
+  if(!confirm(`Delete most recent workout (${lastSess.d.slice(0,10)} - ${sessTag(lastSess.s)})?`))return;
+  log.pop();set("log",log);renderLog();syncClan(true);
   msg("lMsg","Most recent workout removed.",true);
 });
 function renderLog(){
@@ -438,7 +599,7 @@ function renderLog(){
   $("lHist").innerHTML=log.slice(-10).reverse().map(s=>{
     const tVol=s.ex.reduce((a,x)=>a+(vol(x,s.bw)||0),0);
     const tSets=s.ex.reduce((a,x)=>a+(parseFloat(x.sets)||0),0);
-    return `<div class="row"><span>${esc(s.d.slice(0,10))} &bull; ${esc(s.s.split(" ")[0])}</span><span>${tSets} sets &bull; ${Math.round(tVol)} kg vol</span></div>`}).join("");
+    return `<div class="row"><span>${esc(s.d.slice(0,10))} &bull; ${esc(sessTag(s.s))}</span><span>${tSets} sets &bull; ${Math.round(tVol)} kg vol</span></div>`}).join("");
 }
 
 // ---- BMR ----
@@ -463,16 +624,362 @@ function renderBmr(){
 $("bSave").addEventListener("click",()=>{
   const r=bmrCalc();if(!r)return msg("bMsg","Fill in age, height and weight first.",false);
   const e={d:new Date().toISOString().slice(0,10),sex:$("bSex").value,age:$("bAge").value,h:$("bH").value,kg:$("bW").value,act:$("bAct").value,...r};
-  const all=get("bmr",[]);all.push(e);set("bmr",all);set("bmrIn",e);bmrLoaded=true;renderBmr();
+  const all=get("bmr",[]);all.push(e);set("bmr",all);set("bmrIn",e);bmrLoaded=true;renderBmr();checkBwStale();
   msg("bMsg",stored?"Entry saved & bodyweight synced":"Saved for this session only",stored);
 });
 $("bExp").addEventListener("click",()=>{
   const all=get("bmr",[]);
   if(!all.length)return msg("bMsg","No entries saved yet.",false);
-  exportCSV("bmr-log.csv",toCSV(["Date","Sex","Age","Height_cm","Weight_kg","Activity_Factor","BMR_kcal","Maintenance_kcal"],all.map(e=>[e.d,e.sex,e.age,e.h,e.kg,e.act,e.bmr,e.tdee])));
+  exportFile("bmr-log.csv",toCSV(["Date","Sex","Age","Height_cm","Weight_kg","Activity_Factor","BMR_kcal","Maintenance_kcal"],all.map(e=>[e.d,e.sex,e.age,e.h,e.kg,e.act,e.bmr,e.tdee])),"text/csv");
 });
 
-render();
+// ---- Advanced: custom workouts ----
+const TYPES={a:{db:1,m:1,t:"1 dumbbell"},b:{db:2,m:1,t:"2 dumbbells"},c:{db:1,m:2,t:"1 dumbbell, each side"},d:{db:2,m:2,t:"2 dumbbells, each side"}};
+let cDraft=[];
+function applyCustom(){
+  Object.keys(P).filter(k=>k.startsWith("c_")).forEach(k=>delete P[k]);
+  const cs=get("custom",[]);
+  cs.forEach(c=>{
+    P["c_"+c.id]={title:c.title,ex:c.ex};
+    c.ex.forEach(x=>{EX_MAP[x[0]]=x[4];if(!DEFAULT_EX_NAMES.has(normExName(x[1])))EX_MAP[x[1]]=x[4]});
+  });
+  const sel=$("split"),cur=sel.value;
+  sel.querySelectorAll("[data-c]").forEach(o=>o.remove());
+  cs.forEach(c=>{const o=document.createElement("option");o.value="c_"+c.id;o.dataset.c=1;o.textContent="Custom: "+c.title;sel.appendChild(o)});
+  if([...sel.options].some(o=>o.value===cur))sel.value=cur;
+}
+function renderAdv(){
+  const on=get("adv",false);$("advToggle").checked=on;$("advCard").hidden=!on;
+  $("cList").innerHTML=cDraft.map((x,i)=>`<div class="row"><span>${esc(x[1])} <small>(${esc(x[2])})</small></span><button class="mini" data-cd="${i}">x</button></div>`).join("")||'<div class="hint">No exercises added yet.</div>';
+  $("cSaved").innerHTML=get("custom",[]).map((c,i)=>`<div class="row"><span>${esc(c.title)} (${c.ex.length} ex)</span><button class="mini" data-cs="${i}">Delete</button></div>`).join("");
+}
+$("advToggle").addEventListener("change",e=>{set("adv",e.target.checked);renderAdv()});
+$("cAdd").addEventListener("click",()=>{
+  const name=$("cName").value.trim().replace(/\s+/g," ");
+  if(!name)return msg("cMsg","Give the exercise a name.",false);
+  const norm=normExName(name),normBase=normExName(name.split("(")[0]);
+  if(DEFAULT_EX_NAMES.has(norm)||DEFAULT_EX_NAMES.has(normBase)){
+    return msg("cMsg","That name matches a built-in default exercise. Choose a distinct custom name.",false);
+  }
+  if(cDraft.some(x=>normExName(x[1])===norm)){
+    return msg("cMsg","You already added that exercise to this workout.",false);
+  }
+  const existingCustom=get("custom",[]).flatMap(c=>c.ex).find(x=>normExName(x[1])===norm);
+  const canonicalName=existingCustom?existingCustom[1]:name;
+  const t=TYPES[$("cType").value],pct=Math.min(100,Math.max(0,parseFloat($("cBw").value)||0));
+  const note="Est: "+[pct?pct+"% BW":"",t.db>1?t.db+"x kg":"kg"].filter(Boolean).join(" + ")+(t.m>1?" x 2 sides":"");
+  cDraft.push(["cx_"+Date.now().toString(36)+cDraft.length,canonicalName,$("cTarget").value.trim()||"Your sets x reps",($("cCue").value.trim()||"Tap the links below to see how it is done."),
+    {bw:pct/100,db:t.db,m:t.m,ph:"1-DB kg",note,desc:`Custom: ${t.t}${pct?", "+pct+"% of bodyweight":""}. Enter the weight of ONE dumbbell and reps per side.`}]);
+  ["cName","cTarget","cCue","cBw"].forEach(i=>{$(i).value=""});renderAdv();
+  msg("cMsg",`Added "${canonicalName}".`,true);
+});
+$("cSave").addEventListener("click",()=>{
+  const title=$("cTitle").value.trim();
+  if(!title||!cDraft.length)return msg("cMsg","Add a workout name and at least one exercise.",false);
+  if(/^(push|pull|legs)\b/i.test(title))return msg("cMsg","Choose a workout name that doesn't start with Push, Pull, or Legs.",false);
+  const cs=get("custom",[]);cs.push({id:Date.now().toString(36),title,ex:cDraft});set("custom",cs);
+  cDraft=[];$("cTitle").value="";applyCustom();renderAdv();msg("cMsg","Saved. Pick it in the session list.",true);
+});
+$("advCard").addEventListener("click",e=>{
+  const d=e.target.closest("[data-cd]"),v=e.target.closest("[data-cs]");
+  if(d){cDraft.splice(+d.dataset.cd,1);renderAdv()}
+  if(v&&confirm("Delete this custom workout? Logged history is kept.")){const cs=get("custom",[]);cs.splice(+v.dataset.cs,1);set("custom",cs);applyCustom();renderAdv();render()}
+});
+
+// ---- Clan: Firebase Auth + Realtime Database over REST ----
+const CLOUD_V=2,LOCAL_V=1;
+const MAIL="@clanboard.app",OKURL=/^https:\/\/[\w.-]+\.(firebaseio\.com|firebasedatabase\.app)$/;
+const WR="auth != null && (auth.token.email === 'u-' + $member + '@clanboard.app' || auth.token.email === 'm-' + $clan + '@clanboard.app')";
+const MW="auth != null && auth.token.email === 'm-' + $clan + '@clanboard.app'";
+const RULES=JSON.stringify({rules:{".read":false,".write":false,clans:{"$clan":{
+  d:{"$kind":{".read":"auth != null","$member":{".write":WR}}},
+  meta:{".read":"auth != null",".write":MW},
+  mod:{".read":"auth != null",".write":MW},
+  board:{".read":"auth != null","$member":{".write":WR}},
+  custom:{".read":"auth != null","$member":{".write":WR}}}}}},null,1);
+$("kRules").value=RULES;
+const rnd=n=>[...crypto.getRandomValues(new Uint8Array(n))].map(b=>(b%36).toString(36)).join("");
+const enc=o=>"CLAN1."+btoa(JSON.stringify(o)).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+const dec=t=>JSON.parse(atob(t.trim().replace(/\s/g,"").slice(6).replace(/-/g,"+").replace(/_/g,"/")));
+const cleanName=v=>v.trim().replace(/[^\p{L}\p{N} _-]/gu,"").slice(0,20);
+const arr=v=>Array.isArray(v)?v.filter(Boolean):Object.values(v||{});
+const num=v=>Number(v)||0;
+const key=(...a)=>a.join("|").replace(/[.$#\[\]\/]/g,"_");
+const FR={EMAIL_EXISTS:"That account already exists.",OPERATION_NOT_ALLOWED:"Email/Password sign-in isn't switched on in Firebase (guide step 3).",INVALID_API_KEY:"The API key looks wrong. Re-copy the Firebase config.",API_KEY_INVALID:"The API key looks wrong. Re-copy the Firebase config.",WEAK_PASSWORD:"Password too short.",INVALID_LOGIN_CREDENTIALS:"Wrong password.",INVALID_PASSWORD:"Wrong password.",PERMISSION_DENIED:"Firebase rules are missing or not published (guide step 5)."};
+const why=e=>{const k=String(e&&e.message||e).split(/[ :]/)[0];return FR[k]||"Failed: "+(e&&e.message||e)};
+const np=(c,k)=>(c.sv>=2?"d/":"")+k;
+async function authCall(kind,ak,email,password){
+  const r=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:${kind}?key=${encodeURIComponent(ak)}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email,password,returnSecureToken:true})});
+  const j=await r.json();if(!r.ok)throw new Error(j.error&&j.error.message||r.status);return j;
+}
+let tokC={t:"",exp:0},tokA={t:"",exp:0};
+async function tok(c){
+  if(tokC.exp>Date.now())return tokC.t;
+  const j=await authCall("signInWithPassword",c.ak,"u-"+c.me+MAIL,c.pw);
+  tokC={t:j.idToken,exp:Date.now()+3e6};return tokC.t;
+}
+async function db(c,method,path,body,t){
+  const r=await fetch(`${c.url}/clans/${c.clan}/${path}.json?auth=${t||await tok(c)}`,{method,body:body===undefined?undefined:JSON.stringify(body)});
+  if(r.status===401)throw new Error("PERMISSION_DENIED");
+  if(!r.ok)throw new Error("HTTP "+r.status);
+  return r.json();
+}
+function summary(){
+  const std=[],cus=[],sv=(get("clan2",null)||{}).shareVol!==false;
+  get("log",[]).slice(-120).forEach(s=>{
+    let sets=0,v=0;
+    s.ex.forEach(x=>{
+      const n=num(x.sets),vv=sv?Math.round(vol(x,s.bw)||0):0;
+      if(String(x.id).startsWith("cx_"))cus.push({i:s.sid,d:s.d.slice(0,10),e:String(x.n).slice(0,40),kg:num(x.kg),sets:n,reps:num(x.reps),v:vv});
+      else{sets+=n;v+=vv}
+    });
+    if(sets)std.push({i:s.sid,d:s.d.slice(0,10),k:sessTag(s.s),sets,vol:v});
+  });
+  return {std,cus:cus.slice(-150)};
+}
+async function syncClan(quiet){
+  const c=get("clan2",null);if(!c)return;
+  try{
+    const m=summary(),t=Date.now();
+    await db(c,"PUT",np(c,"board")+"/"+c.me,{v:c.sv||1,name:c.name,t,s:m.std});
+    await db(c,"PUT",np(c,"custom")+"/"+c.me,{v:c.sv||1,name:c.name,t,s:m.cus});
+    if(!quiet)msg("kMsg","Synced with clan board.",true);
+  }catch(e){if(!quiet)msg("kMsg",why(e),false)}
+}
+let lastData={},adm=[];
+async function renderClan(){
+  const c=get("clan2",null);
+  $("kJoin").hidden=!!c;$("kBoard").hidden=!c;if(!c)return;
+  const admin=tokA.t&&tokA.exp>Date.now();
+  const baseTitle="Signed in as "+esc(c.name)+(c.owner?" (clan creator)":"")+(admin?" - admin unlocked":"")+(c.sv>=2?"":" (legacy clan)");
+  $("kTitle").innerHTML=baseTitle+` <span class="conn-pill" id="kConn">Syncing...</span>`;
+  $("kAdminBox").hidden=!c.owner\vert{}\vert{}admin;$("kShareVol").checked=c.shareVol!==false;
+  try{
+    await tok(c);
+    const [bd,cu,md0]=await Promise.all(["board","custom","mod"].map(n=>db(c,"GET",n==="mod"?n:np(c,n))));
+    const pill=$("kConn");if(pill){pill.textContent="● Connected";pill.classList.remove("err")}
+    const md=md0||{},m=$("kMetric").value;
+    const cut=new Date(Date.now()-parseInt($("kRange").value,10)*864e5).toISOString().slice(0,10);
+    const hid=id=>md[id]&&md[id].hide,drop=(id,k1,k2)=>md[id]&&md[id].drop&&(md[id].drop[k1]||(k2&&md[id].drop[k2]));
+    lastData=Object.create(null);
+    const rows=Object.entries(bd||{}).filter(([id])=>admin||!hid(id)).map(([id,u])=>{
+      const all=arr(u.s).map(x=>{
+        const d=String(x.d),k=String(x.k),sets=num(x.sets),vol=num(x.vol),legK=key(d,k,sets),uidK=x.i?key("s",x.i,legK):legK;
+        return {d,k,sets,vol,uidK,legK};
+      }).filter(x=>!drop(id,x.uidK,x.legK));
+      const l=all.filter(x=>x.d>=cut);
+      lastData[id]={name:String(u.name||"?"),items:all.slice(-25).reverse().map(x=>({label:`${x.d} ${x.k}: ${x.sets} sets`,key:x.uidK}))};
+      return {id,name:String(u.name||"?"),w:l.length,sets:l.reduce((a,x)=>a+x.sets,0),vol:l.reduce((a,x)=>a+x.vol,0),hidden:!!hid(id)};
+    }).sort((a,b)=>b[m]-a[m]);
+    const byEx=Object.create(null);
+    Object.entries(cu||{}).filter(([id])=>!hid(id)).forEach(([id,u])=>arr(u.s).forEach(x=>{
+      const d=String(x.d),e=String(x.e),kg=num(x.kg),sets=num(x.sets),reps=num(x.reps);
+      const legK=key("c",d,e,kg,sets,reps),uidK=x.i?key("c",x.i,e,kg,sets,reps):legK;
+      if(lastData[id])lastData[id].items.push({label:`${d} ${e}: ${sets}x${reps}`,key:uidK});
+      if(d<cut||drop(id,uidK,legK))return;
+      const gKey=normExName(e);if(DEFAULT_EX_NAMES.has(gKey))return;
+      const g=byEx[gKey]=byEx[gKey]||{label:e,m:Object.create(null)};
+      const r=g.m[id]=g.m[id]||{name:String(u.name||"?"),sets:0,best:0,vol:0};
+      r.sets+=sets;r.best=Math.max(r.best,kg);r.vol+=num(x.v);
+    }));
+    const pokeBtn=r=>(c.sv>=2&&r.id!==c.me&&!r.hidden)?` <button class="mini" data-poke="${esc(r.id)}">Poke</button>`:"";
+    const btn=r=>admin?(r.hidden?` <button class="mini" data-unhide="${esc(r.id)}">Unhide</button>`:` <button class="mini" data-mg="${esc(r.id)}">Manage</button>`):"";
+    $("kRows").innerHTML=rows.map((u,i)=>`<div class="row" style="${u.id===c.me?"color:var(--acc);font-weight:bold;":""}${u.hidden?"opacity:.5":""}"><span>${["\u{1F947}","\u{1F948}","\u{1F949}"][i]||(i+1)+"."} ${esc(u.name)}</span><span>${u.w} workouts &bull; ${u.sets} sets &bull; ${u.vol} kg${btn(u)}${pokeBtn(u)}</span></div>`).join("")||'<div class="hint">No members yet.</div>';
+    $("kCust").innerHTML=Object.values(byEx).sort((a,b)=>Object.keys(b.m).length-Object.keys(a.m).length||a.label.localeCompare(b.label)).map(g=>`<div class="hint" style="margin-top:10px"><b>${esc(g.label)}</b></div>`+Object.values(g.m).sort((a,b)=>b.vol-a.vol).map(r=>`<div class="row"><span>${esc(r.name)}</span><span>${r.sets} sets &bull; best ${r.best} kg &bull; ${r.vol} kg vol</span></div>`).join("")).join("")||'<div class="hint">No custom exercises logged in this period.</div>';
+  }catch(e){
+    const pill=$("kConn");if(pill){pill.textContent="● Offline / Error";pill.classList.add("err")}
+    $("kRows").innerHTML=`<div class="hint">${esc(why(e))}</div>`;
+  }
+}
+function showManage(id){
+  const d=lastData[id];if(!d)return;
+  adm=d.items.map(x=>({id,...x}));
+  $("kManage").innerHTML=`<div class="info-panel"><b>${esc(d.name)}</b>: remove entries (the member can't bring them back)`+adm.map((x,i)=>`<div class="row"><span>${esc(x.label)}</span><button class="mini" data-rm="${i}">Remove</button></div>`).join("")+`<button class="danger" data-hide="${esc(id)}">Hide ${esc(d.name)} from the board</button></div>`;
+}
+$("kRows").addEventListener("click",e=>{
+  const b=e.target.closest("button"),c=get("clan2",null);if(!b)return;
+  if(b.dataset.poke)return sendPoke(b.dataset.poke);
+  if(b.dataset.mg)return showManage(b.dataset.mg);
+  if(b.dataset.unhide)db(c,"DELETE",`mod/${b.dataset.unhide}/hide`,undefined,tokA.t).then(renderClan).catch(x=>msg("kMsg",why(x),false));
+});
+$("kManage").addEventListener("click",e=>{
+  const b=e.target.closest("button"),c=get("clan2",null);if(!b)return;
+  let p;
+  if(b.dataset.rm){const x=adm[+b.dataset.rm];p=db(c,"PUT",`mod/${x.id}/drop/${x.key}`,true,tokA.t)}
+  else if(b.dataset.hide)p=db(c,"PUT",`mod/${b.dataset.hide}/hide`,true,tokA.t);
+  if(p)p.then(()=>{$("kManage").innerHTML="";renderClan()}).catch(x=>msg("kMsg",why(x),false));
+});
+async function joinWith(base,name,owner){
+  const c={...base,sv:base.sv||1,name,me:rnd(10),pw:rnd(20),owner:!!owner};
+  await authCall("signUp",c.ak,"u-"+c.me+MAIL,c.pw);
+  c.code=enc({u:c.url,a:c.ak,c:c.clan,s:c.sv});
+  tokC={t:"",exp:0};set("clan2",c);
+  await syncClan(true);renderClan();
+  msg("kMsg",owner?"Clan created! Tap 'Share invite code' to invite friends.":"Joined clan & synced!",true);
+}
+$("kJoinBtn").addEventListener("click",async()=>{
+  let b;
+  if(/^\s*CLAN[2-9]\d*\./.test($("kCode").value))return msg("kMsg","This invite is from a newer version of the app. Refresh the app and try again.",false);
+  try{const d=dec($("kCode").value);b={url:String(d.u),ak:String(d.a),clan:String(d.c),sv:Number(d.s)\vert{}\vert{}1};if(!OKURL.test(b.url)\vert{}\vert{}!b.ak\vert{}\vert{}!/^\w{10,}$/.test(b.clan))throw 0}
+  catch(e){return msg("kMsg","That invite code isn't valid. Paste the whole thing starting with CLAN1.",false)}
+  const name=cleanName($("kName").value);if(!name)return msg("kMsg","Enter a display name.",false);
+  try{await joinWith(b,name,false)}catch(e){msg("kMsg",why(e),false)}
+});
+$("kCreate").addEventListener("click",async()=>{
+  const cfg=$("kCfg").value,pick=k=>(cfg.match(new RegExp(k+`["']?\\s*:\\s*["']([^"']+)`))||[])[1];
+  const ak=pick("apiKey"),url=(pick("databaseURL")||"").replace(/\/+$/,""),name=cleanName($("kName2").value),mp=$("kMP").value;
+  if(!ak||!url)return msg("kMsg","apiKey or databaseURL missing from what you pasted (guide steps 4 and 6).",false);
+  if(!OKURL.test(url))return msg("kMsg","That databaseURL doesn't look like a Firebase one.",false);
+  if(!name||mp.length<12)return msg("kMsg","Enter a name and a master password of 12+ characters.",false);
+  const base={url,ak,clan:rnd(24),sv:CLOUD_V};
+  try{const mj=await authCall("signUp",ak,"m-"+base.clan+MAIL,mp);await db(base,"PUT","meta",{sv:CLOUD_V,created:Date.now()},mj.idToken);await joinWith(base,name,true)}
+  catch(e){msg("kMsg",why(e),false)}
+});
+$("kUnlock").addEventListener("click",async()=>{
+  const c=get("clan2",null);
+  try{
+    const j=await authCall("signInWithPassword",c.ak,"m-"+c.clan+MAIL,$("kMaster").value);
+    tokA={t:j.idToken,exp:Date.now()+3e6};$("kMaster").value="";msg("kMsg","Admin unlocked for this session.",true);renderClan();
+  }catch(e){msg("kMsg",why(e),false)}
+});
+$("kSync").addEventListener("click",async()=>{await syncClan();renderClan()});
+$("kInvite").addEventListener("click",async()=>{
+  const c=get("clan2",null),t="Join my training clan! Open the app, tap Clan, then Join, and paste this code:\n\n"+c.code;
+  try{if(navigator.share){await navigator.share({text:t});return}}catch(e){if(e.name==="AbortError")return}
+  try{await navigator.clipboard.writeText(t);msg("kMsg","Invite copied. Paste it into a message.",true)}catch(e){msg("kMsg","Couldn't copy. Long-press the code to copy it manually.",false)}
+});
+$("kLeave").addEventListener("click",async()=>{
+  if(!confirm("Leave the clan on this device? Your entries will be removed from the board."))return;
+  const c=get("clan2",null);
+  try{await db(c,"DELETE",np(c,"board")+"/"+c.me);await db(c,"DELETE",np(c,"custom")+"/"+c.me);if(c.sv>=2)await db(c,"DELETE",np(c,"pokes")+"/"+c.me)}catch(e){}
+  tokA={t:"",exp:0};tokC={t:"",exp:0};set("clan2",null);renderClan();
+});
+["kRange","kMetric"].forEach(id=>$(id).addEventListener("change",renderClan));
+$("kShareVol").addEventListener("change",async e=>{const c=get("clan2",null);c.shareVol=e.target.checked;set("clan2",c);await syncClan(true);renderClan()});
+window.addEventListener("online",()=>syncClan(true));
+if(get("clan2",null))syncClan(true);
+$("kGuideBtn").addEventListener("click",()=>{$("kGuide").hidden=!$("kGuide").hidden});
+$("kCopyRules").addEventListener("click",async()=>{
+  try{await navigator.clipboard.writeText(RULES);msg("kMsg","Rules copied. Paste them into Firebase.",true)}
+  catch(e){$("kRules").select();msg("kMsg","Select the text below and copy it manually.",false)}
+});
+[["kTabJoin","kTabNew"],["kTabNew","kTabJoin"]].forEach(([on,off])=>$(on).addEventListener("click",()=>{
+  $(on).classList.add("on");$(off).classList.remove("on");
+  $("kPJoin").hidden=on!=="kTabJoin";$("kPNew").hidden=on!=="kTabNew";
+}));
+
+// ---- Stats ----
+const ld=d=>{const t=new Date(d);return t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0")};
+function renderStats(){
+  const n=parseInt($("sRange").value,10),log=get("log",[]),days=[];
+  for(let i=n-1;i>=0;i--){const t=new Date();t.setDate(t.getDate()-i);days.push(ld(t))}
+  const by=Object.create(null),type=Object.create(null);
+  days.forEach(d=>{by[d]={v:0,w:0}});
+  let sets=0,wk=0;
+  log.forEach(x=>{
+    const d=ld(x.d);if(!by[d])return;
+    const v=x.ex.reduce((a,e)=>a+(vol(e,x.bw)||0),0);
+    by[d].v+=v;by[d].w++;wk++;
+    sets+=x.ex.reduce((a,e)=>a+(parseFloat(e.sets)||0),0);
+    const k=sessTag(x.s);type[k]=(type[k]||0)+v;
+  });
+  const total=days.reduce((a,d)=>a+by[d].v,0),trained=days.filter(d=>by[d].w).length;
+  $("sCards").innerHTML=[[`${trained}/${n}`,"days trained"],[wk,"workouts"],[Math.round(total).toLocaleString(),"kg est. volume"],[sets,"hard sets"]].map(([a,b])=>`<div class="stat"><b>${a}</b><small>${b}</small></div>`).join("");
+  $("sGrid").innerHTML=days.map((d,i)=>`<span class="dd${by[d].w?" on":""}${i===n-1?" td":""}" title="${d}"></span>`).join("");
+  const mx=Math.max(1,...days.map(d=>by[d].v)),w=300/n;
+  $("sVol").innerHTML=`<svg viewBox="0 0 300 130" style="width:100%">${days.map((d,i)=>{const h=by[d].v/mx*100;return `<rect class="bar" x="${i*w+.5}" y="${110-h}" width="${Math.max(1,w-1)}" height="${h}"></rect>`}).join("")}<line class="ax" x1="0" y1="110" x2="300" y2="110"/><text class="tx" x="0" y="10">${Math.round(mx).toLocaleString()} kg</text><text class="tx" x="0" y="125">${days[0].slice(5)}</text><text class="tx" x="300" y="125" text-anchor="end">${days[n-1].slice(5)}</text></svg>`;
+  const tmax=Math.max(1,...Object.values(type));
+  $("sType").innerHTML=Object.entries(type).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div style="display:flex;align-items:center;gap:8px;margin:5px 0;font-size:.85rem"><span style="width:88px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(k)}</span><div style="flex:1;background:#2a2a2a;border-radius:4px"><div style="width:${v/tmax*100}%;background:var(--acc);height:14px;border-radius:4px"></div></div><span style="width:56px;text-align:right">${Math.round(v).toLocaleString()}</span></div>`).join("")||'<div class="hint">No workouts in this period.</div>';
+}
+$("sRange").addEventListener("change",renderStats);
+
+// ---- Data versioning, migration & backup ----
+const DATA_KEYS=["log","last","custom","bmr","bmrIn","adv"],DEFAULTS={log:[],last:{},custom:[],bmr:[],bmrIn:null,adv:false};
+const MIG={1:()=>{
+  const byName={};Object.values(P).forEach(p=>p.ex.forEach(x=>{byName[x[1]]=x[0]}));
+  const log=get("log",[]);
+  log.forEach(s=>{if(!s.sid)s.sid=rnd(10);s.ex.forEach(x=>{if(!x.id&&byName[x.n])x.id=byName[x.n]})});
+  set("log",log);
+}};
+function migrate(){
+  let v=get("schema",0);
+  if(v>LOCAL_V)return msg("wMsg","Your saved data is from a newer app version. Refresh the app to update.",false);
+  try{
+    while(v<LOCAL_V){
+      const snap={};DATA_KEYS.forEach(k=>{snap[k]=get(k,null)});set("bak_v"+v,snap);
+      MIG[v+1]();v++;set("schema",v);
+    }
+  }catch(e){msg("wMsg","Data upgrade failed. Your data is unchanged.",false)}
+}
+$("lBak").addEventListener("click",()=>{
+  const data={};DATA_KEYS.forEach(k=>{data[k]=get(k,DEFAULTS[k])});
+  exportFile("training-backup.json",JSON.stringify({app:"training-hub",schema:get("schema",LOCAL_V),exported:new Date().toISOString(),data}),"application/json");
+});
+$("lRes").addEventListener("click",()=>$("lFile").click());
+$("lFile").addEventListener("change",async e=>{
+  const f=e.target.files[0];e.target.value="";if(!f)return;
+  try{
+    const j=JSON.parse(await f.text()),d=j.data||{};
+    const okLog=(d.log||[]).every(s=>s&&typeof s.d==="string"&&typeof s.s==="string"&&Array.isArray(s.ex));
+    const okCus=(d.custom||[]).every(c=>c&&typeof c.id==="string"&&typeof c.title==="string"&&Array.isArray(c.ex)&&c.ex.every(x=>Array.isArray(x)&&x.length>=5&&x[4]&&typeof x[4]==="object"));
+    if(j.app!=="training-hub"||typeof j.schema!=="number"||!okLog||!okCus||!Array.isArray(d.bmr||[]))throw new Error("bad");
+    if(j.schema>LOCAL_V)return msg("lMsg","That backup is from a newer app version. Refresh the app first.",false);
+    if(!confirm(`Replace ALL data on this device with this backup (${(d.log||[]).length} workouts)?`))return;
+    DATA_KEYS.forEach(k=>set(k,d[k]??DEFAULTS[k]));
+    set("schema",j.schema);bmrLoaded=false;migrate();applyCustom();renderAdv();render();renderLog();checkBwStale();
+    msg("lMsg","Backup restored.",true);
+  }catch(err){msg("lMsg","That file isn't a valid backup.",false)}
+});
+
+// ---- Poke (stored under your own id, so database rules stay unchanged) ----
+function chime(){
+  audio();if(!actx)return;
+  [659,880].forEach((f,i)=>{
+    const o=actx.createOscillator(),g=actx.createGain(),t=actx.currentTime+i*.18;
+    o.type="sine";o.frequency.value=f;
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.3,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.3);
+    o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+.32);
+  });
+}
+async function sendPoke(id){
+  const c=get("clan2",null);if(!c||c.sv<2)return;
+  const cd=get("pokeCd",{}),now=Date.now();
+  if(cd[id]&&now-cd[id]<18e5)return msg("kMsg","You poked them recently. Try again later.",false);
+  try{
+    await db(c,"PUT",`${np(c,"pokes")}/${c.me}/${id}`,{t:now,n:c.name});
+    cd[id]=now;set("pokeCd",cd);msg("kMsg","Poked! They'll see it when they next open the app.",true);
+  }catch(e){msg("kMsg",why(e),false)}
+}
+async function checkPokes(){
+  const c=get("clan2",null);if(!c||c.sv<2||document.hidden)return;
+  try{
+    const [pk,md]=await Promise.all([db(c,"GET",np(c,"pokes")),db(c,"GET","mod")]);
+    const seen=get("pokeSeen",{}),now=Date.now(),hits=[];
+    Object.entries(pk||{}).forEach(([from,to])=>{
+      const q=to&&to[c.me];if(!q||from===c.me||(md&&md[from]&&md[from].hide))return;
+      const t=num(q.t);
+      if(t>now+3e5||now-t>1728e5||t<=(seen[from]||0)+6e5)return;
+      hits.push(String(q.n||"A clan member").slice(0,20));seen[from]=t;
+    });
+    if(hits.length){
+      set("pokeSeen",seen);
+      $("pokeBar").innerHTML=hits.map(n=>`\u{1F44A} ${esc(n)} poked you. Time to check in!`).join("<br>")+'<button id="pokeOk">Got it</button>';
+      $("pokeBar").hidden=false;chime();
+    }
+  }catch(e){}
+}
+$("pokeBar").addEventListener("click",e=>{if(e.target.closest("button"))$("pokeBar").hidden=true});
+$("kNudge").addEventListener("click",async()=>{
+  const t="\u{1F4AA} Time to check in on the training clan! Open the app and log your session.";
+  try{if(navigator.share){await navigator.share({text:t});return}}catch(e){if(e.name==="AbortError")return}
+  try{await navigator.clipboard.writeText(t);msg("kMsg","Copied. Paste it into a message.",true)}catch(e){msg("kMsg","Couldn't copy the message.",false)}
+});
+setInterval(checkPokes,45000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkPokes()});
+checkPokes();
+
+migrate();
+applyCustom();renderAdv();render();checkBwStale();
 </script>
 </body>
 </html>
