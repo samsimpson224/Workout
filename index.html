@@ -23,6 +23,15 @@ button.danger{background:#3a1d1d;color:#ff6b6b;margin-top:10px}
 .tabs button.on{background:var(--acc);color:var(--bg)}
 .timer-bar{display:flex;gap:6px;align-items:center;justify-content:center;margin-bottom:12px;flex-wrap:wrap}
 .timer-bar button{margin:0;padding:6px 11px;font-size:.8rem;width:auto;background:#252525;color:var(--acc);border:1px solid var(--bd)}
+@keyframes pulseAlert {
+  0% { background: #252525; color: var(--acc); transform: scale(1); }
+  50% { background: var(--acc); color: #121212; transform: scale(1.05); }
+  100% { background: #252525; color: var(--acc); transform: scale(1); }
+}
+.timer-done {
+  animation: pulseAlert 0.7s infinite ease-in-out;
+  border: 2px solid var(--acc) !important;
+}
 .box{background:#252525;border-left:4px solid var(--acc);padding:12px;border-radius:0 8px 8px 0;font-size:.95rem;line-height:1.4}
 .info-panel{background:#181818;border:1px solid var(--bd);border-left:3px solid var(--acc);padding:12px;border-radius:8px;margin:8px 0;font-size:.85rem;line-height:1.45;color:#ddd}
 .info-panel b{color:var(--acc)}
@@ -56,11 +65,10 @@ button.danger{background:#3a1d1d;color:#ff6b6b;margin-top:10px}
   <button id="tInfoBtn" title="Timer info">? Timer</button>
 </div>
 <div id="tInfoBox" class="info-panel" hidden>
-  <b>Rest Timer Guide (Lock-Screen Safe):</b>
+  <b>Rest Timer Guide (Audio &amp; Visual Alert):</b>
   <ul>
-    <li><b>Rest 60s:</b> Short rest for smaller isolation exercises (calves, forearms, rear delts, abs) when time is tight.</li>
-    <li><b>Rest 2m &ndash; 3m:</b> Recommended for heavy compound and unilateral lifts (rows, overhead press, split squats, RDLs, push-ups). Resting long enough to recover central nervous system drive and repeat your reps across sets builds more muscle than rushing for a burn.</li>
-    <li><b>Screen-Lock Proof:</b> Uses target timestamps rather than tick counting, so locking your phone will not pause the countdown.</li>
+    <li><b>Rest 60s / 2m / 3m:</b> Tap any preset to start the countdown.</li>
+    <li><b>Alerts:</b> When time expires, the button flashes and pulses visually, your phone vibrates (if supported), and a synthesized chime plays to signal your next set.</li>
   </ul>
 </div>
 
@@ -90,14 +98,14 @@ button.danger{background:#3a1d1d;color:#ff6b6b;margin-top:10px}
   <div class="card">
     <h2>Active Protocol</h2>
     <div class="hint" id="bwNotice"></div>
-    <div class="hint"><b>Entry Rule:</b> Always enter the weight of <b>ONE dumbbell</b> (or added kg for push-ups). Last logged values are pre-filled; <b>clear Sets or Reps to skip an exercise</b> (e.g. pick either Split Squats or Goblet Squats).</div>
+    <div class="hint"><b>Entry Rule:</b> Always enter the weight of <b>ONE dumbbell</b> (or added kg for push-ups). Last logged values are pre-filled; <b>clear Sets or Reps to skip an exercise</b>.</div>
     <button id="normHelpBtn" class="alt" style="margin-bottom:8px;padding:8px;font-size:.85rem">? How Volume &amp; Progression Tracking Works</button>
     <div id="normHelpBox" class="info-panel" hidden>
       <b>What Actually Matters in Your Log:</b>
       <ul>
-        <li><b>Primary Hypertrophy Metrics:</b> The best indicators of progress are <b>(1) adding reps or load on the same exercise over time</b> and <b>(2) total hard sets per muscle group per week</b>. Summing total kilogram tonnage across different exercises is mostly statistical noise.</li>
-        <li><b>Why We Estimate Bodyweight Levers:</b> Bodyweight percentages (e.g. ~55% for incline push-ups, ~70% for split squats) are <b>rough mechanical estimates, not lab measurements</b> (actual load shifts with foot/hand placement). They exist simply so bodyweight-heavy movements don't log as <code>0 kg</code>.</li>
-        <li><b>Consistent Single-DB Entry:</b> To prevent logging mistakes, you <b>always enter the weight of a single dumbbell</b>. If an exercise uses 2 dumbbells simultaneously or is performed on both left and right sides, the app applies the multiplier automatically at export time.</li>
+        <li><b>Primary Hypertrophy Metrics:</b> Adding reps or load over time and tracking total hard sets per muscle group per week.</li>
+        <li><b>Bodyweight Levers:</b> Rough mechanical estimates so bodyweight movements don't log as <code>0 kg</code>.</li>
+        <li><b>Single-DB Entry:</b> Always enter the weight of a single dumbbell; multipliers handle bilateral/unilateral math automatically.</li>
       </ul>
     </div>
     <div id="list"></div>
@@ -113,9 +121,8 @@ button.danger{background:#3a1d1d;color:#ff6b6b;margin-top:10px}
     <div id="bmrHelpBox" class="info-panel" hidden>
       <b>How This Tab Works:</b>
       <ul>
-        <li><b>BMR (Basal Metabolic Rate):</b> Uses the Mifflin-St Jeor formula to estimate daily resting energy expenditure.</li>
-        <li><b>Maintenance (TDEE):</b> Multiplies BMR by your activity factor as a starting calorie estimate. Adjust based on real-world scale and measurement trends.</li>
-        <li><b>Local Bodyweight Sync:</b> Saving an entry stores your weight locally on your device and syncs it with the Workout tab for bodyweight-coupled exercises. Nothing is hardcoded or sent to a server.</li>
+        <li><b>BMR &amp; TDEE:</b> Estimates resting energy expenditure and maintenance calories using the Mifflin-St Jeor formula.</li>
+        <li><b>Local Bodyweight Sync:</b> Saving an entry syncs your weight with the Workout tab locally on your device.</li>
       </ul>
     </div>
     <label>Sex</label>
@@ -147,9 +154,8 @@ button.danger{background:#3a1d1d;color:#ff6b6b;margin-top:10px}
     <div id="logHelpBox" class="info-panel" hidden>
       <b>Understanding Your Log &amp; CSV Export:</b>
       <ul>
-        <li><b>Raw Storage, Dynamic Export:</b> The log stores your raw inputs (Entered_kg, Sets, Reps, and Session Bodyweight). Effective load and volume are computed dynamically when you view or export the CSV, so any future formula tweaks apply cleanly across your whole history.</li>
-        <li><b>Hard Sets vs. Volume:</b> Track <b>Sets</b> per session and <b>Entered_kg / Avg_Reps</b> per individual exercise to measure real progression.</li>
-        <li><b>Delete Confirmation:</b> Removing the most recent workout prompts for confirmation so you never lose data by accident.</li>
+        <li><b>Raw Storage, Dynamic Export:</b> Stores raw inputs and computes effective load dynamically.</li>
+        <li><b>Hard Sets vs. Volume:</b> Track sets, weight, and reps per individual exercise.</li>
       </ul>
     </div>
     <div id="lSum" class="hint"></div>
@@ -161,14 +167,12 @@ button.danger{background:#3a1d1d;color:#ff6b6b;margin-top:10px}
 </section>
 
 <script>
-// Schema: [id, name, target, guide, {bw: bw_fraction, db: dbs_held_at_once, m: sets_or_sides_multiplier, ph: placeholder, note: short_formula, desc: detailed_explanation}]
-// Rule: User ALWAYS enters the weight of 1 dumbbell (or added weight for push-ups).
 const P={
 push:{title:"Push Focus (Chest, Shoulders, Triceps)",ex:[
 ["push_pu","Incline Hands-Elevated Deficit Push-Ups","3 Sets x Near Failure (3-sec lower)","Hands on raised, stable supports with body in a rigid plank. Lower over 3 seconds until your chest dips below hand level, then press up.",
-{bw:0.55,db:1,m:1,ph:"+kg (0=BW)",note:"Est: 55% BW + added kg",desc:"Rough lever estimate (~55% of bodyweight supported by hands in an elevated incline plank; exact load varies with hand height and foot position). Enter 0 for bodyweight-only, or added weight in a backpack."}],
+{bw:0.55,db:1,m:1,ph:"+kg (0=BW)",note:"Est: 55% BW + added kg",desc:"Rough lever estimate (~55% of bodyweight supported by hands in an elevated incline plank). Enter 0 for bodyweight-only, or added weight in a backpack."}],
 ["push_ohp","Standing / Seated Overhead Press","3 Sets x 8-12 Reps","Dumbbells at shoulder height, core braced. Press straight overhead to lockout, then lower under control.",
-{bw:0,db:2,m:1,ph:"1-DB kg",note:"2x 1-DB weight (bilateral)",desc:"Bilateral lift holding 2 dumbbells at once. Enter the weight of ONE dumbbell; total load is doubled (2x) automatically."}],
+{bw:0,db:2,m:1,ph:"1-DB kg",note:"2x 1-DB weight (bilateral)",desc:"Bilateral lift holding 2 dumbbells at once. Enter the weight of ONE dumbbell; total load is doubled automatically."}],
 ["push_fly","Standing Single-Arm Cross-Body Scoop Flys","3 Sets x 12-15 Reps/side","Soft elbow. Sweep the dumbbell in a low-to-high arc across your body and squeeze your chest at the top.",
 {bw:0,db:1,m:2,ph:"1-DB kg",note:"1-DB weight x 2 sides",desc:"Unilateral lift performed on both left and right sides. Enter the weight of ONE dumbbell and reps per side."}],
 ["push_lat","Strict Lateral Raises (Slight Forward Lean)","4 Sets x 15-20 Reps","Lean slightly forward and raise arms out to shoulder height, leading with the elbows. No swinging; lower slowly.",
@@ -178,32 +182,31 @@ push:{title:"Push Focus (Chest, Shoulders, Triceps)",ex:[
 
 pull:{title:"Pull Focus (Lats, Rear Delts, Biceps, Forearms)",ex:[
 ["pull_row","Single-Arm Tripod Rows (Sweeping to Hip)","4 Sets x 10-12 Reps/side","One hand braced on a support, back flat. Pull the dumbbell in a sweep towards your hip, squeeze your lat, lower fully.",
-{bw:0,db:1,m:2,ph:"1-DB kg",note:"1-DB weight x 2 sides",desc:"Unilateral compound row. Enter ONE dumbbell weight and reps completed on one side; volume accounts for both left and right lats (2x)."}],
+{bw:0,db:1,m:2,ph:"1-DB kg",note:"1-DB weight x 2 sides",desc:"Unilateral compound row. Enter ONE dumbbell weight and reps completed on one side; volume accounts for both lats (2x)."}],
 ["pull_rd","Bent-Over Rear Delt Pulls / Flys","3 Sets x 15-20 Reps","Hinge forward with a flat back. Raise arms out to the sides with a soft elbow and squeeze the rear shoulders.",
 {bw:0,db:2,m:1,ph:"1-DB kg",note:"2x 1-DB weight (bilateral)",desc:"Bilateral 2-dumbbell lift. Enter the weight of ONE dumbbell; doubled for two arms."}],
 ["pull_curl","Superset: Standard Curls + Wide Curls","3 Sets x 10-12 Reps each","Standard curls (palms up, elbows pinned) then straight into wide curls (hands wide, elbows flared) with no rest between.",
-{bw:0,db:2,m:2,ph:"1-DB kg",note:"2 DBs x 2 exercises (4x)",desc:"Compound superset using 2 dumbbells across 2 back-to-back exercises. Enter the weight of ONE dumbbell and average reps per variation (e.g. 10 standard + 10 wide = enter 10)."}],
+{bw:0,db:2,m:2,ph:"1-DB kg",note:"2 DBs x 2 exercises (4x)",desc:"Compound superset using 2 dumbbells across 2 back-to-back exercises. Enter the weight of ONE dumbbell and average reps per variation."}],
 ["pull_ham","Hammer Curls (Brachialis Focus)","3 Sets x 10-12 Reps","Palms facing in, elbows by your sides. Curl up and lower slowly without swinging.",
 {bw:0,db:2,m:1,ph:"1-DB kg",note:"2x 1-DB weight (bilateral)",desc:"Bilateral neutral-grip curl. Enter ONE dumbbell weight; doubled for both arms."}],
 ["pull_grip","Forearm Splayers & Donut Squeezers","2-3 Sets to pump","Splay your fingers open against resistance, then squeeze a ball or grip donut hard. Work until the forearms are pumped.",
-{bw:0,db:1,m:2,ph:"est kg (e.g. 5)",note:"Est resistance x 2 hands",desc:"Grip and finger extensor work. Enter an arbitrary constant (e.g. 5) simply so sets and reps log consistently, or leave blank to skip."}]]},
+{bw:0,db:1,m:2,ph:"est kg (e.g. 5)",note:"Est resistance x 2 hands",desc:"Grip and finger extensor work. Enter an arbitrary constant (e.g. 5) simply so sets and reps log consistently."}]]},
 
 legs:{title:"Legs & Core Focus (Quads, Hamstring, Calves, Abs)",ex:[
-["leg_bss","Bulgarian Split Squats (2 Dumbbells)","3 Sets x 10-12 Reps/leg","Rear foot on a support, drop straight down to a parallel front thigh and drive through the front heel. Clear sets/reps if doing Goblet Squats instead.",
-{bw:0.70,db:2,m:2,ph:"1-DB kg",note:"Est: (70% BW + 2x DB) x 2 legs",desc:"Unilateral squat (~70% bodyweight lever estimate + two dumbbells held, performed on both left and right legs). Follow the universal rule: enter the weight of ONE dumbbell (if holding one DB, halve the entry) and reps per leg."}],
-["leg_gob","Goblet Squats (1 Dumbbell, Bilateral)","3 Sets x 10-12 Reps","Hold a single dumbbell vertically at your chest, squat deep with knees tracking toes, chest upright. Clear sets/reps if doing Split Squats instead.",
-{bw:0.70,db:1,m:1,ph:"1-DB kg",note:"Est: 70% BW + 1-DB weight (x1)",desc:"Bilateral squat using both legs simultaneously (multiplier is 1x, preventing the 2x volume inflation of unilateral split squats). Enter the single dumbbell weight."}],
-["leg_rdl","B-Stance Single-Leg RDLs (2 Dumbbells)","3 Sets x 10-12 Reps/leg","Back foot as a light kickstand. Hinge at the hips with a flat back, lower over 3 seconds, squeeze your glutes to stand.",
-{bw:0.50,db:2,m:2,ph:"1-DB kg",note:"Est: (50% BW + 2x DB) x 2 legs",desc:"Unilateral hip hinge (~50% upper-body lever estimate + two dumbbells held, performed on both legs). Enter the weight of ONE dumbbell and reps per leg."}],
-["leg_calf","Single-Leg Step Calf Raises (1 Dumbbell)","4 Sets x 12-15 Reps/leg","Ball of one foot on a step. Lower the heel fully, rise as high as possible and pause. Vary toe direction between sets.",
-{bw:0.90,db:1,m:2,ph:"1-DB kg",note:"Est: (90% BW + 1-DB) x 2 legs",desc:"Unilateral calf raise (~90% bodyweight lever estimate + 1 dumbbell held, repeated on both legs). Enter ONE dumbbell weight and reps per leg."}],
+["leg_bss","Bulgarian Split Squats (2 Dumbbells)","3 Sets x 10-12 Reps/leg","Rear foot on a support, drop straight down to a parallel front thigh and drive through the front heel.",
+{bw:0.70,db:2,m:2,ph:"1-DB kg",note:"Est: (70% BW + 2x DB) x 2 legs",desc:"Unilateral squat (~70% bodyweight lever estimate + two dumbbells held). Enter ONE dumbbell weight and reps per leg."}],
+["leg_gob","Goblet Squats (1 Dumbbell, Bilateral)","3 Sets x 10-12 Reps","Hold a single dumbbell vertically at your chest, squat deep with knees tracking toes, chest upright.",
+{bw:0.70,db:1,m:1,ph:"1-DB kg",note:"Est: 70% BW + 1-DB weight (x1)",desc:"Bilateral squat using both legs simultaneously (multiplier is 1x). Enter the single dumbbell weight."}],
+["leg_rdl","B-Stance Single-Leg RDLs (2 Dumbbells)","3 Sets x 10-12 Reps/leg","Back foot as a light kickstand. Hinge at the hips with a flat back, lower over 3 seconds.",
+{bw:0.50,db:2,m:2,ph:"1-DB kg",note:"Est: (50% BW + 2x DB) x 2 legs",desc:"Unilateral hip hinge (~50% upper-body lever estimate + two dumbbells held). Enter ONE dumbbell weight and reps per leg."}],
+["leg_calf","Single-Leg Step Calf Raises (1 Dumbbell)","4 Sets x 12-15 Reps/leg","Ball of one foot on a step. Lower the heel fully, rise as high as possible and pause.",
+{bw:0.90,db:1,m:2,ph:"1-DB kg",note:"Est: (90% BW + 1-DB) x 2 legs",desc:"Unilateral calf raise (~90% bodyweight lever estimate + 1 dumbbell held). Enter ONE dumbbell weight and reps per leg."}],
 ["leg_abs","Weighted Hollow-Body Floor/Mat Crunches","3 Sets x 12-15 Reps","Lower back pressed into the floor, legs low. Curl your shoulders up while holding a single dumbbell over your chest.",
 {bw:0.25,db:1,m:1,ph:"1-DB kg",note:"Est: 25% torso BW + 1-DB kg",desc:"Bilateral trunk flexion (~25% upper-torso bodyweight estimate + 1 dumbbell held on chest). Enter the single dumbbell weight."}],
 ["leg_march","Standing Suitcase Core Marches","3 Sets x 12 steps/side","Hold a heavy dumbbell in one hand and stand tall without leaning. March slowly, keeping ribs stacked over hips.",
 {bw:0,db:1,m:2,ph:"1-DB kg",note:"1-DB weight x 2 sides",desc:"Unilateral anti-lateral flexion carry. Enter ONE dumbbell weight and marches per side."}]]}
 };
 
-// Lookup map by exercise ID or Name for dynamic retroactive calculation
 const EX_MAP={};
 Object.values(P).forEach(s=>s.ex.forEach(x=>{EX_MAP[x[0]]=x[4];EX_MAP[x[1]]=x[4]}));
 
@@ -221,26 +224,63 @@ function msg(id,t,good){const e=$(id);e.style.color=good?"#4caf50":"#ff9800";e.t
 function getBW(){const b=get("bmrIn",null);return b&&parseFloat(b.kg)>0?parseFloat(b.kg):70}
 function hasSavedBW(){const b=get("bmrIn",null);return Boolean(b&&parseFloat(b.kg)>0)}
 
-// ---- Info Drawers (All Hidden by Default) ----
+// ---- Info Drawers ----
 [["tInfoBtn","tInfoBox"],["normHelpBtn","normHelpBox"],["bmrHelpBtn","bmrHelpBox"],["logHelpBtn","logHelpBox"]].forEach(([b,x])=>{
   $(b).addEventListener("click",()=>{$(x).hidden=!$(x).hidden});
 });
 
-// ---- Lock-Screen Safe Timestamp Rest Timer ----
+// ---- Audio & Visual Alert Rest Timer ----
 let tInt=null,tEnd=0;
+
+function playAlertSound(){
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if(!AudioCtx) return;
+    const ctx = new AudioCtx();
+    
+    // Play a dual-tone chime
+    [523.25, 659.25, 783.99].forEach((freq, index) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + index * 0.12);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime + index * 0.12);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + index * 0.12 + 0.3);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime + index * 0.12);
+      osc.stop(ctx.currentTime + index * 0.12 + 0.3);
+    });
+  } catch(e) {
+    // Audio context restricted or not supported
+  }
+}
+
+function triggerAlert(){
+  playAlertSound();
+  if(navigator.vibrate) {
+    try { navigator.vibrate([300, 150, 300, 150, 400]); } catch(e){}
+  }
+  const stopBtn = $("tStop");
+  stopBtn.classList.add("timer-done");
+}
+
 function tickTimer(){
   if(!tEnd)return;
   const rem=Math.ceil((tEnd-Date.now())/1000);
   if(rem<=0){
     clearInterval(tInt);tInt=null;tEnd=0;
     $("tDisp").textContent="DONE!";
+    triggerAlert();
   }else{
     $("tDisp").textContent=rem+"s";
   }
 }
+
 document.querySelector(".timer-bar").addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b||b.id==="tInfoBtn")return;
   clearInterval(tInt);tInt=null;
+  $("tStop").classList.remove("timer-done");
   if(b.id==="tStop"){tEnd=0;$("tStop").hidden=true;return}
   const sec=parseInt(b.dataset.sec,10);
   tEnd=Date.now()+sec*1000;
@@ -260,7 +300,7 @@ document.querySelector(".tabs").addEventListener("click",e=>{
   if(b.dataset.t==="tW")render();
 });
 
-// ---- Dynamic Normalization Math (Computed at View/Export Time) ----
+// ---- Dynamic Normalization Math ----
 function getMeta(x){return EX_MAP[x.id]||EX_MAP[x.n]||x.meta||{bw:0,db:1,m:1}}
 function calcEffKg(rawKg,meta,bw){
   const k=parseFloat(rawKg);
@@ -286,7 +326,7 @@ function render(){
   $("advice").textContent=ADV[$("weather").value];
   $("bwNotice").innerHTML=hasSavedBW()
     ?`Synced Bodyweight: <b>${bw} kg</b> (from BMR tab).`
-    :`No bodyweight saved in BMR tab yet (using neutral <b>${bw} kg</b> placeholder for bodyweight levers).`;
+    :`No bodyweight saved in BMR tab yet (using neutral <b>${bw} kg</b> placeholder).`;
   let h=`<div class="badge">${esc(p.title)}</div>`;
   p.ex.forEach((x,i)=>{
     const id=x[0],meta=x[4],v={...last[id],...draft[id]};
@@ -358,7 +398,6 @@ const toCSV=(h,rows)=>[h.join(","),...rows.map(r=>r.map(q).join(","))].join("\r\
 async function exportCSV(name, text) {
   const f = new File([text], name, { type: "text/csv" });
   try {
-    // Sharing strictly the single file object prevents iOS from generating a companion text.txt file
     if (navigator.canShare && navigator.canShare({ files: [f] })) {
       await navigator.share({ files: [f] });
       return;
@@ -402,7 +441,7 @@ function renderLog(){
     return `<div class="row"><span>${esc(s.d.slice(0,10))} &bull; ${esc(s.s.split(" ")[0])}</span><span>${tSets} sets &bull; ${Math.round(tVol)} kg vol</span></div>`}).join("");
 }
 
-// ---- BMR (Preserves Unsaved Edits Across Tab Switches) ----
+// ---- BMR ----
 let bmrLoaded=false;
 function bmrCalc(){
   const a=parseFloat($("bAge").value),h=parseFloat($("bH").value),w=parseFloat($("bW").value);
