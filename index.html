@@ -2,144 +2,248 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Training">
 <title>Greek Statue &amp; Weather Hub</title>
 <style>
-:root{--bg-color:#121212;--card-bg:#1e1e1e;--accent:#d4af37;--text-main:#f0f0f0;--text-muted:#aaa;--border:#333}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg-color);color:var(--text-main);margin:0 auto;padding:16px;max-width:600px}
-h1,h2{color:var(--accent);text-align:center;font-size:1.5rem}
-.card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 4px 6px rgba(0,0,0,.3)}
-label{display:block;margin-bottom:8px;font-weight:bold;color:var(--accent)}
-select,input{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--border);color:#fff;border-radius:8px;font-size:1rem;margin-bottom:12px;box-sizing:border-box}
-button{background:var(--accent);color:#121212;border:none;padding:12px;font-weight:bold;border-radius:8px;width:100%;font-size:1rem;cursor:pointer;margin-top:8px}
+:root{--bg:#121212;--card:#1e1e1e;--acc:#d4af37;--tx:#f0f0f0;--mu:#aaa;--bd:#333}
+*{box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--tx);margin:0 auto;padding:16px;padding-top:max(16px,env(safe-area-inset-top));padding-bottom:max(16px,env(safe-area-inset-bottom));max-width:600px}
+h1,h2{color:var(--acc);text-align:center;font-size:1.4rem;margin:8px 0}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:16px}
+label{display:block;margin:8px 0;font-weight:bold;color:var(--acc)}
+select,input{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);color:#fff;border-radius:8px;font-size:1rem;margin-bottom:8px}
+button{background:var(--acc);color:#121212;border:0;padding:12px;font-weight:bold;border-radius:8px;width:100%;font-size:1rem;margin-top:8px}
 button:active{opacity:.8}
-.protocol-box{background:#252525;border-left:4px solid var(--accent);padding:12px;margin-top:10px;border-radius:0 8px 8px 0;font-size:.95rem;line-height:1.4}
-.exercise-item{display:flex;justify-content:space-between;align-items:center;background:#252525;padding:10px;border-radius:8px;margin-bottom:8px;gap:8px}
-.exercise-info{flex-grow:1}
-.exercise-info div:first-child{font-weight:bold}
-.exercise-info div:last-child{font-size:.85rem;color:var(--text-muted)}
-.weight-input{width:70px!important;padding:6px!important;margin:0!important;text-align:center}
-.badge{display:inline-block;padding:4px 8px;font-size:.75rem;background:#333;border-radius:4px;color:var(--accent);margin-bottom:8px}
-.privacy-footer{text-align:center;font-size:.75rem;color:var(--text-muted);margin-top:24px}
+button.alt{background:#333;color:var(--acc)}
+.tabs{display:flex;gap:6px;margin:12px 0}
+.tabs button{margin:0;background:#2a2a2a;color:var(--mu);padding:10px}
+.tabs button.on{background:var(--acc);color:#121212}
+.box{background:#252525;border-left:4px solid var(--acc);padding:12px;border-radius:0 8px 8px 0;font-size:.95rem;line-height:1.4}
+.badge{display:inline-block;padding:4px 8px;font-size:.75rem;background:#333;border-radius:4px;color:var(--acc);margin-bottom:8px}
+.ex{background:#252525;padding:10px;border-radius:8px;margin-bottom:8px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.info b{display:block}.info small{color:var(--mu)}
+.mini{width:auto;margin:0;padding:6px 12px;font-size:.85rem}
+.inp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.inp input{margin:0;padding:8px;text-align:center}
+.guide{margin-top:8px;font-size:.9rem;line-height:1.4}
+.lnk{display:inline-block;margin:6px 8px 0 0;padding:8px 12px;background:#333;color:var(--acc);border-radius:8px;text-decoration:none;font-weight:bold}
+.msg{text-align:center;font-size:.85rem;margin-top:8px;min-height:1em}
+.res{font-size:1.1rem;text-align:center;line-height:1.6}
+.row{display:flex;justify-content:space-between;border-bottom:1px solid var(--bd);padding:6px 0;font-size:.9rem}
+.hint{color:var(--mu);font-size:.8rem;margin:6px 0}
 </style>
 </head>
 <body>
 <h1>Greek Statue &amp; Weather Hub</h1>
-<div style="text-align:center;font-size:.85rem;color:#aaa;margin-bottom:16px">100% Local • Private • iPhone Optimized</div>
-
-<div class="card">
-  <label for="weatherSelect">1. Select Current Conditions:</label>
-  <select id="weatherSelect">
-    <option value="dry_porch">Dry &amp; Mild (Porch / Open Air)</option>
-    <option value="cold_wind">Cold &amp; Windy (Porch Protected)</option>
-    <option value="pouring_rain">Pouring Rain / Freezing (Move to Garage)</option>
-  </select>
-
-  <label for="splitSelect" style="margin-top:12px">2. Select Training Session:</label>
-  <select id="splitSelect">
-    <option value="push">Push Session (Chest, Shoulders, Triceps)</option>
-    <option value="pull">Pull Session (Lats, Rear Delts, Biceps, Forearms)</option>
-    <option value="legs">Legs &amp; Core Session (Quads, Hamstrings, Calves, Abs)</option>
-  </select>
-
-  <div id="envAdvice" class="protocol-box"></div>
+<div class="tabs">
+  <button class="on" data-t="tW">Workout</button>
+  <button data-t="tB">BMR</button>
+  <button data-t="tL">Log</button>
 </div>
 
-<div class="card">
-  <h2>Active Protocol Checklist</h2>
-  <div id="workoutList"></div>
-  <button id="saveBtn">Save Local Weights &amp; Sets</button>
-  <div id="saveStatus" style="text-align:center;font-size:.8rem;margin-top:8px"></div>
-</div>
+<section id="tW">
+  <div class="card">
+    <label for="weather">1. Current conditions</label>
+    <select id="weather">
+      <option value="dry_porch">Dry &amp; Mild (Porch / Open Air)</option>
+      <option value="cold_wind">Cold &amp; Windy (Porch Protected)</option>
+      <option value="pouring_rain">Pouring Rain / Freezing (Move to Garage)</option>
+    </select>
+    <label for="split">2. Training session</label>
+    <select id="split">
+      <option value="push">Push (Chest, Shoulders, Triceps)</option>
+      <option value="pull">Pull (Lats, Rear Delts, Biceps, Forearms)</option>
+      <option value="legs">Legs &amp; Core (Quads, Hamstrings, Calves, Abs)</option>
+    </select>
+    <div id="advice" class="box"></div>
+  </div>
+  <div class="card">
+    <h2>Active Protocol</h2>
+    <div class="hint">Boxes: kg &bull; sets &bull; avg reps. Last logged values are pre-filled; clear a box to skip an exercise.</div>
+    <div id="list"></div>
+    <button id="logBtn">Log this workout</button>
+    <div id="wMsg" class="msg"></div>
+  </div>
+</section>
 
-<div class="privacy-footer">Zero Cloud Transmission. All logs stay on your device.</div>
+<section id="tB" hidden>
+  <div class="card">
+    <h2>BMR Tracker</h2>
+    <label>Sex</label>
+    <select id="bSex"><option value="m">Male</option><option value="f">Female</option></select>
+    <label>Age (years)</label><input id="bAge" inputmode="numeric">
+    <label>Height (cm)</label><input id="bH" inputmode="decimal">
+    <label>Weight (kg)</label><input id="bW" inputmode="decimal">
+    <label>Activity level</label>
+    <select id="bAct">
+      <option value="1.2">Sedentary (little exercise)</option>
+      <option value="1.375">Light (1-3 days/week)</option>
+      <option value="1.55">Moderate (3-5 days/week)</option>
+      <option value="1.725">Hard (6-7 days/week)</option>
+      <option value="1.9">Very hard (physical job + training)</option>
+    </select>
+    <div id="bRes" class="res"></div>
+    <div class="hint">Mifflin-St Jeor estimate. A guide, not a measurement.</div>
+    <button id="bSave">Save entry</button>
+    <button id="bExp" class="alt">Export BMR history (CSV)</button>
+    <div id="bMsg" class="msg"></div>
+    <div id="bHist"></div>
+  </div>
+</section>
+
+<section id="tL" hidden>
+  <div class="card">
+    <h2>Workout Log</h2>
+    <div id="lSum" class="hint"></div>
+    <button id="lExp">Export all workouts (CSV)</button>
+    <div class="hint">The full history is kept inside this app. Each export creates the complete file: in the share sheet choose Save to Files, and Replace the old copy to keep one master file.</div>
+    <div id="lMsg" class="msg"></div>
+    <div id="lHist"></div>
+  </div>
+</section>
 
 <script>
-const protocols = {
-  push: { title: "Push Focus (Chest, Shoulders, Triceps)", exercises: [
-    { name: "Incline Hands-Elevated Deficit Push-Ups", target: "3 Sets x Near Failure (3-sec lower)" },
-    { name: "Standing / Seated Overhead Press", target: "3 Sets x 8-12 Reps" },
-    { name: "Standing Single-Arm Cross-Body Scoop Flys", target: "3 Sets x 12-15 Reps/side (8-12kg)" },
-    { name: "Strict Lateral Raises (Slight Forward Lean)", target: "4 Sets x 15-20 Reps (6-10kg)" },
-    { name: "Braced / Self-Spotted Tricep Kickbacks", target: "3 Sets x 12-15 Reps" }
-  ]},
-  pull: { title: "Pull Focus (Lats, Rear Delts, Biceps, Forearms)", exercises: [
-    { name: "Single-Arm Tripod Rows (Sweeping to Hip)", target: "4 Sets x 10-12 Reps (24kg)" },
-    { name: "Bent-Over Rear Delt Pulls / Flys", target: "3 Sets x 15-20 Reps" },
-    { name: "Superset: Standard Curls + Wide Curls", target: "3 Sets x 10-12 Reps" },
-    { name: "Hammer Curls (Brachialis Focus)", target: "3 Sets x 10-12 Reps" },
-    { name: "Forearm Splayers & Donut Squeezers", target: "2-3 Sets to pump" }
-  ]},
-  legs: { title: "Legs & Core Focus (Quads, Hamstring, Calves, Abs)", exercises: [
-    { name: "Bulgarian Split Squats OR Goblet Squats", target: "3 Sets x 10-12 Reps (20-24kg)" },
-    { name: "B-Stance Single-Leg RDLs (3-sec slow lower)", target: "3 Sets x 10-12 Reps" },
-    { name: "Single-Leg Step Calf Raises (Toes in/out)", target: "4 Sets x 12-15 Reps (20kg)" },
-    { name: "Weighted Hollow-Body Floor/Mat Crunches", target: "3 Sets x 12-15 Reps (10-14kg)" },
-    { name: "Standing Suitcase Core Marches", target: "3 Sets x 12 steps (24kg)" }
-  ]}
+const P={
+push:{title:"Push Focus (Chest, Shoulders, Triceps)",ex:[
+["Incline Hands-Elevated Deficit Push-Ups","3 Sets x Near Failure (3-sec lower)","Hands on raised, stable supports with body in a rigid plank. Lower over 3 seconds until your chest dips below hand level, then press up."],
+["Standing / Seated Overhead Press","3 Sets x 8-12 Reps","Dumbbells at shoulder height, core braced. Press straight overhead to lockout, then lower under control."],
+["Standing Single-Arm Cross-Body Scoop Flys","3 Sets x 12-15 Reps/side (8-12kg)","Soft elbow. Sweep the dumbbell in a low-to-high arc across your body and squeeze your chest at the top."],
+["Strict Lateral Raises (Slight Forward Lean)","4 Sets x 15-20 Reps (6-10kg)","Lean slightly forward and raise arms out to shoulder height, leading with the elbows. No swinging; lower slowly."],
+["Braced / Self-Spotted Tricep Kickbacks","3 Sets x 12-15 Reps","Hinge forward with your free hand braced. Pin the upper arm to your side and extend the forearm back until straight, then squeeze."]]},
+pull:{title:"Pull Focus (Lats, Rear Delts, Biceps, Forearms)",ex:[
+["Single-Arm Tripod Rows (Sweeping to Hip)","4 Sets x 10-12 Reps (24kg)","One hand braced on a support, back flat. Pull the dumbbell in a sweep towards your hip, squeeze your lat, lower fully."],
+["Bent-Over Rear Delt Pulls / Flys","3 Sets x 15-20 Reps","Hinge forward with a flat back. Raise arms out to the sides with a soft elbow and squeeze the rear shoulders."],
+["Superset: Standard Curls + Wide Curls","3 Sets x 10-12 Reps","Standard curls (palms up, elbows pinned) then straight into wide curls (hands wide, elbows flared) with no rest between."],
+["Hammer Curls (Brachialis Focus)","3 Sets x 10-12 Reps","Palms facing in, elbows by your sides. Curl up and lower slowly without swinging."],
+["Forearm Splayers & Donut Squeezers","2-3 Sets to pump","Splay your fingers open against resistance, then squeeze a ball or grip donut hard. Work until the forearms are pumped."]]},
+legs:{title:"Legs & Core Focus (Quads, Hamstring, Calves, Abs)",ex:[
+["Bulgarian Split Squats OR Goblet Squats","3 Sets x 10-12 Reps (20-24kg)","Split squat: rear foot on a bench, drop straight down to a parallel front thigh and drive through the front heel. Goblet: dumbbell at chest, squat deep, chest up."],
+["B-Stance Single-Leg RDLs (3-sec slow lower)","3 Sets x 10-12 Reps","Back foot as a light kickstand. Hinge at the hips with a flat back, lower over 3 seconds, squeeze your glutes to stand."],
+["Single-Leg Step Calf Raises (Toes in/out)","4 Sets x 12-15 Reps (20kg)","Ball of one foot on a step. Lower the heel fully, rise as high as possible and pause. Vary toe direction between sets."],
+["Weighted Hollow-Body Floor/Mat Crunches","3 Sets x 12-15 Reps (10-14kg)","Lower back pressed into the floor, legs low. Curl your shoulders up while holding the weight over your chest."],
+["Standing Suitcase Core Marches","3 Sets x 12 steps (24kg)","Hold a heavy dumbbell on one side and stand tall without leaning. March, keeping ribs stacked over hips."]]}
 };
+const ADV={
+dry_porch:"Ideal conditions. Keep the dumbbells on the dry porch, warm up in your hoodie and enjoy the open air.",
+cold_wind:"Cold air. Do a 3-minute indoor warm-up (arm circles, bodyweight squats) first. Use the towel over plastic handles for grip.",
+pouring_rain:"Wet/freezing. Move the dumbbells into the garage. Use seated chair variations if headroom is tight."};
 
-const advice = {
-  dry_porch: "Environment: Ideal conditions. Keep your plastic dumbbells on the dry porch, do your warm-up in your hoodie, and enjoy the open-air movement.",
-  cold_wind: "Environment: Cold air detected. Rule: Do a 3-minute indoor warm-up (arm circles, bodyweight squats) before stepping out. Use the towel over plastic handles to maintain grip.",
-  pouring_rain: "Environment: Wet/Freezing conditions. Action: Move your selected dumbbells directly into the Garage workspace. Use seated chair variations if headroom is tight."
-};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+const mem={};let stored=true;
+function get(k,d){try{const v=localStorage.getItem(k);if(v!==null)return JSON.parse(v)}catch(e){stored=false}return k in mem?mem[k]:d}
+function set(k,v){mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v))}catch(e){stored=false}}
+function msg(id,t,good){const e=$(id);e.style.color=good?"#4caf50":"#ff9800";e.textContent=t;setTimeout(()=>{e.textContent=""},4000)}
 
-// Storage that never throws (localStorage can be blocked on file:// and data: pages)
-const memStore = {};
-let persistent = true;
-function storeGet(k) {
-  try { const v = localStorage.getItem(k); return v === null ? (memStore[k] || "") : v; }
-  catch (e) { persistent = false; return memStore[k] || ""; }
-}
-function storeSet(k, v) {
-  memStore[k] = v;
-  try { localStorage.setItem(k, v); } catch (e) { persistent = false; }
-}
+// ---- Tabs ----
+document.querySelector(".tabs").addEventListener("click",e=>{
+  const b=e.target.closest("[data-t]");if(!b)return;
+  document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));
+  ["tW","tB","tL"].forEach(id=>{$(id).hidden=id!==b.dataset.t});
+  if(b.dataset.t==="tL")renderLog();
+  if(b.dataset.t==="tB")renderBmr();
+});
 
-function esc(s) {
-  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
-}
-
-function updateEnvironment() {
-  const weather = document.getElementById('weatherSelect').value;
-  const splitKey = document.getElementById('splitSelect').value;
-  document.getElementById('envAdvice').textContent = advice[weather];
-
-  const split = protocols[splitKey];
-  let html = `<div class="badge">${esc(split.title)}</div>`;
-  split.exercises.forEach((ex, i) => {
-    html += `
-      <div class="exercise-item">
-        <div class="exercise-info">
-          <div>${esc(ex.name)}</div>
-          <div>${esc(ex.target)}</div>
-        </div>
-        <div>
-          <input type="text" inputmode="decimal" class="weight-input" id="weight_${splitKey}_${i}" value="${esc(storeGet(`ex_${splitKey}_${i}`))}" placeholder="KG">
-        </div>
-      </div>`;
+// ---- Workout ----
+let draft={};
+function render(){
+  const sk=$("split").value,p=P[sk],last=get("last",{});
+  $("advice").textContent=ADV[$("weather").value];
+  let h=`<div class="badge">${esc(p.title)}</div>`;
+  p.ex.forEach((x,i)=>{
+    const k=sk+i,v={...last[k],...draft[k]};
+    const q=encodeURIComponent(x[0]);
+    const f=(n,ph,m)=>`<input inputmode="${m}" data-k="${k}" data-f="${n}" placeholder="${ph}" value="${esc(v[n]??"")}">`;
+    h+=`<div class="ex"><div class="top"><div class="info"><b>${esc(x[0])}</b><small>${esc(x[1])}</small></div><button class="mini" data-g="${i}">Guide</button></div>
+    <div class="inp">${f("kg","kg","decimal")}${f("sets","sets","numeric")}${f("reps","reps","numeric")}</div>
+    <div class="guide" id="g${i}" hidden><p>${esc(x[2])}</p>
+    <a class="lnk" target="_blank" rel="noopener" href="https://www.google.com/search?tbm=isch&q=${q}+exercise+illustration">Illustrations</a>
+    <a class="lnk" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query=${q}+form+guide">Video guide</a></div></div>`;
   });
-  document.getElementById('workoutList').innerHTML = html;
+  $("list").innerHTML=h;
 }
+$("list").addEventListener("click",e=>{
+  const b=e.target.closest("[data-g]");if(!b)return;
+  const g=$("g"+b.dataset.g);g.hidden=!g.hidden;b.textContent=g.hidden?"Guide":"Hide";
+});
+$("list").addEventListener("input",e=>{
+  const t=e.target;if(!t.dataset.k)return;
+  (draft[t.dataset.k]=draft[t.dataset.k]||{})[t.dataset.f]=t.value;
+});
+$("split").addEventListener("change",render);
+$("weather").addEventListener("change",()=>{$("advice").textContent=ADV[$("weather").value]});
 
-function saveProgress() {
-  const splitKey = document.getElementById('splitSelect').value;
-  protocols[splitKey].exercises.forEach((ex, i) => {
-    storeSet(`ex_${splitKey}_${i}`, document.getElementById(`weight_${splitKey}_${i}`).value);
+$("logBtn").addEventListener("click",()=>{
+  const sk=$("split").value,p=P[sk],last=get("last",{}),log=get("log",[]),ex=[];
+  p.ex.forEach((x,i)=>{
+    const k=sk+i,v={...last[k],...draft[k]};
+    if(v.kg||v.sets||v.reps){ex.push({n:x[0],kg:v.kg||"",sets:v.sets||"",reps:v.reps||""});last[k]=v}
+    else delete last[k];
   });
-  const status = document.getElementById('saveStatus');
-  status.style.color = persistent ? "#4caf50" : "#ff9800";
-  status.textContent = persistent
-    ? "Saved to this device"
-    : "Saved for this session only (browser blocked permanent storage)";
-  setTimeout(() => { status.textContent = ""; }, 3500);
+  if(!ex.length)return msg("wMsg","Enter at least one exercise first.",false);
+  log.push({d:new Date().toISOString(),s:p.title,w:$("weather").selectedOptions[0].text,ex});
+  set("log",log);set("last",last);draft={};render();
+  msg("wMsg",stored?`Workout logged (${log.length} total)`:"Logged for this session only: browser blocked permanent storage",stored);
+});
+
+// ---- CSV ----
+const q=v=>'"'+String(v).replace(/"/g,'""')+'"';
+const toCSV=(h,rows)=>[h.join(","),...rows.map(r=>r.map(q).join(","))].join("\r\n");
+async function exportCSV(name,text){
+  const f=new File([text],name,{type:"text/csv"});
+  try{
+    if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:name});return}
+  }catch(e){if(e.name==="AbortError")return}
+  const a=document.createElement("a");a.href=URL.createObjectURL(f);a.download=name;
+  document.body.appendChild(a);a.click();a.remove();
+}
+const vol=x=>{const k=parseFloat(x.kg),s=parseFloat(x.sets),r=parseFloat(x.reps);return k>0&&s>0&&r>0?Math.round(k*s*r*10)/10:""};
+$("lExp").addEventListener("click",()=>{
+  const log=get("log",[]);
+  if(!log.length)return msg("lMsg","Nothing logged yet.",false);
+  const rows=[];
+  log.forEach(s=>s.ex.forEach(x=>rows.push([s.d.slice(0,10),s.d.slice(11,16),s.s,s.w,x.n,x.kg,x.sets,x.reps,vol(x)])));
+  exportCSV("workout-log.csv",toCSV(["Date","Time_UTC","Session","Conditions","Exercise","Weight_kg","Sets","Avg_Reps","Volume_kg"],rows));
+});
+function renderLog(){
+  const log=get("log",[]);
+  $("lSum").textContent=`${log.length} workout${log.length===1?"":"s"} logged`+(stored?"":" (permanent storage blocked)");
+  $("lHist").innerHTML=log.slice(-10).reverse().map(s=>{
+    const t=s.ex.reduce((a,x)=>a+(vol(x)||0),0);
+    return `<div class="row"><span>${esc(s.d.slice(0,10))} &bull; ${esc(s.s.split(" ")[0])}</span><span>${s.ex.length} ex &bull; ${Math.round(t)} kg vol</span></div>`}).join("");
 }
 
-document.getElementById('weatherSelect').addEventListener('change', updateEnvironment);
-document.getElementById('splitSelect').addEventListener('change', updateEnvironment);
-document.getElementById('saveBtn').addEventListener('click', saveProgress);
-updateEnvironment();
+// ---- BMR ----
+function bmrCalc(){
+  const a=parseFloat($("bAge").value),h=parseFloat($("bH").value),w=parseFloat($("bW").value);
+  if(!(a>0&&h>0&&w>0)){$("bRes").textContent="";return null}
+  const bmr=10*w+6.25*h-5*a+($("bSex").value==="m"?5:-161),tdee=bmr*parseFloat($("bAct").value);
+  $("bRes").innerHTML=`BMR: <b>${Math.round(bmr)}</b> kcal/day<br>Maintenance: <b>${Math.round(tdee)}</b> kcal/day`;
+  return {bmr:Math.round(bmr),tdee:Math.round(tdee)};
+}
+["bSex","bAge","bH","bW","bAct"].forEach(id=>$(id).addEventListener("input",bmrCalc));
+function renderBmr(){
+  const l=get("bmrIn",null);
+  if(l&&!$("bAge").value){$("bSex").value=l.sex;$("bAge").value=l.age;$("bH").value=l.h;$("bW").value=l.kg;$("bAct").value=l.act}
+  bmrCalc();
+  $("bHist").innerHTML=get("bmr",[]).slice(-6).reverse().map(e=>`<div class="row"><span>${esc(e.d)} &bull; ${esc(e.kg)} kg</span><span>${e.bmr} / ${e.tdee} kcal</span></div>`).join("");
+}
+$("bSave").addEventListener("click",()=>{
+  const r=bmrCalc();if(!r)return msg("bMsg","Fill in age, height and weight first.",false);
+  const e={d:new Date().toISOString().slice(0,10),sex:$("bSex").value,age:$("bAge").value,h:$("bH").value,kg:$("bW").value,act:$("bAct").value,...r};
+  const all=get("bmr",[]);all.push(e);set("bmr",all);set("bmrIn",e);renderBmr();
+  msg("bMsg",stored?"Entry saved":"Saved for this session only",stored);
+});
+$("bExp").addEventListener("click",()=>{
+  const all=get("bmr",[]);
+  if(!all.length)return msg("bMsg","No entries saved yet.",false);
+  exportCSV("bmr-log.csv",toCSV(["Date","Sex","Age","Height_cm","Weight_kg","Activity_Factor","BMR_kcal","Maintenance_kcal"],all.map(e=>[e.d,e.sex,e.age,e.h,e.kg,e.act,e.bmr,e.tdee])));
+});
+
+render();
 </script>
 </body>
 </html>
