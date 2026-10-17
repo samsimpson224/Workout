@@ -1166,26 +1166,106 @@ function creatureRig(g,pal,fill,stage){
     <ellipse cx="160" cy="88" rx="4" ry="3" fill="${pal.p}"/>`;
 }
 
-// sil=true draws the pure black silhouette on a lighter backdrop (no colour, glow or particles)
-function renderCreatureSVG(g,stage,pal,sil){
-  if(sil){pal=SIL;stage=1}
-  const id=`${g.w}-${++svgUid}`,body=`bodyGrad-${id}`,sky=`skyGrad-${id}`,glow=`glow-${id}`;
-  const scale=sil?1:stage===1?.82:stage===2?.93:1.05,opacity=sil?1:stage===1?.65:stage===2?.88:1;
-  const rig=creatureRig(g,pal,sil?"#000":`url(#${body})`,stage);
-  let fx="";
-  if(!sil){const em=pal===PALETTES.ember||pal===PALETTES.solar;
-    for(let i=0;i<6;i++){const x=(i*43+17)%300,y=(i*31+12)%160,r=(i%2)+1.2;
-      fx+=`<circle class="${em?"p-ember":"p-snow"}" cx="${x}" cy="${y+20}" r="${r}" fill="${pal.s}" style="animation-delay:${(i*.4).toFixed(1)}s"/>`}}
-  return `<svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${sil?"Unknown creature":esc(g.name)}">
+// ---- Unique High-Fantasy Creature Anatomy & Silhouette Generators ----
+function renderCreatureSVG(g, bondStage, pal, sil){
+  if(sil){ pal = SIL; bondStage = 1; }
+  const id = `${g.w}-${++svgUid}`, body = `bodyGrad-${id}`, sky = `skyGrad-${id}`, glow = `glow-${id}`;
+  const scale = sil ? 1 : bondStage === 1 ? .82 : bondStage === 2 ? .93 : 1.05;
+  const opacity = sil ? 1 : bondStage === 1 ? .65 : bondStage === 2 ? .88 : 1;
+  const fill = sil ? "#000" : `url(#${body})`;
+  const k = g.kind, name = g.name.toLowerCase();
+
+  let rig = "";
+  if(k === "lindworm" || k === "forgedrake" || k === "sovereign"){
+    rig = `
+      <path class="fx-draft" d="M25,130 Q90,100 150,135 T295,120" stroke="${pal.p}" stroke-width="1.8" fill="none"/>
+      <path d="M55,145 C25,115 65,65 110,92 C155,118 140,158 185,142 C230,125 245,75 205,52 C175,35 148,55 135,44" stroke="${fill}" stroke-width="20" stroke-linecap="round" fill="none"/>
+      <path d="M135,44 L105,30 L120,48 L95,58 L132,62 L152,50" fill="${fill}" stroke="${pal.p}" stroke-width="1.5"/>
+      ${bondStage >= 2 && !sil ? `<path class="fx-bolt" d="M62,92 L118,95 L182,115 L212,72" stroke="${pal.s}" stroke-width="2" fill="none"/>` : ""}`;
+  } else if(k === "golem" || /tortoise|golem|sphinx|turtle|guardian|treant/.test(name)){
+    // Armored Golems, Tortoises, Treants, Sphinxes
+    rig = `
+      <polygon points="68,52 112,38 118,86 76,96" fill="${fill}" stroke="${pal.s}" stroke-width="1.5"/>
+      <polygon points="252,52 208,38 202,86 244,96" fill="${fill}" stroke="${pal.s}" stroke-width="1.5"/>
+      <polygon points="160,32 118,62 132,148 160,162 188,148 202,62" fill="${fill}" stroke="${pal.p}" stroke-width="2"/>
+      <ellipse cx="160" cy="110" rx="35" ry="24" fill="${fill}" stroke="${pal.p}" stroke-width="1.5"/>
+      <polygon points="160,58 140,92 160,128 180,92" fill="${pal.p}" stroke="${pal.s}" stroke-width="1.2"/>`;
+  } else if(/mammoth|behemoth/.test(name)){
+    // Majestic Woolly Mammoth & Behemoths
+    rig = `
+      <ellipse cx="160" cy="115" rx="46" ry="32" fill="${fill}" stroke="${pal.p}" stroke-width="2"/>
+      <circle cx="130" cy="95" r="22" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
+      <path d="M115,105 Q95,120 100,135" stroke="${pal.s}" stroke-width="5" stroke-linecap="round" fill="none"/>
+      <path d="M118,100 Q98,115 103,130" stroke="${pal.s}" stroke-width="4" stroke-linecap="round" fill="none"/>
+      <polygon points="110,75 95,55 125,70" fill="${fill}" stroke="${pal.s}" stroke-width="1"/>`;
+  } else if(/owl|falcon|puffin|roc|griffin/.test(name)){
+    // Birds, Owls, Falcons, Griffins
+    rig = `
+      <ellipse cx="160" cy="112" rx="26" ry="34" fill="${fill}" stroke="${pal.p}" stroke-width="1.8"/>
+      <circle cx="160" cy="78" r="20" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
+      <polygon points="152,78 168,78 160,92" fill="${pal.p}"/>
+      <path d="M134,105 Q105,95 120,130 Z" fill="${fill}" stroke="${pal.s}" stroke-width="1.5"/>
+      <path d="M186,105 Q215,95 200,130 Z" fill="${fill}" stroke="${pal.s}" stroke-width="1.5"/>`;
+  } else if(/fox|lynx|wolf|hound|cinderfox|panther|fennec|stag|boar/.test(name)){
+    // Foxes, Lynx, Stags, Canines, Quads
+    rig = `
+      <ellipse cx="160" cy="118" rx="38" ry="24" fill="${fill}" stroke="${pal.p}" stroke-width="1.8"/>
+      <circle cx="195" cy="85" r="18" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
+      <polygon points="182,72 172,48 192,68" fill="${fill}" stroke="${pal.s}" stroke-width="1"/>
+      <polygon points="204,72 214,48 198,68" fill="${fill}" stroke="${pal.s}" stroke-width="1"/>
+      <path d="M125,115 Q95,100 110,135" stroke="${fill}" stroke-width="8" stroke-linecap="round" fill="none"/>`;
+  } else if(/frog|axolotl|seal|otter|whale|crab/.test(name)){
+    // Amphibians, Seals, Axolotls, Aquatic creatures
+    rig = `
+      <ellipse cx="160" cy="120" rx="42" ry="24" fill="${fill}" stroke="${pal.p}" stroke-width="1.8"/>
+      <circle cx="150" cy="95" r="20" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
+      <circle cx="138" cy="88" r="6" fill="${fill}" stroke="${pal.s}" stroke-width="1"/>
+      <circle cx="162" cy="88" r="6" fill="${fill}" stroke="${pal.s}" stroke-width="1"/>
+      <ellipse cx="160" cy="135" rx="32" ry="12" fill="${pal.p}" opacity=".4"/>`;
+  } else {
+    // Standard Cute Companion Silhouette
+    rig = `
+      <ellipse cx="160" cy="115" rx="38" ry="28" fill="${fill}" stroke="${pal.p}" stroke-width="1.8"/>
+      <circle cx="160" cy="82" r="24" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
+      <polygon points="142,68 132,45 152,62" fill="${fill}" stroke="${pal.s}" stroke-width="1"/>
+      <polygon points="178,68 188,45 168,62" fill="${fill}" stroke="${pal.s}" stroke-width="1"/>
+      <circle cx="152" cy="78" r="3" fill="${pal.s}"/><circle cx="168" cy="78" r="3" fill="${pal.s}"/>
+      <ellipse cx="160" cy="88" rx="4" ry="3" fill="${pal.p}"/>`;
+  }
+
+  const creature = `
+    <g transform="translate(160 90) scale(${scale}) translate(-160 -90)" opacity="${opacity}"${stage === 3 && !sil ? ` filter="url(#${glow})"` : ""}>
+      <g class="boss-rig">${rig}</g>
+    </g>`;
+
+  let fx = "";
+  if(!sil){
+    const ember = (pal === PALETTES.ember || pal === PALETTES.solar);
+    for(let i = 0; i < 6; i++){
+      const x = (i * 43 + 17) % 300, y = (i * 31 + 12) % 160, r = (i % 2) + 1.2;
+      fx += `<circle class="${ember ? "p-ember" : "p-snow"}" cx="${x}" cy="${y + 20}" r="${r}" fill="${pal.s}" style="animation-delay:${(i * 0.4).toFixed(1)}s"/>`;
+    }
+  }
+
+  return `<svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${sil ? "Unknown creature" : esc(g.name)}">
     <defs>
-      <radialGradient id="${sky}" cx="50%" cy="45%" r="65%"><stop offset="0%" stop-color="${pal.bg1}"/><stop offset="100%" stop-color="${pal.bg2}"/></radialGradient>
-      <linearGradient id="${body}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2b3040"/><stop offset="100%" stop-color="${pal.bg1}"/></linearGradient>
-      <filter id="${glow}" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/><feFlood flood-color="${pal.glow}" result="color"/><feComposite in="color" in2="blur" operator="in" result="shadow"/><feMerge><feMergeNode in="shadow"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <radialGradient id="${sky}" cx="50%" cy="45%" r="65%">
+        <stop offset="0%" stop-color="${pal.bg1}"/><stop offset="100%" stop-color="${pal.bg2}"/>
+      </radialGradient>
+      <linearGradient id="${body}" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#2b3040"/><stop offset="100%" stop-color="${pal.bg1}"/>
+      </linearGradient>
+      <filter id="${glow}" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>
+        <feFlood flood-color="${pal.glow}" result="color"/>
+        <feComposite in="color" in2="blur" operator="in" result="shadow"/>
+        <feMerge><feMergeNode in="shadow"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
     </defs>
     <rect width="320" height="180" fill="url(#${sky})"/>
     <polygon points="0,180 0,142 65,122 135,152 215,125 285,148 320,132 320,180" fill="#0c0d14" opacity=".85"/>
     ${fx}
-    <g transform="translate(160 90) scale(${scale}) translate(-160 -90)" opacity="${opacity}"${stage===3&&!sil?` filter="url(#${glow})"`:""}><g class="boss-rig">${rig}</g></g>
+    ${creature}
   </svg>`;
 }
 
