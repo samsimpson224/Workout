@@ -1145,27 +1145,6 @@ const targetFor=n=>Math.max(30,Math.max(1,num(n))*45);
 const needOf=g=>g.boss?1:.85;
 const stageOf=(s,tg,g)=>{const r=num(s)/tg;return r<.35?1:r<needOf(g)?2:3};
 const rank=r=>Object.values((r&&r.m)||{}).filter(m=>m.s>0).sort((a,b)=>b.s-a.s).map(m=>[m.name,m.s]);
-function creatureRig(g,pal,fill,stage){
-  const k=g.kind;
-  if(k==="lindworm"||k==="forgedrake"||k==="sovereign")return `
-    <path class="fx-draft" d="M25,130 Q90,100 150,135 T295,120" stroke="${pal.p}" stroke-width="1.8" fill="none"/>
-    <path d="M55,145 C25,115 65,65 110,92 C155,118 140,158 185,142 C230,125 245,75 205,52 C175,35 148,55 135,44" stroke="${fill}" stroke-width="20" stroke-linecap="round" fill="none"/>
-    <path d="M135,44 L105,30 L120,48 L95,58 L132,62 L152,50" fill="${fill}" stroke="${pal.p}" stroke-width="1.5"/>
-    ${stage>=2?`<path class="fx-bolt" d="M62,92 L118,95 L182,115 L212,72" stroke="${pal.s}" stroke-width="2" fill="none"/>`:""}`;
-  if(k==="golem")return `
-    <polygon points="68,52 112,38 118,86 76,96" fill="${fill}" stroke="${pal.s}" stroke-width="1.5"/>
-    <polygon points="252,52 208,38 202,86 244,96" fill="${fill}" stroke="${pal.s}" stroke-width="1.5"/>
-    <polygon points="160,32 118,62 132,148 160,162 188,148 202,62" fill="${fill}" stroke="${pal.p}" stroke-width="2"/>
-    <polygon points="160,58 140,92 160,128 180,92" fill="${pal.p}" stroke="${pal.s}" stroke-width="1.2"/>`;
-  return `
-    <ellipse cx="160" cy="115" rx="38" ry="28" fill="${fill}" stroke="${pal.p}" stroke-width="1.8"/>
-    <circle cx="160" cy="82" r="24" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
-    <polygon points="142,68 132,45 152,62" fill="${fill}" stroke="${pal.s}"/>
-    <polygon points="178,68 188,45 168,62" fill="${fill}" stroke="${pal.s}"/>
-    <circle cx="152" cy="78" r="3" fill="${pal.s}"/><circle cx="168" cy="78" r="3" fill="${pal.s}"/>
-    <ellipse cx="160" cy="88" rx="4" ry="3" fill="${pal.p}"/>`;
-}
-
 // ---- Unique High-Fantasy Companion Anatomy & Silhouette Engine ----
 function creatureRig(g, pal, fill, stage){
   const k = g.kind, name = g.name.toLowerCase();
@@ -1178,7 +1157,6 @@ function creatureRig(g, pal, fill, stage){
       ${stage >= 2 ? `<path class="fx-bolt" d="M62,92 L118,95 L182,115 L212,72" stroke="${pal.s}" stroke-width="2" fill="none"/>` : ""}`;
   } 
   if(k === "golem" || /tortoise|golem|sphinx|turtle|guardian|treant/.test(name)){
-    // Armored Golems, Tortoises, Treants, Sphinxes
     return `
       <polygon points="68,52 112,38 118,86 76,96" fill="${fill}" stroke="${pal.s}" stroke-width="1.5"/>
       <polygon points="252,52 208,38 202,86 244,96" fill="${fill}" stroke="${pal.s}" stroke-width="1.5"/>
@@ -1187,7 +1165,6 @@ function creatureRig(g, pal, fill, stage){
       <polygon points="160,58 140,92 160,128 180,92" fill="${pal.p}" stroke="${pal.s}" stroke-width="1.2"/>`;
   } 
   if(/mammoth|behemoth/.test(name)){
-    // Majestic Woolly Mammoth & Behemoths
     return `
       <ellipse cx="160" cy="115" rx="46" ry="32" fill="${fill}" stroke="${pal.p}" stroke-width="2"/>
       <circle cx="130" cy="95" r="22" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
@@ -1196,7 +1173,6 @@ function creatureRig(g, pal, fill, stage){
       <polygon points="110,75 95,55 125,70" fill="${fill}" stroke="${pal.s}" stroke-width="1"/>`;
   } 
   if(/owl|falcon|puffin|roc|griffin/.test(name)){
-    // Birds, Owls, Falcons, Griffins
     return `
       <ellipse cx="160" cy="112" rx="26" ry="34" fill="${fill}" stroke="${pal.p}" stroke-width="1.8"/>
       <circle cx="160" cy="78" r="20" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
@@ -1205,7 +1181,6 @@ function creatureRig(g, pal, fill, stage){
       <path d="M186,105 Q215,95 200,130 Z" fill="${fill}" stroke="${pal.s}" stroke-width="1.5"/>`;
   } 
   if(/fox|lynx|wolf|hound|cinderfox|panther|fennec|stag|boar/.test(name)){
-    // Foxes, Lynx, Stags, Canines, Quads
     return `
       <ellipse cx="160" cy="118" rx="38" ry="24" fill="${fill}" stroke="${pal.p}" stroke-width="1.8"/>
       <circle cx="195" cy="85" r="18" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
@@ -1214,7 +1189,6 @@ function creatureRig(g, pal, fill, stage){
       <path d="M125,115 Q95,100 110,135" stroke="${fill}" stroke-width="8" stroke-linecap="round" fill="none"/>`;
   } 
   if(/frog|axolotl|seal|otter|whale|crab/.test(name)){
-    // Amphibians, Seals, Axolotls, Aquatic creatures
     return `
       <ellipse cx="160" cy="120" rx="42" ry="24" fill="${fill}" stroke="${pal.p}" stroke-width="1.8"/>
       <circle cx="150" cy="95" r="20" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
@@ -1223,7 +1197,6 @@ function creatureRig(g, pal, fill, stage){
       <ellipse cx="160" cy="135" rx="32" ry="12" fill="${pal.p}" opacity=".4"/>`;
   } 
   
-  // Standard Cute Companion Silhouette fallback
   return `
     <ellipse cx="160" cy="115" rx="38" ry="28" fill="${fill}" stroke="${pal.p}" stroke-width="1.8"/>
     <circle cx="160" cy="82" r="24" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
@@ -1233,75 +1206,17 @@ function creatureRig(g, pal, fill, stage){
     <ellipse cx="160" cy="88" rx="4" ry="3" fill="${pal.p}"/>`;
 }
 
-// ---- Unique High-Fantasy Creature Anatomy & Silhouette Generators ----
 function renderCreatureSVG(g, bondStage, pal, sil){
   if(sil){ pal = SIL; bondStage = 1; }
+  const st = Number.isFinite(Number(bondStage)) ? Number(bondStage) : 1;
   const id = `${g.w}-${++svgUid}`, body = `bodyGrad-${id}`, sky = `skyGrad-${id}`, glow = `glow-${id}`;
-  const scale = sil ? 1 : bondStage === 1 ? .82 : bondStage === 2 ? .93 : 1.05;
-  const opacity = sil ? 1 : bondStage === 1 ? .65 : bondStage === 2 ? .88 : 1;
+  const scale = sil ? 1 : st === 1 ? .82 : st === 2 ? .93 : 1.05;
+  const opacity = sil ? 1 : st === 1 ? .65 : st === 2 ? .88 : 1;
   const fill = sil ? "#000" : `url(#${body})`;
-  const k = g.kind, name = g.name.toLowerCase();
-
-  let rig = "";
-  if(k === "lindworm" || k === "forgedrake" || k === "sovereign"){
-    rig = `
-      <path class="fx-draft" d="M25,130 Q90,100 150,135 T295,120" stroke="${pal.p}" stroke-width="1.8" fill="none"/>
-      <path d="M55,145 C25,115 65,65 110,92 C155,118 140,158 185,142 C230,125 245,75 205,52 C175,35 148,55 135,44" stroke="${fill}" stroke-width="20" stroke-linecap="round" fill="none"/>
-      <path d="M135,44 L105,30 L120,48 L95,58 L132,62 L152,50" fill="${fill}" stroke="${pal.p}" stroke-width="1.5"/>
-      ${bondStage >= 2 && !sil ? `<path class="fx-bolt" d="M62,92 L118,95 L182,115 L212,72" stroke="${pal.s}" stroke-width="2" fill="none"/>` : ""}`;
-  } else if(k === "golem" || /tortoise|golem|sphinx|turtle|guardian|treant/.test(name)){
-    // Armored Golems, Tortoises, Treants, Sphinxes
-    rig = `
-      <polygon points="68,52 112,38 118,86 76,96" fill="${fill}" stroke="${pal.s}" stroke-width="1.5"/>
-      <polygon points="252,52 208,38 202,86 244,96" fill="${fill}" stroke="${pal.s}" stroke-width="1.5"/>
-      <polygon points="160,32 118,62 132,148 160,162 188,148 202,62" fill="${fill}" stroke="${pal.p}" stroke-width="2"/>
-      <ellipse cx="160" cy="110" rx="35" ry="24" fill="${fill}" stroke="${pal.p}" stroke-width="1.5"/>
-      <polygon points="160,58 140,92 160,128 180,92" fill="${pal.p}" stroke="${pal.s}" stroke-width="1.2"/>`;
-  } else if(/mammoth|behemoth/.test(name)){
-    // Majestic Woolly Mammoth & Behemoths
-    rig = `
-      <ellipse cx="160" cy="115" rx="46" ry="32" fill="${fill}" stroke="${pal.p}" stroke-width="2"/>
-      <circle cx="130" cy="95" r="22" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
-      <path d="M115,105 Q95,120 100,135" stroke="${pal.s}" stroke-width="5" stroke-linecap="round" fill="none"/>
-      <path d="M118,100 Q98,115 103,130" stroke="${pal.s}" stroke-width="4" stroke-linecap="round" fill="none"/>
-      <polygon points="110,75 95,55 125,70" fill="${fill}" stroke="${pal.s}" stroke-width="1"/>`;
-  } else if(/owl|falcon|puffin|roc|griffin/.test(name)){
-    // Birds, Owls, Falcons, Griffins
-    rig = `
-      <ellipse cx="160" cy="112" rx="26" ry="34" fill="${fill}" stroke="${pal.p}" stroke-width="1.8"/>
-      <circle cx="160" cy="78" r="20" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
-      <polygon points="152,78 168,78 160,92" fill="${pal.p}"/>
-      <path d="M134,105 Q105,95 120,130 Z" fill="${fill}" stroke="${pal.s}" stroke-width="1.5"/>
-      <path d="M186,105 Q215,95 200,130 Z" fill="${fill}" stroke="${pal.s}" stroke-width="1.5"/>`;
-  } else if(/fox|lynx|wolf|hound|cinderfox|panther|fennec|stag|boar/.test(name)){
-    // Foxes, Lynx, Stags, Canines, Quads
-    rig = `
-      <ellipse cx="160" cy="118" rx="38" ry="24" fill="${fill}" stroke="${pal.p}" stroke-width="1.8"/>
-      <circle cx="195" cy="85" r="18" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
-      <polygon points="182,72 172,48 192,68" fill="${fill}" stroke="${pal.s}" stroke-width="1"/>
-      <polygon points="204,72 214,48 198,68" fill="${fill}" stroke="${pal.s}" stroke-width="1"/>
-      <path d="M125,115 Q95,100 110,135" stroke="${fill}" stroke-width="8" stroke-linecap="round" fill="none"/>`;
-  } else if(/frog|axolotl|seal|otter|whale|crab/.test(name)){
-    // Amphibians, Seals, Axolotls, Aquatic creatures
-    rig = `
-      <ellipse cx="160" cy="120" rx="42" ry="24" fill="${fill}" stroke="${pal.p}" stroke-width="1.8"/>
-      <circle cx="150" cy="95" r="20" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
-      <circle cx="138" cy="88" r="6" fill="${fill}" stroke="${pal.s}" stroke-width="1"/>
-      <circle cx="162" cy="88" r="6" fill="${fill}" stroke="${pal.s}" stroke-width="1"/>
-      <ellipse cx="160" cy="135" rx="32" ry="12" fill="${pal.p}" opacity=".4"/>`;
-  } else {
-    // Standard Cute Companion Silhouette
-    rig = `
-      <ellipse cx="160" cy="115" rx="38" ry="28" fill="${fill}" stroke="${pal.p}" stroke-width="1.8"/>
-      <circle cx="160" cy="82" r="24" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
-      <polygon points="142,68 132,45 152,62" fill="${fill}" stroke="${pal.s}" stroke-width="1"/>
-      <polygon points="178,68 188,45 168,62" fill="${fill}" stroke="${pal.s}" stroke-width="1"/>
-      <circle cx="152" cy="78" r="3" fill="${pal.s}"/><circle cx="168" cy="78" r="3" fill="${pal.s}"/>
-      <ellipse cx="160" cy="88" rx="4" ry="3" fill="${pal.p}"/>`;
-  }
+  const rig = creatureRig(g, pal, fill, st);
 
   const creature = `
-    <g transform="translate(160 90) scale(${scale}) translate(-160 -90)" opacity="${opacity}"${stage === 3 && !sil ? ` filter="url(#${glow})"` : ""}>
+    <g transform="translate(160 90) scale(${scale}) translate(-160 -90)" opacity="${opacity}"${st === 3 && !sil ? ` filter="url(#${glow})"` : ""}>
       <g class="boss-rig">${rig}</g>
     </g>`;
 
