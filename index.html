@@ -41,7 +41,7 @@ button.danger{background:#3a1d1d;color:#ff6b6b;margin-top:10px}
 code{word-break:break-all}
 .poke{position:sticky;top:0;z-index:50;background:var(--acc);color:#121212;padding:10px;border-radius:8px;margin-bottom:8px;font-weight:bold;text-align:center}
 .poke[hidden]{display:none}.poke button{background:#121212;color:var(--acc)}
-.bw-warn{background:#2a2211;border:1px solid #d4af37;color:#fce38a;padding:10px;border-radius:8px;margin-bottom:12px;font-size:0.85rem}
+.bw-warn{background:#2a2211;border:1px solid #d4af37;color:#fce38a;padding:10px;border-radius:8px;margin-bottom:12px;font-size:0.85rem;line-height:1.4}
 .cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
 .stat{background:#252525;border-radius:8px;padding:10px;text-align:center}
 .stat b{display:block;font-size:1.4rem;color:var(--acc)}.stat small{color:var(--mu)}
@@ -62,6 +62,7 @@ textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);c
 .norm-tag{color:var(--acc);font-size:.74rem;margin-top:3px;opacity:.95}
 .btn-grp{display:flex;gap:4px;flex-shrink:0}
 .mini{width:auto;margin:0;padding:6px 9px;font-size:.78rem;background:#333;color:var(--acc)}
+.mini.hype{background:#3a2e11;color:#ffd700;border:1px solid #d4af37}
 .inp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
 .inp input{margin:0;padding:8px;text-align:center}
 .guide{margin-top:8px;font-size:.88rem;line-height:1.45;background:#1b1b1b;padding:10px;border-radius:6px;border:1px solid #2e2e2e}
@@ -73,6 +74,13 @@ textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);c
 .filter-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
 .up{color:#4caf50;font-weight:bold}
 .dn{color:#ff6b6b;font-weight:bold}
+.s-pill{display:inline-block;padding:2px 6px;border-radius:99px;font-size:.72rem;font-weight:bold;margin-left:4px;background:#2a2415;color:#ffd700;border:1px solid #665218}
+.ticker{background:#181818;border:1px solid #2c2c2c;border-radius:8px;padding:8px 10px;margin:8px 0;font-size:.82rem}
+.ticker-item{padding:4px 0;border-bottom:1px solid #252525;display:flex;justify-content:space-between;gap:8px}
+.ticker-item:last-child{border-bottom:0}
+.podium-card{background:#232323;border:1px solid #333;border-radius:8px;padding:10px;margin-top:8px}
+.podium-bar{height:8px;background:#161616;border-radius:4px;overflow:hidden;margin:4px 0 6px}
+.podium-fill{height:100%;background:var(--acc);border-radius:4px}
 </style>
 </head>
 <body>
@@ -90,10 +98,10 @@ textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);c
   <button id="tInfoBtn" title="Timer info">? Timer</button>
 </div>
 <div id="tInfoBox" class="info-panel" hidden>
-  <b>Rest Timer Guide (Audio &amp; Visual Alert):</b>
+  <b>Rest Timer Guide (Background-Music Safe):</b>
   <ul>
-    <li><b>Rest 60s / 2m / 3m:</b> Tap any preset to start the countdown.</li>
-    <li><b>Alerts:</b> When time expires, the button flashes and pulses visually, your phone vibrates (if supported), and a synthesized chime plays to signal your next set.</li>
+    <li><b>Rest 60s / 2m / 3m:</b> Tap any preset to start the countdown. Starting or running a timer will <b>never pause your background music</b> (Spotify, Apple Music, YouTube Music).</li>
+    <li><b>Alerts:</b> When time expires, the screen flashes visually, your phone vibrates, and an ambient chime plays over your music.</li>
   </ul>
 </div>
 
@@ -107,21 +115,27 @@ textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);c
 
 <section id="tW">
   <div id="bwWarnBox" class="bw-warn" hidden>⚠️ It has been over 30 days since you updated your weight in the BMR tab. Tap <a href="#" id="gotoBmr" style="color:var(--acc);font-weight:bold">here</a> to update it for accurate volume normalization.</div>
-  <div class="card" style="padding:10px 16px"><label style="display:flex;align-items:center;gap:10px;margin:0"><input type="checkbox" id="advToggle" style="width:auto;margin:0"> Advanced mode (build your own workouts)</label></div>
+  <div id="streakNudgeBox" class="bw-warn" hidden></div>
+  <div class="card" style="padding:10px 16px"><label style="display:flex;align-items:center;gap:10px;margin:0"><input type="checkbox" id="advToggle" style="width:auto;margin:0"> Advanced mode (build &amp; share custom workouts)</label></div>
   <div class="card" id="advCard" hidden>
     <h2>Custom Workout Builder</h2>
-    <label>Workout name</label><input id="cTitle" placeholder="e.g. Upper Body B">
+    <label>Workout name</label><input id="cTitle" placeholder="e.g. Back and Bi">
     <div id="cList"></div>
     <label>Add an exercise</label>
     <input id="cName" placeholder="Exercise name">
     <input id="cTarget" placeholder="Target, e.g. 3 Sets x 8-12 Reps">
     <input id="cCue" placeholder="Form notes (optional)">
-    <select id="cType"><option value="a">1 dumbbell</option><option value="b">2 dumbbells (enter kg of one)</option><option value="c">1 dumbbell, each side</option><option value="d">2 dumbbells, each side</option></select>
+    <select id="cType"><option value="a">1 dumbbell / cable / machine</option><option value="b">2 dumbbells (enter kg of one)</option><option value="c">1 dumbbell, each side</option><option value="d">2 dumbbells, each side</option></select>
     <input id="cBw" inputmode="numeric" placeholder="% of bodyweight moved (0 = none, ~55 push-ups)">
+    <div id="cConflictBox" class="bw-warn" hidden></div>
     <button id="cAdd" class="alt">Add exercise</button>
     <button id="cSave">Save workout</button>
     <div id="cMsg" class="msg"></div>
+    <h2 style="font-size:1.05rem;margin-top:14px">My Saved Custom Workouts</h2>
     <div id="cSaved"></div>
+    <h2 style="font-size:1.05rem;margin-top:14px">Clan Shared Workout Library</h2>
+    <div class="hint">Import workouts created by your clanmates (includes exercise names &amp; set/rep targets only &mdash; weights and bodyweight are never shared).</div>
+    <div id="cClanLib"><div class="hint">Join a clan and tap Sync to browse shared workouts.</div></div>
   </div>
   <div class="card">
     <label for="weather">1. Current conditions</label>
@@ -270,17 +284,16 @@ textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);c
         <li>Come back here: <b>Start a clan</b> &rarr; paste the block, enter your name and a <b>master password</b> &rarr; Create. Then tap <b>Share invite code</b> and send it to your friends.</li>
       </ol>
       <p>Everything stays on Firebase's free plan. If Firebase asks for a card or a plan upgrade, stop and cancel. Button names occasionally change; pick the closest match.</p>
-      <b>C. How editing is protected</b>
+      <b>C. How editing &amp; privacy are protected</b>
       <ul>
         <li>Everyone can only change their own entries. This is enforced by the database, not just the app.</li>
         <li>Only you, with the master password, can hide a member or remove any entry (Unlock admin tools on the board). Your master password is never stored on your phone or shared.</li>
-        <li>Anyone holding the invite code can see the board, so only send it to your clan. Shared: display name, optional division, plus each session's date, type, sets and estimated volume. Not shared: bodyweight or measurements. Note that estimated volume is calculated from bodyweight, so it reflects your size indirectly; untick &quot;Share my estimated volume&quot; on the board to keep that private.</li>
+        <li><b>Weight Privacy:</b> Neither standard nor custom workouts share the weights you lifted or your bodyweight. Only session totals (workouts, sets, and optional estimated volume) are shown. Untick &quot;Share my estimated volume&quot; to hide volume completely and rank purely by workouts and sets.</li>
       </ul>
-      <b>D. Pokes</b>
+      <b>D. Streaks, Hype &amp; Pokes</b>
       <ul>
-        <li>Tap <b>Poke</b> next to a member. They see a banner the next time they open the app, or within about a minute if it's already open. Pokes can't wake a closed app. For an instant phone notification, use <b>Send a nudge by message</b>.</li>
-        <li>Everyone in the clan can see who poked whom. You can poke the same person once every 30 minutes (enforced on both sender and recipient devices).</li>
-        <li>Pokes only work in clans created with the newest version.</li>
+        <li><b>Weekly Streaks (3+/week):</b> Log at least 3 workouts per week (Mon&ndash;Sun) to build your streak medal (<code>🔥</code> &rarr; <code>⚡</code> &rarr; <code>🌟</code> &rarr; <code>👑</code>). Every 4streak weeks earns a Grace Shield (<code>🛡️</code>, max 2) that automatically protects your streak if you miss a week.</li>
+        <li><b>Hype vs. Poke:</b> If a clanmate trained in the last 48h, tap <b>Hype 🔥</b> to send them props! If they haven't logged in a while, tap <b>Poke 👋</b> to check in. (30-minute cooldown per person).</li>
       </ul>
       <b>E. Using One Profile Across Multiple Devices &amp; App Updates</b>
       <ul>
@@ -325,6 +338,7 @@ textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);c
 
     <div id="kBoard" hidden>
       <div id="kTitle" class="hint"></div>
+      <div id="kTicker" class="ticker" hidden></div>
       <label style="display:flex;align-items:center;gap:10px;margin:8px 0;font-weight:normal"><input type="checkbox" id="kShareVol" style="width:auto;margin:0"> Share my estimated volume (reflects bodyweight)</label>
       <div class="filter-grid">
         <div>
@@ -348,10 +362,11 @@ textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);c
         <select id="kRange" style="margin:0"><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option></select>
         <select id="kMetric" style="margin:0"><option value="w">Rank by workouts</option><option value="sets">Rank by hard sets</option><option value="vol">Rank by est. volume</option></select>
       </div>
-      <h2 style="font-size:1.1rem">Standard workouts</h2>
+      <h2 style="font-size:1.1rem">Overall Clan Standings</h2>
+      <div class="hint">Includes all standard &amp; custom workouts. Maintain 3+ workouts/week for streak medals!</div>
       <div id="kRows"></div>
-      <h2 style="font-size:1.1rem;margin-top:16px">Custom exercises</h2>
-      <div class="hint">One table per exercise, ranked by est. volume.</div>
+      <h2 style="font-size:1.1rem;margin-top:16px">Custom Workout Rankings (By Session)</h2>
+      <div class="hint">Aggregated by session using the filters above &mdash; individual exercise weights are never exposed.</div>
       <div id="kCust"></div>
       <div id="kManage"></div>
       <button id="kSync">Sync my logs &amp; refresh</button>
@@ -414,8 +429,8 @@ legs:{title:"Legs & Core Focus (Quads, Hamstring, Calves, Abs)",ex:[
 {bw:0,db:1,m:2,ph:"1-DB kg",note:"1-DB weight x 2 sides",desc:"Unilateral anti-lateral flexion carry. Enter ONE dumbbell weight and marches per side."}]]}
 };
 
-const EX_MAP={};
-Object.values(P).forEach(s=>s.ex.forEach(x=>{EX_MAP[x[0]]=x[4];EX_MAP[x[1]]=x[4]}));
+const EX_MAP={},BUILTIN_NAMES=new Set();
+Object.values(P).forEach(s=>s.ex.forEach(x=>{EX_MAP[x[0]]=x[4];EX_MAP[x[1]]=x[4];BUILTIN_NAMES.add(x[1].toLowerCase())}));
 const STD_TITLES=new Set([P.push.title,P.pull.title,P.legs.title]);
 function sessLabel(title){
   const s=String(title||"");
@@ -441,6 +456,63 @@ function getBW(){return getSavedBW()||70}
 function hasSavedBW(){return getSavedBW()!==null}
 function getBmrGender(){const b=get("bmrIn",null);return b&&(b.sex==="m"||b.sex==="f")?b.sex:""}
 
+// ---- Weekly Streak & Grace Shield Engine (3 workouts/week Mon-Sun) ----
+const ld=d=>{const t=new Date(d);return t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0")};
+function getMondayStr(dStr){
+  const p=String(dStr).slice(0,10).split("-").map(Number);
+  if(p.length<3||!p[0])return "";
+  const dt=new Date(p[0],p[1]-1,p[2]);
+  const day=dt.getDay(),diff=(day===0?-6:1)-day;
+  dt.setDate(dt.getDate()+diff);
+  return ld(dt);
+}
+function calcStreak(sessions){
+  const byWeek=Object.create(null);
+  (sessions||[]).forEach(x=>{
+    const m=getMondayStr(x.d);
+    if(m)byWeek[m]=(byWeek[m]||0)+1;
+  });
+  const curMon=getMondayStr(ld(new Date()));
+  const weeks=[];
+  const p=curMon.split("-").map(Number);
+  const dt=new Date(p[0],p[1]-1,p[2]);
+  for(let i=25;i>=1;i--){
+    const w=new Date(dt);w.setDate(w.getDate()-i*7);
+    weeks.push(ld(w));
+  }
+  let streak=0,shields=0,graceBank=0;
+  weeks.forEach(w=>{
+    const cnt=byWeek[w]||0;
+    if(cnt>=3){
+      streak++;graceBank++;
+      if(graceBank>=4){shields=Math.min(2,shields+1);graceBank=0}
+    }else if(streak>0&&shields>0){
+      shields--;
+    }else if(streak>0){
+      streak=0;graceBank=0;shields=0;
+    }
+  });
+  const curCnt=byWeek[curMon]||0;
+  if(curCnt>=3){
+    streak++;graceBank++;
+    if(graceBank>=4)shields=Math.min(2,shields+1);
+  }
+  const icon=streak>=12?"\u{1F451}":streak>=8?"\u{1F31F}":streak>=4?"\u26A1":streak>=1?"\u{1F525}":"";
+  return {streak,shields,curCnt,icon};
+}
+function checkStreakNudge(){
+  const box=$("streakNudgeBox");if(!box)return;
+  const st=calcStreak(get("log",[]));
+  const day=new Date().getDay(); // 0=Sun, 6=Sat
+  if((day===0||day===6)&&st.curCnt>0&&st.curCnt<3){
+    const rem=3-st.curCnt;
+    box.innerHTML=`\u{1F525} <b>Weekend Streak Check:</b> You have <b>${st.curCnt}/3</b> workouts logged this week. Log <b>${rem} more</b> by Sunday night to ${st.streak>0?`push your streak to <b>${st.streak+1}w</b>!`:`start a new weekly streak!`}`;
+    box.hidden=false;
+  }else{
+    box.hidden=true;
+  }
+}
+
 function checkBwStale(){
   const all=get("bmr",[]);
   if(!all.length){$("bwWarnBox").hidden=false;return}
@@ -455,17 +527,17 @@ $("gotoBmr")?.addEventListener("click",e=>{e.preventDefault();document.querySele
   $(b).addEventListener("click",()=>{$(x).hidden=!$(x).hidden});
 });
 
-// ---- Rest timer: full-screen flash + loud repeating beeps ----
+// ---- Rest timer: Ambient Audio (Never pauses Spotify / Apple Music) ----
 let tInt=null,tEnd=0,actx=null,tNodes=[],aInt=null,wake=null;
 function audio(){
   try{
-    if(navigator.audioSession)navigator.audioSession.type="playback";
+    // "ambient" mixes alert chimes over background music without pausing playback
+    if(navigator.audioSession)navigator.audioSession.type="ambient";
     const AC=window.AudioContext||window.webkitAudioContext;
     if(!actx&&AC)actx=new AC();
     if(actx&&actx.state!=="running")actx.resume();
   }catch(e){}
 }
-window.addEventListener("pointerdown",()=>{audio();try{actx&&actx.resume()}catch(e){}},{once:true});
 
 function beeps(){
   if(!actx)return;
@@ -502,9 +574,10 @@ function wakeOn(){try{navigator.wakeLock&&navigator.wakeLock.request("screen").t
 document.querySelector(".timer-bar").addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b||b.id==="tInfoBtn")return;
   stopAlarm();clearInterval(tInt);tInt=null;$("tStop").classList.remove("timer-done");
-  if(b.id==="tTest"){audio();triggerAlert();if(window.AudioContext||window.webkitAudioContext)msg("wMsg","Test alert triggered. Keep this page open for the visual/audio alert.",true);return}
+  if(b.id==="tTest"){triggerAlert();if(window.AudioContext||window.webkitAudioContext)msg("wMsg","Test alert triggered (ambient mode — background music stays playing).",true);return}
   if(b.id==="tStop"){tEnd=0;$("tStop").hidden=true;return}
-  audio();
+  // Prepare ambient audio context gently without interrupting external media
+  try{if(navigator.audioSession)navigator.audioSession.type="ambient"}catch(err){}
   tEnd=Date.now()+parseInt(b.dataset.sec,10)*1000;
   $("tStop").hidden=false;tickTimer();tInt=setInterval(tickTimer,250);wakeOn();
 });
@@ -520,7 +593,7 @@ document.querySelector(".tabs").addEventListener("click",e=>{
   if(b.dataset.t==="tC")renderClan();
   if(b.dataset.t==="tS")renderStats();
   if(b.dataset.t==="tB")renderBmr();
-  if(b.dataset.t==="tW"){render();checkBwStale()}
+  if(b.dataset.t==="tW"){render();checkBwStale();checkStreakNudge()}
 });
 
 // ---- Dynamic Normalization Math ----
@@ -541,18 +614,24 @@ function vol(x,bwUsed){
   const eff=calcEffKg(x.kg,meta,bwUsed||getBW());
   return eff>0?Math.round(eff*s*r*10)/10:"";
 }
+function parseTargetOutline(str){
+  const m=String(str||"").match(/(\d+)\s*(?:sets?|s)?\s*[xX*]\s*(\d+)/i)||String(str||"").match(/(\d+)\s*reps?\s*(\d+)\s*sets?/i);
+  if(!m)return null;
+  const isRev=/reps?\s+\d+\s*sets?/i.test(str);
+  return {sets:isRev?m[2]:m[1],reps:isRev?m[1]:m[2]};
+}
 
 // ---- Workout ----
 let draft={};
 function render(){
-  const sk=$("split").value,p=P[sk],last=get("last",{}),bw=getBW();
+  const sk=$("split").value,p=P[sk]||P.push,last=get("last",{}),bw=getBW();
   $("advice").textContent=ADV[$("weather").value];
   $("bwNotice").innerHTML=hasSavedBW()
     ?`Synced Bodyweight: <b>${bw} kg</b> (from BMR tab).`
     :`No bodyweight saved in BMR tab yet (using neutral <b>${bw} kg</b> placeholder for estimates; locks to your real weight once you save a BMR entry).`;
   let h=`<div class="badge">${esc(p.title)}</div>`;
   p.ex.forEach((x,i)=>{
-    const id=x[0],meta=x[4],v={...last[id],...draft[id]};
+    const id=x[0],meta=x[4],outline=parseTargetOutline(x[2]),v={...(outline||{}),...last[id],...draft[id]};
     const defKg=v.kg!==undefined?v.kg:(meta.bw>0?"0":"");
     const eff=calcEffKg(defKg,meta,bw);
     const bwPart=Math.round(bw*(meta.bw||0)*10)/10;
@@ -597,7 +676,7 @@ $("weather").addEventListener("change",()=>{$("advice").textContent=ADV[$("weath
 $("logBtn").addEventListener("click",()=>{
   const sk=$("split").value,p=P[sk],last=get("last",{}),log=get("log",[]),savedBw=getSavedBW(),ex=[];
   p.ex.forEach(x=>{
-    const id=x[0],meta=x[4],v={...last[id],...draft[id]};
+    const id=x[0],meta=x[4],outline=parseTargetOutline(x[2]),v={...(outline||{}),...last[id],...draft[id]};
     const kgVal=v.kg!==undefined?String(v.kg).trim():(meta.bw>0?"0":"");
     const setsVal=v.sets!==undefined?String(v.sets).trim():"";
     const repsVal=v.reps!==undefined?String(v.reps).trim():"";
@@ -611,7 +690,7 @@ $("logBtn").addEventListener("click",()=>{
   const entry={sid:rnd(10),d:new Date().toISOString(),s:p.title,w:$("weather").selectedOptions[0].text,ex};
   if(savedBw!==null)entry.bw=savedBw;
   log.push(entry);
-  set("log",log);set("last",last);draft={};render();syncClan(true);
+  set("log",log);set("last",last);draft={};render();checkStreakNudge();syncClan(true);
   msg("wMsg",stored?`Workout logged (${log.length} total)`:"Logged for this session only",stored);
 });
 
@@ -657,7 +736,7 @@ $("lUndo").addEventListener("click",()=>{
   if(!log.length)return msg("lMsg","No workouts to delete.",false);
   const lastSess=log[log.length-1];
   if(!confirm(`Delete most recent workout (${lastSess.d.slice(0,10)} - ${sessLabel(lastSess.s)})?`))return;
-  log.pop();set("log",log);renderLog();syncClan(true);
+  log.pop();set("log",log);renderLog();checkStreakNudge();syncClan(true);
   msg("lMsg","Most recent workout removed.",true);
 });
 function renderLog(){
@@ -694,7 +773,6 @@ $("bSave").addEventListener("click",()=>{
   const all=get("bmr",[]),isFirstWeighIn=all.length===0;
   all.push(e);set("bmr",all);set("bmrIn",e);bmrLoaded=true;renderBmr();
 
-  // Backfill earlier workouts that lacked a saved bodyweight (or used the 70kg placeholder before first weigh-in)
   const log=get("log",[]),newKg=parseFloat(e.kg);
   let backfilled=false;
   if(newKg>0){
@@ -725,9 +803,9 @@ $("bExp").addEventListener("click",()=>{
   exportCSV("bmr-log.csv",toCSV(["Date","Sex","Age","Height_cm","Weight_kg","Activity","BMR","TDEE"],all.map(e=>[e.d,e.sex,e.age,e.h,e.kg,e.act,e.bmr,e.tdee])));
 });
 
-// ---- Advanced: custom workouts ----
+// ---- Advanced: Custom Workouts & Intra-Clan Shared Library ----
 const TYPES={a:{db:1,m:1,t:"1 dumbbell"},b:{db:2,m:1,t:"2 dumbbells"},c:{db:1,m:2,t:"1 dumbbell, each side"},d:{db:2,m:2,t:"2 dumbbells, each side"}};
-let cDraft=[];
+let cDraft=[],clanLibCache=[];
 function applyCustom(){
   Object.keys(P).filter(k=>k.startsWith("c_")).forEach(k=>delete P[k]);
   const cs=get("custom",[]);
@@ -744,39 +822,90 @@ function applyCustom(){
   if([...sSel.options].some(o=>o.value===sCur))sSel.value=sCur;
 }
 function renderAdv(){
-  const on=get("adv",false);$("advToggle").checked=on;$("advCard").hidden=!on;
+  const on=get("adv",false),hasClan=Boolean(get("clan2",null));
+  $("advToggle").checked=on;$("advCard").hidden=!on;
   $("cList").innerHTML=cDraft.map((x,i)=>`<div class="row"><span>${esc(x[1])} <small>(${esc(x[2])})</small></span><button class="mini" data-cd="${i}">x</button></div>`).join("")||'<div class="hint">No exercises added yet.</div>';
-  $("cSaved").innerHTML=get("custom",[]).map((c,i)=>`<div class="row"><span>${esc(c.title)} (${c.ex.length} ex)</span><button class="mini" data-cs="${i}">Delete</button></div>`).join("");
+  $("cSaved").innerHTML=get("custom",[]).map((c,i)=>`<div class="row"><span><b>${esc(c.title)}</b> (${c.ex.length} ex)${c.shared?' <small style="color:var(--acc)">[Shared]</small>':""}</span><span class="btn-grp">${hasClan?`<button class="mini" data-cshare="${i}">${c.shared?"Update Share":"Share to Clan"}</button>`:""}<button class="mini" data-cs="${i}">Delete</button></span></div>`).join("")||'<div class="hint">No custom workouts saved yet.</div>';
+  renderClanLib();
 }
-$("advToggle").addEventListener("change",e=>{set("adv",e.target.checked);renderAdv()});
-$("cAdd").addEventListener("click",()=>{
-  const name=$("cName").value.trim();if(!name)return msg("cMsg","Give the exercise a name.",false);
-  const lowerName = name.toLowerCase();
-  const isDefault = Object.values(P).some(s => s.ex.some(x => x[1].toLowerCase() === lowerName));
-  if(isDefault) return msg("cMsg","That name matches a default built-in exercise. Choose a unique name.",false);
+function renderClanLib(){
+  const box=$("cClanLib");if(!box)return;
+  const c=get("clan2",null);
+  if(!c){box.innerHTML='<div class="hint">Join a clan to share workouts and import routines from your teammates.</div>';return}
+  if(!clanLibCache.length){box.innerHTML='<div class="hint">No workouts shared in your clan library yet. Tap "Share to Clan" above to publish one!</div>';return}
+  const myTitles=new Set(get("custom",[]).map(x=>x.title.toLowerCase()));
+  box.innerHTML=clanLibCache.map((w,i)=>{
+    const exPreview=w.ex.map(x=>`${esc(x.n)} (${esc(x.t)})`).join(", ");
+    const owned=myTitles.has(w.title.toLowerCase());
+    return `<div class="ex" style="margin-bottom:6px"><div class="top"><div class="info"><b>${esc(w.title)} <small style="display:inline;color:var(--acc)">by ${esc(w.by)}</small></b><small>${esc(exPreview)}</small></div>
+    <button class="mini" data-libimp="${i}">${owned?"Re-import":"Import"}</button></div></div>`;
+  }).join("");
+}
+$("advToggle").addEventListener("change",e=>{set("adv",e.target.checked);renderAdv();if(e.target.checked)fetchClanLib()});
+
+function addDraftExercise(finalName){
   const t=TYPES[$("cType").value];
   if(!t)return msg("cMsg","Choose a valid equipment type.",false);
   const rawPct=$("cBw").value.trim(),pct=rawPct===""?0:Number(rawPct);
   if(!Number.isFinite(pct)||pct<0||pct>100)return msg("cMsg","Bodyweight percentage must be between 0 and 100.",false);
-  if(name.length>80)return msg("cMsg","Exercise names must be 80 characters or fewer.",false);
+  if(finalName.length>80)return msg("cMsg","Exercise names must be 80 characters or fewer.",false);
   const note="Est: "+[pct?pct+"% BW":"",t.db>1?t.db+"x kg":"kg"].filter(Boolean).join(" + ")+(t.m>1?" x 2 sides":"");
-  cDraft.push(["cx_"+Date.now().toString(36)+cDraft.length,name,$("cTarget").value.trim()||"Your sets x reps",($("cCue").value.trim()||"Tap the links below to see how it is done."),
+  cDraft.push(["cx_"+Date.now().toString(36)+cDraft.length,finalName,$("cTarget").value.trim()||"3 Sets x 8-12 Reps",($("cCue").value.trim()||"Tap the links below to see how it is done."),
     {bw:pct/100,db:t.db,m:t.m,ph:"1-DB kg",note,desc:`Custom: ${t.t}${pct?", "+pct+"% of bodyweight":""}. Enter the weight of ONE dumbbell and reps per side.`}]);
-  ["cName","cTarget","cCue"].forEach(i=>{$(i).value=""});renderAdv();
+  ["cName","cTarget","cCue"].forEach(i=>{$(i).value=""});
+  $("cConflictBox").hidden=true;
+  renderAdv();
+}
+$("cAdd").addEventListener("click",()=>{
+  const name=$("cName").value.trim();if(!name)return msg("cMsg","Give the exercise a name.",false);
+  const lowerName=name.toLowerCase();
+  if(BUILTIN_NAMES.has(lowerName)){
+    const sug=name.slice(0,68)+" (Custom)";
+    const box=$("cConflictBox");
+    box.innerHTML=`💡 <b>Friendly heads-up:</b> "${esc(name)}" is already the exact name of a built-in exercise. To keep your stats and progression history from mixing together, tap below to add it with a unique tag:<br><button type="button" id="cAutoRenameBtn" style="margin-top:8px;padding:9px">Use "${esc(sug)}" &amp; Add</button>`;
+    box.hidden=false;
+    $("cAutoRenameBtn")?.addEventListener("click",()=>addDraftExercise(sug),{once:true});
+    return;
+  }
+  addDraftExercise(name);
 });
 $("cSave").addEventListener("click",()=>{
   const title=$("cTitle").value.trim();
   if(!title||!cDraft.length)return msg("cMsg","Add a workout name and at least one exercise.",false);
   if(title.length>60)return msg("cMsg","Workout names must be 60 characters or fewer.",false);
-  if(/^(push|pull|legs)\b/i.test(title))return msg("cMsg","Custom workout names shouldn't start with Push, Pull or Legs.",false);
+  if(/^(push|pull|legs)\b/i.test(title)){
+    const sug="Custom "+title.slice(0,50);
+    $("cTitle").value=sug;
+    return msg("cMsg",`Renamed to "${sug}" so it stays separate from default Push/Pull/Legs splits. Tap Save workout again!`,false);
+  }
   const cs=get("custom",[]);if(cs.some(c=>c.title.toLowerCase()===title.toLowerCase()))return msg("cMsg","A custom workout with that name already exists.",false);
   cs.push({id:Date.now().toString(36),title,ex:cDraft});set("custom",cs);
-  cDraft=[];$("cTitle").value="";applyCustom();renderAdv();msg("cMsg","Saved. Pick it in the session list.",true);
+  cDraft=[];$("cTitle").value="";$("cConflictBox").hidden=true;applyCustom();renderAdv();msg("cMsg","Saved! Pick it in the Training session list below.",true);
 });
-$("advCard").addEventListener("click",e=>{
-  const d=e.target.closest("[data-cd]"),v=e.target.closest("[data-cs]");
+$("advCard").addEventListener("click",async e=>{
+  const d=e.target.closest("[data-cd]"),v=e.target.closest("[data-cs]"),sh=e.target.closest("[data-cshare]"),imp=e.target.closest("[data-libimp]");
   if(d){cDraft.splice(+d.dataset.cd,1);renderAdv()}
-  if(v&&confirm("Delete this custom workout? Logged history is kept.")){const cs=get("custom",[]);cs.splice(+v.dataset.cs,1);set("custom",cs);applyCustom();renderAdv();render()}
+  if(v&&confirm("Delete this custom workout? Logged history is kept.")){const cs=get("custom",[]);cs.splice(+v.dataset.cs,1);set("custom",cs);applyCustom();renderAdv();render();syncClan(true)}
+  if(sh){
+    const cs=get("custom",[]),w=cs[+sh.dataset.cshare];if(!w)return;
+    w.shared=true;set("custom",cs);renderAdv();
+    await syncClan(false);await fetchClanLib();
+    msg("cMsg",`"${w.title}" published to Clan Library (weights & bodyweight excluded)!`,true);
+  }
+  if(imp){
+    const w=clanLibCache[+imp.dataset.libimp];if(!w)return;
+    const cs=get("custom",[]),idx=cs.findIndex(x=>x.title.toLowerCase()===w.title.toLowerCase());
+    const rebuilt={id:idx>=0?cs[idx].id:Date.now().toString(36),title:w.title,ex:w.ex.map((x,i)=>{
+      const pct=Math.round((Number(x.bw)||0)*100),db=Number(x.db)||1,m=Number(x.m)||1;
+      const note="Est: "+[pct?pct+"% BW":"",db>1?db+"x kg":"kg"].filter(Boolean).join(" + ")+(m>1?" x 2 sides":"");
+      return ["cx_"+Date.now().toString(36)+i,String(x.n).slice(0,80),String(x.t||"3 Sets x 8-12 Reps").slice(0,60),String(x.c||"Tap links below for form guide.").slice(0,200),
+        {bw:(Number(x.bw)||0),db,m,ph:"1-DB kg",note,desc:`Imported from ${w.by}. Enter the weight of ONE dumbbell and reps per side.`}];
+    })};
+    if(idx>=0)cs[idx]=rebuilt;else cs.push(rebuilt);
+    set("custom",cs);applyCustom();renderAdv();
+    $("split").value="c_"+rebuilt.id;render();
+    msg("cMsg",`"${w.title}" imported and selected in your session list!`,true);
+  }
 });
 
 // ---- Clan: Firebase Auth + Realtime Database over REST ----
@@ -818,17 +947,42 @@ async function db(c,method,path,body,t){
   return r.json();
 }
 function summary(){
-  const std=[],cus=[],sv=(get("clan2",null)||{}).shareVol!==false;
+  const std=[],sv=(get("clan2",null)||{}).shareVol!==false;
   get("log",[]).slice(-120).forEach(s=>{
     let sets=0,v=0;
     s.ex.forEach(x=>{
       const n=num(x.sets),vv=sv?Math.round(vol(x,s.bw)||0):0;
-      if(String(x.id).startsWith("cx_"))cus.push({i:s.sid,d:s.d.slice(0,10),e:String(x.n).slice(0,40),kg:num(x.kg),sets:n,reps:num(x.reps),v:vv});
-      else{sets+=n;v+=vv}
+      sets+=n;v+=vv;
     });
-    if(sets)std.push({i:s.sid,d:s.d.slice(0,10),k:s.s.split(" ")[0],sets,vol:v});
+    const isStd=STD_TITLES.has(s.s)||/^(Push|Pull|Legs)\s+Focus\b/.test(s.s);
+    const label=sessLabel(s.s);
+    if(sets)std.push({i:s.sid,d:s.d.slice(0,10),ts:Date.parse(s.d)||0,k:label,c:isStd?0:1,sets,vol:v});
   });
-  return {std,cus:cus.slice(-150)};
+  // Blueprints shared to Clan Library (Strictly scrubbed: NO kg lifted, NO bodyweight)
+  const lib=get("custom",[]).filter(c=>c.shared).slice(-15).map(c=>({
+    title:String(c.title).slice(0,40),
+    ex:(c.ex||[]).slice(0,15).map(x=>({
+      n:String(x[1]).slice(0,60),
+      t:String(x[2]).slice(0,40),
+      c:String(x[3]||"").slice(0,140),
+      bw:Number(x[4]&&x[4].bw)||0,
+      db:Number(x[4]&&x[4].db)||1,
+      m:Number(x[4]&&x[4].m)||1
+    }))
+  }));
+  return {std,lib};
+}
+async function fetchClanLib(){
+  const c=get("clan2",null);if(!c||c.sv<2)return;
+  try{
+    const raw=await db(c,"GET",np(c,"lib"));
+    const list=[];
+    Object.entries(raw||{}).forEach(([,u])=>{
+      const by=String(u&&u.name||"Member");
+      arr(u&&u.w).forEach(w=>{if(w&&w.title&&Array.isArray(w.ex))list.push({by,title:String(w.title),ex:w.ex})});
+    });
+    clanLibCache=list;renderClanLib();
+  }catch(e){}
 }
 async function syncClan(quiet){
   const c=get("clan2",null);if(!c)return;
@@ -836,11 +990,18 @@ async function syncClan(quiet){
   try{
     const m=summary(),t=Date.now(),g=c.g||"";
     await db(c,"PUT",np(c,"board")+"/"+c.me,{v:c.sv||1,name:c.name,g,t,s:m.std});
-    await db(c,"PUT",np(c,"custom")+"/"+c.me,{v:c.sv||1,name:c.name,g,t,s:m.cus});
+    // Scrub legacy individual custom exercise weight records so working weights cannot be reverse-engineered
+    await db(c,"PUT",np(c,"custom")+"/"+c.me,{v:c.sv||1,name:c.name,g,t,s:[]});
+    if(c.sv>=2)await db(c,"PUT",np(c,"lib")+"/"+c.me,{name:c.name,t,w:m.lib});
     if(!quiet)msg("kMsg","Synced",true);
   }catch(e){if(!quiet)msg("kMsg",why(e),false)}
 }
 let lastData={},adm=[];
+function relTime(ms){
+  if(!ms)return "";
+  const hrs=Math.max(0,Math.floor((Date.now()-ms)/36e5));
+  return hrs<1?"just now":hrs<24?`${hrs}h ago`:`${Math.floor(hrs/24)}d ago`;
+}
 async function renderClan(){
   const c=get("clan2",null);
   $("kJoin").hidden=!!c;$("kBoard").hidden=!c;
@@ -858,34 +1019,81 @@ async function renderClan(){
   try{
     await tok(c);
     const [bd,cu,md0]=await Promise.all(["board","custom","mod"].map(n=>db(c,"GET",n==="mod"?n:np(c,n))));
+    fetchClanLib();
     const md=md0||{},m=$("kMetric").value,fGen=$("kFilterGen").value;
     const cut=new Date(Date.now()-parseInt($("kRange").value,10)*864e5).toISOString().slice(0,10);
+    const todayStr=ld(new Date()),yestStr=ld(new Date(Date.now()-864e5));
     const hid=id=>md[id]&&md[id].hide,drop=(id,k)=>md[id]&&md[id].drop&&md[id].drop[k];
     const matchGen=uGen=>fGen==="all"||uGen===fGen;
     const gBadge=g=>g==="f"?' <small style="color:var(--acc);opacity:.85">[W]</small>':(g==="m"?' <small style="color:var(--mu)">[M]</small>':"");
     lastData=Object.create(null);
+    const feedEvents=[],custWorkouts=Object.create(null);
+
     const rows=Object.entries(bd||{}).filter(([id,u])=>(admin||!hid(id))&&matchGen(u&&u.g||"")).map(([id,u])=>{
-      const all=arr(u.s).map(x=>({i:String(x.i||""),d:String(x.d),k:String(x.k),sets:num(x.sets),vol:num(x.vol)})).filter(x=>!drop(id,key(x.d,x.k,x.sets))&&!(x.i&&drop(id,key(x.i))));
+      const uName=String(u&&u.name||"?"),uGen=String(u&&u.g||"");
+      const all=arr(u&&u.s).map(x=>({i:String(x.i||""),d:String(x.d),ts:num(x.ts)||Date.parse(x.d)||0,k:String(x.k),c:Boolean(x.c)||!/^(Push|Pull|Legs)$/i.test(String(x.k)),sets:num(x.sets),vol:num(x.vol)})).filter(x=>!drop(id,key(x.d,x.k,x.sets))&&!(x.i&&drop(id,key(x.i))));
+
+      // Also fold in any legacy custom exercise logs by date into a single session summary if not yet migrated
+      const legByDate=Object.create(null);
+      arr(cu&&cu[id]&&cu[id].s).forEach(x=>{
+        const d=String(x.d),sets=num(x.sets),v=num(x.v),k=key("c",d,String(x.e),num(x.kg),sets,num(x.reps));
+        if(drop(id,k))return;
+        if(!legByDate[d])legByDate[d]={i:"leg_"+d,d,ts:Date.parse(d)||0,k:"Custom Workout",c:true,sets:0,vol:0};
+        legByDate[d].sets+=sets;legByDate[d].vol+=v;
+      });
+      Object.values(legByDate).forEach(ls=>{
+        if(!all.some(a=>a.d===ls.d&&a.c))all.push(ls);
+      });
+
+      const st=calcStreak(all);
+      const recentActive=all.some(x=>x.d>=yestStr||x.d===todayStr);
+      all.slice(-4).forEach(x=>feedEvents.push({name:uName,k:x.k,sets:x.sets,vol:x.vol,d:x.d,ts:x.ts||Date.parse(x.d)||0}));
+
       const l=all.filter(x=>x.d>=cut);
-      lastData[id]={name:String(u.name||"?"),items:all.slice(-25).reverse().map(x=>({label:`${x.d} ${x.k}: ${x.sets} sets (${x.vol} kg)`,key:x.i?key(x.i):key(x.d,x.k,x.sets)}))};
-      return {id,name:String(u.name||"?"),g:String(u.g||""),w:l.length,sets:l.reduce((a,x)=>a+x.sets,0),vol:l.reduce((a,x)=>a+x.vol,0),hidden:!!hid(id)};
+      // Group custom workouts by session title for privacy-safe Custom Workout Rankings
+      l.filter(x=>x.c).forEach(x=>{
+        const cwKey=x.k.trim().toLowerCase();
+        const grp=custWorkouts[cwKey]=custWorkouts[cwKey]||{label:x.k,members:Object.create(null)};
+        const memRec=grp.members[id]=grp.members[id]||{id,name:uName,g:uGen,w:0,sets:0,vol:0};
+        memRec.w++;memRec.sets+=x.sets;memRec.vol+=x.vol;
+      });
+
+      lastData[id]={name:uName,items:all.slice(-25).reverse().map(x=>({label:`${x.d} ${x.k}: ${x.sets} sets (${x.vol} kg)`,key:x.i?key(x.i):key(x.d,x.k,x.sets)}))};
+      return {id,name:uName,g:uGen,st,recentActive,w:l.length,sets:l.reduce((a,x)=>a+x.sets,0),vol:l.reduce((a,x)=>a+x.vol,0),hidden:!!hid(id)};
     }).sort((a,b)=>b[m]-a[m]);
-    const byEx=Object.create(null);
-    Object.entries(cu||{}).filter(([id,u])=>{
-      const ug=(u&&u.g)||(bd&&bd[id]&&bd[id].g)||"";
-      return !hid(id)&&matchGen(ug);
-    }).forEach(([id,u])=>arr(u.s).forEach(x=>{
-      const d=String(x.d),e=String(x.e),kg=num(x.kg),sets=num(x.sets),reps=num(x.reps),k=key("c",d,e,kg,sets,reps);
-      if(lastData[id])lastData[id].items.push({label:`${d} ${e}: ${sets}x${reps}`,key:k});
-      if(d<cut||drop(id,k))return;
-      const g=byEx[e.trim().toLowerCase()]=byEx[e.trim().toLowerCase()]||{label:e,m:Object.create(null)};
-      const r=g.m[id]=g.m[id]||{name:String(u.name||"?"),sets:0,best:0,vol:0};
-      r.sets+=sets;r.best=Math.max(r.best,kg);r.vol+=num(x.v);
-    }));
-    const pokeBtn=r=>(c.sv>=2&&r.id!==c.me&&!r.hidden)?` <button class="mini" data-poke="${esc(r.id)}">Poke</button>`:"";
+
+    // Render Live Activity Ticker
+    feedEvents.sort((a,b)=>b.ts-a.ts||b.d.localeCompare(a.d));
+    const topFeed=feedEvents.slice(0,4);
+    const tBox=$("kTicker");
+    if(topFeed.length){
+      tBox.innerHTML=`<div style="color:var(--acc);font-weight:bold;margin-bottom:4px">\u26A1 Recent Clan Activity</div>`+topFeed.map(f=>`<div class="ticker-item"><span><b>${esc(f.name)}</b> logged <b>${esc(f.k)}</b> (${f.sets} sets${f.vol?` &bull; ${f.vol.toLocaleString()} kg`:""})</span><small style="color:var(--mu);flex-shrink:0">${esc(relTime(f.ts)||f.d.slice(5))}</small></div>`).join("");
+      tBox.hidden=false;
+    }else tBox.hidden=true;
+
+    const streakTag=u=>{
+      if(!u.st||(!u.st.streak&&!u.st.shields))return "";
+      const sh=u.st.shields?` \u{1F6E1}\uFE0F${u.st.shields}`:"";
+      return `<span class="s-pill" title="Weekly streak (3+ workouts/wk)">${u.st.icon}${u.st.streak}w${sh}</span>`;
+    };
+    const actBtn=r=>{
+      if(c.sv<2||r.id===c.me||r.hidden)return "";
+      return r.recentActive
+        ?` <button class="mini hype" data-poke="${esc(r.id)}" data-pkind="hype">Hype \u{1F525}</button>`
+        :` <button class="mini" data-poke="${esc(r.id)}" data-pkind="poke">Poke \u{1F44B}</button>`;
+    };
     const btn=r=>admin?(r.hidden?` <button class="mini" data-unhide="${esc(r.id)}">Unhide</button>`:` <button class="mini" data-mg="${esc(r.id)}">Manage</button>`):"";
-    $("kRows").innerHTML=rows.map((u,i)=>`<div class="row" style="${u.id===c.me?"color:var(--acc);font-weight:bold;":""}${u.hidden?"opacity:.5":""}"><span>${["\u{1F947}","\u{1F948}","\u{1F949}"][i]||(i+1)+"."} ${esc(u.name)}${gBadge(u.g)}</span><span>${u.w} workouts &bull; ${u.sets} sets &bull; ${u.vol} kg${btn(u)}${pokeBtn(u)}</span></div>`).join("")||'<div class="hint">No members match this view yet.</div>';
-    $("kCust").innerHTML=Object.values(byEx).sort((a,b)=>Object.keys(b.m).length-Object.keys(a.m).length||a.label.localeCompare(b.label)).map(g=>`<div class="hint" style="margin-top:10px"><b>${esc(g.label)}</b></div>`+Object.values(g.m).sort((a,b)=>b.vol-a.vol).map(r=>`<div class="row"><span>${esc(r.name)}</span><span>${r.sets} sets &bull; best ${r.best} kg &bull; ${r.vol} kg vol</span></div>`).join("")).join("")||'<div class="hint">No custom exercises logged in this period.</div>';
+    $("kRows").innerHTML=rows.map((u,i)=>`<div class="row" style="${u.id===c.me?"color:var(--acc);font-weight:bold;":""}${u.hidden?"opacity:.5":""}"><span>${["\u{1F947}","\u{1F948}","\u{1F949}"][i]||(i+1)+"."} ${esc(u.name)}${gBadge(u.g)}${streakTag(u)}</span><span>${u.w} workouts &bull; ${u.sets} sets &bull; ${u.vol.toLocaleString()} kg${btn(u)}${actBtn(u)}</span></div>`).join("")||'<div class="hint">No members match this view yet.</div>';
+
+    // Render Privacy-First Custom Workout Rankings with Top-3 Podium Bars
+    const mLabel=m==="w"?"workouts":m==="sets"?"sets":"kg est. vol";
+    $("kCust").innerHTML=Object.values(custWorkouts).sort((a,b)=>Object.keys(b.members).length-Object.keys(a.members).length||a.label.localeCompare(b.label)).map(grp=>{
+      const ranked=Object.values(grp.members).sort((a,b)=>b[m]-a[m]||b.vol-a.vol);
+      const top3=ranked.slice(0,3),maxVal=Math.max(1,...top3.map(r=>r[m]));
+      const bars=top3.map((r,idx)=>`<div style="font-size:.82rem;margin-top:4px"><div style="display:flex;justify-content:space-between"><span>${["\u{1F947}","\u{1F948}","\u{1F949}"][idx]} <b>${esc(r.name)}</b>${gBadge(r.g)}</span><span>${r.w} w &bull; ${r.sets} sets &bull; ${r.vol.toLocaleString()} kg</span></div><div class="podium-bar"><div class="podium-fill" style="width:${Math.max(4,Math.round((r[m]/maxVal)*100))}%"></div></div></div>`).join("");
+      const rest=ranked.slice(3).map((r,idx)=>`<div class="row" style="font-size:.82rem"><span>${idx+4}. ${esc(r.name)}${gBadge(r.g)}</span><span>${r.w} w &bull; ${r.sets} sets &bull; ${r.vol.toLocaleString()} kg</span></div>`).join("");
+      return `<div class="podium-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><b style="color:var(--acc)">${esc(grp.label)}</b><small style="color:var(--mu)">Top 3 by ${mLabel}</small></div>${bars}${rest}</div>`;
+    }).join("")||'<div class="hint">No custom workouts logged in this period yet.</div>';
   }catch(e){$("kRows").innerHTML=`<div class="hint">${esc(why(e))}</div>`}
 }
 function showManage(id){
@@ -895,7 +1103,7 @@ function showManage(id){
 }
 $("kRows").addEventListener("click",e=>{
   const b=e.target.closest("button"),c=get("clan2",null);if(!b)return;
-  if(b.dataset.poke)return sendPoke(b.dataset.poke);
+  if(b.dataset.poke)return sendPoke(b.dataset.poke,b.dataset.pkind||"poke");
   if(b.dataset.mg)return showManage(b.dataset.mg);
   if(b.dataset.unhide)db(c,"DELETE",`mod/${b.dataset.unhide}/hide`,undefined,tokA.t).then(renderClan).catch(x=>msg("kMsg",why(x),false));
 });
@@ -983,7 +1191,7 @@ $("kLinkDevice").addEventListener("click",async()=>{
 $("kLeave").addEventListener("click",async()=>{
   if(!confirm("Leave the clan on this device? Your entries will be removed from the board."))return;
   const c=get("clan2",null);
-  try{await db(c,"DELETE",np(c,"board")+"/"+c.me);await db(c,"DELETE",np(c,"custom")+"/"+c.me);if(c.sv>=2)await db(c,"DELETE",np(c,"pokes")+"/"+c.me)}catch(e){}
+  try{await db(c,"DELETE",np(c,"board")+"/"+c.me);await db(c,"DELETE",np(c,"custom")+"/"+c.me);if(c.sv>=2){await db(c,"DELETE",np(c,"pokes")+"/"+c.me);await db(c,"DELETE",np(c,"lib")+"/"+c.me)}}catch(e){}
   tokA={t:"",exp:0};tokC={t:"",exp:0};set("clan2",null);renderClan();
 });
 ["kRange","kMetric","kFilterGen"].forEach(id=>$(id).addEventListener("change",renderClan));
@@ -1007,7 +1215,6 @@ $("kCopyRules").addEventListener("click",async()=>{
 }));
 
 // ---- Stats & Progression Comparison ----
-const ld=d=>{const t=new Date(d);return t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0")};
 function fmtDelta(diff,pct){
   if(diff===0)return `<span style="color:var(--mu)">0 (0%)</span>`;
   const cls=diff>0?"up":"dn",sign=diff>0?"+":"";
@@ -1038,7 +1245,6 @@ function renderStats(){
   const tmax=Math.max(1,...Object.values(type));
   $("sType").innerHTML=Object.entries(type).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div style="display:flex;align-items:center;gap:8px;margin:5px 0;font-size:.85rem"><span style="width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;${sp!=="all"&&k.toLowerCase()===sp.toLowerCase()?"color:var(--acc);font-weight:bold":""}">${esc(k)}</span><div style="flex:1;background:#2a2a2a;border-radius:4px"><div style="width:${v/tmax*100}%;background:var(--acc);height:14px;border-radius:4px;opacity:${sp==="all"||k.toLowerCase()===sp.toLowerCase()?1:0.35}"></div></div><span style="width:56px;text-align:right">${Math.round(v).toLocaleString()}</span></div>`).join("")||'<div class="hint">No workouts in this period.</div>';
 
-  // Progression comparison: First vs Latest session of designated type
   let targetList=matchingSessions;
   let targetLabel=sp==="all"?"":sp;
   if(sp==="all"&&matchingSessions.length){
@@ -1063,7 +1269,6 @@ function renderStats(){
     $("sProg").innerHTML=`<b>Session Progression:</b><br>No ${sp==="all"?"":esc(sp)+" "}workouts logged in this period yet.`;
   }
 
-  // Exercise-level First vs Latest comparison
   const exHist=Object.create(null);
   matchingSessions.forEach(s=>s.ex.forEach(e=>{
     const v=vol(e,s.bw)||0,kg=parseFloat(e.kg)||0,reps=parseFloat(e.reps)||0,sets=parseFloat(e.sets)||0,meta=getMeta(e);
@@ -1121,12 +1326,12 @@ $("lFile").addEventListener("change",async e=>{
     if(j.schema>LOCAL_V)return msg("lMsg","That backup is from a newer app version. Refresh the app first.",false);
     if(!confirm(`Replace ALL data on this device with this backup (${(d.log||[]).length} workouts)?`))return;
     DATA_KEYS.forEach(k=>set(k,d[k]??DEFAULTS[k]));
-    set("schema",j.schema);migrate();applyCustom();renderAdv();render();renderLog();syncClan(true);
+    set("schema",j.schema);migrate();applyCustom();renderAdv();render();renderLog();checkStreakNudge();syncClan(true);
     msg("lMsg",stored?"Backup restored.":"Backup loaded for this tab only because browser storage is blocked. Export it again before closing.",stored);
   }catch(err){msg("lMsg","That file isn't a valid backup.",false)}
 });
 
-// ---- Poke (with both sender & recipient 30-min rate limits) ----
+// ---- Poke & Hype (with both sender & recipient 30-min rate limits) ----
 function chime(){
   audio();if(!actx)return;
   [659,880].forEach((f,i)=>{
@@ -1136,13 +1341,14 @@ function chime(){
     o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+.32);
   });
 }
-async function sendPoke(id){
+async function sendPoke(id,kind){
   const c=get("clan2",null);if(!c||c.sv<2)return;
   const cd=get("pokeCd",{}),now=Date.now();
-  if(cd[id]&&now-cd[id]<18e5)return msg("kMsg","You poked them recently. Try again later.",false);
+  if(cd[id]&&now-cd[id]<18e5)return msg("kMsg","You already sent them a Hype/Poke recently. Try again later.",false);
   try{
-    await db(c,"PUT",`${np(c,"pokes")}/${c.me}/${id}`,{t:now,n:c.name});
-    cd[id]=now;set("pokeCd",cd);msg("kMsg","Poked! They'll see it when they next open the app.",true);
+    await db(c,"PUT",`${np(c,"pokes")}/${c.me}/${id}`,{t:now,n:c.name,k:kind==="hype"?"hype":"poke"});
+    cd[id]=now;set("pokeCd",cd);
+    msg("kMsg",kind==="hype"?"\u{1F525} Hype sent! They'll see your props when they open the app.":"\u{1F44B} Poked! They'll see it when they next open the app.",true);
   }catch(e){msg("kMsg",why(e),false)}
 }
 async function checkPokes(){
@@ -1154,12 +1360,13 @@ async function checkPokes(){
       const q=to&&to[c.me];if(!q||from===c.me||(md&&md[from]&&md[from].hide))return;
       const t=num(q.t),prev=num(seen[from]);
       if(t>now+3e5||now-t>1728e5||t<=prev||(prev>0&&t-prev<18e5))return;
-      hits.push(String(q.n||"A clan member").slice(0,20));
+      const sName=String(q.n||"A clan member").slice(0,20);
+      hits.push(q.k==="hype"?`\u{1F525} ${esc(sName)} hyped your recent workout! Keep crushing it!`:`\u{1F44B} ${esc(sName)} poked you. Time to check in!`);
       seen[from]=Math.min(t,now);
     });
     if(hits.length){
       set("pokeSeen",seen);
-      $("pokeBar").innerHTML=hits.map(n=>`\u{1F44A} ${esc(n)} poked you. Time to check in!`).join("<br>")+'<button id="pokeOk">Got it</button>';
+      $("pokeBar").innerHTML=hits.join("<br>")+'<button id="pokeOk">Got it</button>';
       $("pokeBar").hidden=false;chime();
     }
   }catch(e){}
@@ -1175,7 +1382,7 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkPokes
 checkPokes();
 
 migrate();
-applyCustom();renderAdv();render();checkBwStale();
+applyCustom();renderAdv();render();checkBwStale();checkStreakNudge();
 </script>
 
 <style>
@@ -1202,7 +1409,6 @@ applyCustom();renderAdv();render();checkBwStale();
   const forceShow=location.search.includes('diag=1')||location.hash.includes('diag');
   if(forceShow||errorCount>0)launch.hidden=false;
 
-  // Secret unlock: tap main title 5 times to toggle diagnostics button
   let titleTaps=0,tapTimer=null;
   const appTitle=document.getElementById('appTitle');
   if(appTitle)appTitle.addEventListener('click',function(){
