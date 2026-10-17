@@ -19,7 +19,7 @@ button:active{opacity:.8}
 button.alt{background:#333;color:var(--acc)}
 button.danger{background:#3a1d1d;color:#ff6b6b;margin-top:10px}
 .tabs{display:flex;gap:6px;margin:12px 0}
-.tabs button{margin:0;background:#2a2a2a;color:var(--mu);padding:10px}
+.tabs button{margin:0;background:#2a2a2a;color:var(--mu);padding:10px 2px;font-size:.85rem}
 .tabs button.on{background:var(--acc);color:var(--bg)}
 .timer-bar{display:flex;gap:6px;align-items:center;justify-content:center;margin-bottom:12px;flex-wrap:wrap}
 .timer-bar button{margin:0;padding:6px 11px;font-size:.8rem;width:auto;background:#252525;color:var(--acc);border:1px solid var(--bd)}
@@ -39,8 +39,11 @@ button.danger{background:#3a1d1d;color:#ff6b6b;margin-top:10px}
 code{word-break:break-all}
 .poke{position:sticky;top:0;z-index:50;background:var(--acc);color:#121212;padding:10px;border-radius:8px;margin-bottom:8px;font-weight:bold;text-align:center}
 .poke[hidden]{display:none}.poke button{background:#121212;color:var(--acc)}
-.bw-warn{background:#2a2211;border:1px solid #d4af37;color:#fce38a;padding:10px;border-radius:8px;margin-bottom:12px;font-size:0.85rem}
-.tabs button{font-size:.85rem;padding:10px 2px}
+.bw-warn{background:#262010;border:1px solid var(--acc);color:#f5df8d;padding:10px 12px;border-radius:8px;margin-bottom:12px;font-size:.83rem;line-height:1.4;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.bw-warn[hidden]{display:none}
+.bw-warn button{width:auto;margin:0;padding:6px 10px;font-size:.78rem;flex-shrink:0}
+.conn-pill{display:inline-block;padding:2px 8px;border-radius:99px;font-size:.72rem;font-weight:bold;margin-left:6px;background:#1e3a24;color:#4caf50}
+.conn-pill.err{background:#3a1d1d;color:#ff6b6b}
 .cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
 .stat{background:#252525;border-radius:8px;padding:10px;text-align:center}
 .stat b{display:block;font-size:1.4rem;color:var(--acc)}.stat small{color:var(--mu)}
@@ -73,49 +76,51 @@ textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);c
 </head>
 <body>
 <h1>Training &amp; Weather Hub</h1>
-<div id="storageWarning" class="bw-warn" hidden>⚠️ Browser storage is unavailable. Changes are temporary in this tab; export a backup before closing or refreshing.</div>
 
 <div id="alarm" hidden>REST OVER<small>Tap anywhere to dismiss</small></div>
 <div id="pokeBar" class="poke" hidden></div>
 <div class="timer-bar">
-  <button data-sec="60">Rest 60s</button>
-  <button data-sec="120">Rest 2m</button>
-  <button data-sec="180">Rest 3m</button>
-  <button id="tStop" hidden>Stop (<span id="tDisp">0s</span>)</button>
-  <button id="tTest">Test alert</button>
-  <button id="tInfoBtn" title="Timer info">? Timer</button>
+  <button type="button" data-sec="60">Rest 60s</button>
+  <button type="button" data-sec="120">Rest 2m</button>
+  <button type="button" data-sec="180">Rest 3m</button>
+  <button type="button" id="tStop" hidden>Stop (<span id="tDisp">0s</span>)</button>
+  <button type="button" id="tTest">Test alert</button>
+  <button type="button" id="tInfoBtn" title="Timer info">? Timer</button>
 </div>
 <div id="tInfoBox" class="info-panel" hidden>
   <b>Rest Timer Guide (Audio &amp; Visual Alert):</b>
   <ul>
-    <li><b>Rest 60s / 2m / 3m:</b> Tap any preset to start the countdown.</li>
-    <li><b>Alerts:</b> When time expires, the button flashes and pulses visually, your phone vibrates (if supported), and a synthesized chime plays to signal your next set.</li>
+    <li><b>Rest 60s / 2m / 3m:</b> Tap any preset to start the countdown. Keeps your screen awake while active.</li>
+    <li><b>Alerts:</b> When time expires, the full-screen red/yellow strobe flashes, the button pulses, your phone vibrates (if supported), and a loud repeating square-wave alarm plays until dismissed.</li>
   </ul>
 </div>
 
 <div class="tabs">
-  <button class="on" data-t="tW">Workout</button>
-  <button data-t="tB">BMR</button>
-  <button data-t="tL">Log</button>
-  <button data-t="tC">Clan</button>
-  <button data-t="tS">Stats</button>
+  <button type="button" class="on" data-t="tW">Workout</button>
+  <button type="button" data-t="tB">BMR</button>
+  <button type="button" data-t="tL">Log</button>
+  <button type="button" data-t="tC">Clan</button>
+  <button type="button" data-t="tS">Stats</button>
 </div>
 
 <section id="tW">
-  <div id="bwWarnBox" class="bw-warn" hidden>⚠️ It has been over 30 days since you updated your weight in the BMR tab. Tap <a href="#" id="gotoBmr" style="color:var(--acc);font-weight:bold">here</a> to update it for accurate volume normalization.</div>
+  <div id="bwWarnBox" class="bw-warn" hidden>
+    <span id="bwWarnTxt">Update your bodyweight in the BMR tab to keep bodyweight-exercise volume accurate.</span>
+    <button type="button" id="gotoBmr">Update BW</button>
+  </div>
   <div class="card" style="padding:10px 16px"><label style="display:flex;align-items:center;gap:10px;margin:0"><input type="checkbox" id="advToggle" style="width:auto;margin:0"> Advanced mode (build your own workouts)</label></div>
   <div class="card" id="advCard" hidden>
     <h2>Custom Workout Builder</h2>
     <label>Workout name</label><input id="cTitle" placeholder="e.g. Upper Body B">
     <div id="cList"></div>
     <label>Add an exercise</label>
-    <input id="cName" placeholder="Exercise name">
+    <input id="cName" placeholder="Exercise name (must be unique from defaults)">
     <input id="cTarget" placeholder="Target, e.g. 3 Sets x 8-12 Reps">
     <input id="cCue" placeholder="Form notes (optional)">
     <select id="cType"><option value="a">1 dumbbell</option><option value="b">2 dumbbells (enter kg of one)</option><option value="c">1 dumbbell, each side</option><option value="d">2 dumbbells, each side</option></select>
     <input id="cBw" inputmode="numeric" placeholder="% of bodyweight moved (0 = none, ~55 push-ups)">
-    <button id="cAdd" class="alt">Add exercise</button>
-    <button id="cSave">Save workout</button>
+    <button type="button" id="cAdd" class="alt">Add exercise</button>
+    <button type="button" id="cSave">Save workout</button>
     <div id="cMsg" class="msg"></div>
     <div id="cSaved"></div>
   </div>
@@ -139,7 +144,7 @@ textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);c
     <h2>Active Protocol</h2>
     <div class="hint" id="bwNotice"></div>
     <div class="hint"><b>Entry Rule:</b> Always enter the weight of <b>ONE dumbbell</b> (or added kg for push-ups). Last logged values are pre-filled; <b>clear Sets or Reps to skip an exercise</b>.</div>
-    <button id="normHelpBtn" class="alt" style="margin-bottom:8px;padding:8px;font-size:.85rem">? How Volume &amp; Progression Tracking Works</button>
+    <button type="button" id="normHelpBtn" class="alt" style="margin-bottom:8px;padding:8px;font-size:.85rem">? How Volume &amp; Progression Tracking Works</button>
     <div id="normHelpBox" class="info-panel" hidden>
       <b>What Actually Matters in Your Log:</b>
       <ul>
@@ -149,7 +154,7 @@ textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);c
       </ul>
     </div>
     <div id="list"></div>
-    <button id="logBtn">Log this workout</button>
+    <button type="button" id="logBtn">Log this workout</button>
     <div id="wMsg" class="msg"></div>
   </div>
 </section>
@@ -157,12 +162,12 @@ textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);c
 <section id="tB" hidden>
   <div class="card">
     <h2>BMR &amp; Bodyweight Tracker</h2>
-    <button id="bmrHelpBtn" class="alt" style="margin-bottom:8px;padding:8px;font-size:.85rem">? Explain BMR, TDEE &amp; Bodyweight Sync</button>
+    <button type="button" id="bmrHelpBtn" class="alt" style="margin-bottom:8px;padding:8px;font-size:.85rem">? Explain BMR, TDEE &amp; Bodyweight Sync</button>
     <div id="bmrHelpBox" class="info-panel" hidden>
       <b>How This Tab Works:</b>
       <ul>
         <li><b>BMR &amp; TDEE:</b> Estimates resting energy expenditure and maintenance calories using the Mifflin-St Jeor formula.</li>
-        <li><b>Local Bodyweight Sync:</b> Saving an entry syncs your weight with the Workout tab locally on your device.</li>
+        <li><b>Local Bodyweight Sync:</b> Saving an entry syncs your weight with the Workout tab locally on your device and resets the 30-day weigh-in reminder.</li>
       </ul>
     </div>
     <label>Sex</label>
@@ -180,8 +185,8 @@ textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);c
     </select>
     <div id="bRes" class="res"></div>
     <div class="hint">Mifflin-St Jeor estimate. A guide, not a measurement.</div>
-    <button id="bSave">Save entry</button>
-    <button id="bExp" class="alt">Export BMR history (CSV)</button>
+    <button type="button" id="bSave">Save entry</button>
+    <button type="button" id="bExp" class="alt">Export BMR history (CSV)</button>
     <div id="bMsg" class="msg"></div>
     <div id="bHist"></div>
   </div>
@@ -190,7 +195,7 @@ textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);c
 <section id="tL" hidden>
   <div class="card">
     <h2>Workout Log</h2>
-    <button id="logHelpBtn" class="alt" style="margin-bottom:8px;padding:8px;font-size:.85rem">? Explain CSV Columns &amp; Dynamic Math</button>
+    <button type="button" id="logHelpBtn" class="alt" style="margin-bottom:8px;padding:8px;font-size:.85rem">? Explain CSV Columns &amp; Dynamic Math</button>
     <div id="logHelpBox" class="info-panel" hidden>
       <b>Understanding Your Log &amp; CSV Export:</b>
       <ul>
@@ -199,10 +204,10 @@ textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);c
       </ul>
     </div>
     <div id="lSum" class="hint"></div>
-    <button id="lExp">Export all workouts (CSV)</button>
-    <button id="lUndo" class="danger">Delete most recent workout</button>
-    <button id="lBak" class="alt">Export full backup (JSON)</button>
-    <button id="lRes" class="alt">Restore from backup</button>
+    <button type="button" id="lExp">Export all workouts (CSV)</button>
+    <button type="button" id="lUndo" class="danger">Delete most recent workout</button>
+    <button type="button" id="lBak" class="alt">Export full backup (JSON)</button>
+    <button type="button" id="lRes" class="alt">Restore from backup</button>
     <input type="file" id="lFile" accept=".json,application/json" hidden>
     <div class="hint">The backup holds workouts, custom workouts and body entries. It never includes clan logins or passwords.</div>
     <div id="lMsg" class="msg"></div>
@@ -228,7 +233,7 @@ textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);c
 <section id="tC" hidden>
   <div class="card">
     <h2>Clan Leaderboard</h2>
-    <button id="kGuideBtn" class="alt" style="padding:8px;font-size:.85rem">? Setup guide (iPhone &amp; Android)</button>
+    <button type="button" id="kGuideBtn" class="alt" style="padding:8px;font-size:.85rem">? Setup guide (iPhone &amp; Android)</button>
     <div id="kGuide" class="info-panel" hidden>
       <b>A. Friends: join in 3 steps</b>
       <ol>
@@ -243,7 +248,7 @@ textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);c
         <li>Menu &rarr; <b>Build &rarr; Authentication &rarr; Get started</b>.</li>
         <li>Open the <b>Sign-in method</b> tab &rarr; <b>Email/Password</b> &rarr; turn on the first switch (not &quot;Email link&quot;) &rarr; <b>Save</b>.</li>
         <li>Menu &rarr; <b>Build &rarr; Realtime Database &rarr; Create Database</b>. Pick the closest location, choose <b>Start in locked mode</b>, tap Enable.</li>
-        <li>In Realtime Database open the <b>Rules</b> tab. Delete everything in the box. Tap <b>Copy rules</b> below, paste into the Firebase box, tap <b>Publish</b>. Set this up before? Copy the rules again: the new ones also support older clans.<br><button id="kCopyRules" class="alt" style="padding:8px;font-size:.85rem">Copy rules</button><textarea id="kRules" readonly style="min-height:60px"></textarea></li>
+        <li>In Realtime Database open the <b>Rules</b> tab. Delete everything in the box. Tap <b>Copy rules</b> below, paste into the Firebase box, tap <b>Publish</b>. Set this up before? Copy the rules again: the new ones also support older clans.<br><button type="button" id="kCopyRules" class="alt" style="padding:8px;font-size:.85rem">Copy rules</button><textarea id="kRules" readonly style="min-height:60px"></textarea></li>
         <li>Go to Project overview (home) &rarr; tap the web icon <b>&lt;/&gt;</b> &rarr; nickname &rarr; leave Hosting unticked &rarr; <b>Register app</b>. Select and copy the whole <code>const firebaseConfig = {...}</code> block. It must contain a <code>databaseURL</code> line; if not, step 4 isn't finished.</li>
         <li>Come back here: <b>Start a clan</b> &rarr; paste the block, enter your name and a <b>master password</b> &rarr; Create. Then tap <b>Share invite code</b> and send it to your friends.</li>
       </ol>
@@ -270,17 +275,17 @@ textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);c
     </div>
 
     <div id="kJoin">
-      <div class="sub"><button id="kTabJoin" class="on">Join a clan</button><button id="kTabNew">Start a clan</button></div>
+      <div class="sub"><button type="button" id="kTabJoin" class="on">Join a clan</button><button type="button" id="kTabNew">Start a clan</button></div>
       <div id="kPJoin">
         <label>Invite code</label><textarea id="kCode" placeholder="Paste the code starting CLAN1."></textarea>
         <label>Your display name</label><input id="kName" maxlength="20">
-        <button id="kJoinBtn">Join</button>
+        <button type="button" id="kJoinBtn">Join</button>
       </div>
       <div id="kPNew" hidden>
         <label>Firebase config (paste the whole block)</label><textarea id="kCfg" placeholder="const firebaseConfig = {...}"></textarea>
         <label>Your display name</label><input id="kName2" maxlength="20">
         <label>Master password (12+ characters, only you)</label><input id="kMP" type="password" autocomplete="new-password">
-        <button id="kCreate">Create clan</button>
+        <button type="button" id="kCreate">Create clan</button>
       </div>
     </div>
 
@@ -295,24 +300,19 @@ textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);c
       <div class="hint">One table per exercise, ranked by est. volume.</div>
       <div id="kCust"></div>
       <div id="kManage"></div>
-      <button id="kSync">Sync my logs &amp; refresh</button>
-      <button id="kNudge" class="alt">Send a nudge by message</button>
-      <button id="kInvite" class="alt">Share invite code</button>
+      <button type="button" id="kSync">Sync my logs &amp; refresh</button>
+      <button type="button" id="kNudge" class="alt">Send a nudge by message</button>
+      <button type="button" id="kInvite" class="alt">Share invite code</button>
       <div id="kAdminBox" hidden>
         <label>Master password (clan creator only)</label><input id="kMaster" type="password" autocomplete="current-password">
-        <button id="kUnlock" class="alt">Unlock admin tools</button>
+        <button type="button" id="kUnlock" class="alt">Unlock admin tools</button>
       </div>
-      <button id="kLeave" class="danger">Leave clan</button>
+      <button type="button" id="kLeave" class="danger">Leave clan</button>
     </div>
     <div id="kMsg" class="msg"></div>
   </div>
 </section>
 
-<script>
-window.__diagEarly=window.__diagEarly||[];
-window.addEventListener('error',function(e){window.__diagEarly.push('[early] ERROR: '+(e.message||'Script error')+(e.filename?' — '+e.filename.split('/').pop():'')+(e.lineno?':'+e.lineno:''));});
-window.addEventListener('unhandledrejection',function(e){var r=e.reason;window.__diagEarly.push('[early] REJECTION: '+(r&&(r.stack||r.message)||r||'Unknown rejected promise'));});
-</script>
 <script>
 const P={
 push:{title:"Push Focus (Chest, Shoulders, Triceps)",ex:[
@@ -354,14 +354,6 @@ legs:{title:"Legs & Core Focus (Quads, Hamstring, Calves, Abs)",ex:[
 {bw:0,db:1,m:2,ph:"1-DB kg",note:"1-DB weight x 2 sides",desc:"Unilateral anti-lateral flexion carry. Enter ONE dumbbell weight and marches per side."}]]}
 };
 
-const EX_MAP={};
-Object.values(P).forEach(s=>s.ex.forEach(x=>{EX_MAP[x[0]]=x[4];EX_MAP[x[1]]=x[4]}));
-
-const ADV={
-dry_porch:"Ideal conditions. Keep the dumbbells on the dry porch, warm up in your hoodie and enjoy the open air.",
-cold_wind:"Cold air. Do a 3-minute indoor warm-up (arm circles, bodyweight squats) first. Use the towel over plastic handles for grip.",
-pouring_rain:"Wet/freezing. Move the dumbbells into the garage. Use seated chair variations if headroom is tight."};
-
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
 const mem={};let stored=true;
@@ -373,7 +365,6 @@ function msg(id,t,good){const e=$(id);e.style.color=good?"#4caf50":"#ff9800";e.t
 function getBW(){const b=get("bmrIn",null);return b&&parseFloat(b.kg)>0?parseFloat(b.kg):70}
 function hasSavedBW(){const b=get("bmrIn",null);return Boolean(b&&parseFloat(b.kg)>0)}
 
-// Check if BMR weight was updated in the last 30 days
 function checkBwStale(){
   const all=get("bmr",[]);
   if(!all.length){$("bwWarnBox").hidden=false;return}
@@ -383,12 +374,10 @@ function checkBwStale(){
 }
 $("gotoBmr")?.addEventListener("click",e=>{e.preventDefault();document.querySelector('[data-t="tB"]').click()});
 
-// ---- Info Drawers ----
 [["tInfoBtn","tInfoBox"],["normHelpBtn","normHelpBox"],["bmrHelpBtn","bmrHelpBox"],["logHelpBtn","logHelpBox"]].forEach(([b,x])=>{
   $(b).addEventListener("click",()=>{$(x).hidden=!$(x).hidden});
 });
 
-// ---- Rest timer: full-screen flash + loud repeating beeps ----
 let tInt=null,tEnd=0,actx=null,tNodes=[],aInt=null,wake=null;
 function audio(){
   try{
@@ -398,7 +387,6 @@ function audio(){
     if(actx&&actx.state!=="running")actx.resume();
   }catch(e){}
 }
-// Unlock audio context on any first user touch/click for mobile reliability
 window.addEventListener("pointerdown",()=>{audio();try{actx&&actx.resume()}catch(e){}},{once:true});
 
 function beeps(){
@@ -419,7 +407,6 @@ function stopAlarm(){
 }
 function triggerAlert(){
   audio();beeps();
-  if(!(window.AudioContext||window.webkitAudioContext))msg("wMsg","Timer finished; this browser does not support audio alerts. The visual alert is active.",false);
   let n=0;clearInterval(aInt);
   aInt=setInterval(()=>{if(++n>18)return stopAlarm();beeps()},2400);
   $("alarm").hidden=false;
@@ -436,7 +423,7 @@ function wakeOn(){try{navigator.wakeLock&&navigator.wakeLock.request("screen").t
 document.querySelector(".timer-bar").addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b||b.id==="tInfoBtn")return;
   stopAlarm();clearInterval(tInt);tInt=null;$("tStop").classList.remove("timer-done");
-  if(b.id==="tTest"){audio();triggerAlert();if(window.AudioContext||window.webkitAudioContext)msg("wMsg","Test alert triggered. Keep this page open for the visual/audio alert.",true);return}
+  if(b.id==="tTest"){audio();triggerAlert();return}
   if(b.id==="tStop"){tEnd=0;$("tStop").hidden=true;return}
   audio();
   tEnd=Date.now()+parseInt(b.dataset.sec,10)*1000;
@@ -445,7 +432,6 @@ document.querySelector(".timer-bar").addEventListener("click",e=>{
 $("alarm").addEventListener("click",()=>{stopAlarm();$("tStop").hidden=true;$("tStop").classList.remove("timer-done")});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&tEnd){tickTimer();wakeOn()}});
 
-// ---- Tabs ----
 document.querySelector(".tabs").addEventListener("click",e=>{
   const b=e.target.closest("[data-t]");if(!b)return;
   document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));
@@ -457,7 +443,6 @@ document.querySelector(".tabs").addEventListener("click",e=>{
   if(b.dataset.t==="tW"){render();checkBwStale()}
 });
 
-// ---- Dynamic Normalization Math ----
 function getMeta(x){return EX_MAP[x.id]||EX_MAP[x.n]||x.meta||{bw:0,db:1,m:1}}
 function calcEffKg(rawKg,meta,bw){
   const k=parseFloat(rawKg);
@@ -476,7 +461,6 @@ function vol(x,bwUsed){
   return eff>0?Math.round(eff*s*r*10)/10:"";
 }
 
-// ---- Workout ----
 let draft={};
 function render(){
   const sk=$("split").value,p=P[sk],last=get("last",{}),bw=getBW();
@@ -535,15 +519,14 @@ $("logBtn").addEventListener("click",()=>{
     const kgVal=v.kg!==undefined?String(v.kg).trim():(meta.bw>0?"0":"");
     const setsVal=v.sets!==undefined?String(v.sets).trim():"";
     const repsVal=v.reps!==undefined?String(v.reps).trim():"";
-    const kgNum=kgVal===""?0:Number(kgVal),setsNum=Number(setsVal),repsNum=Number(repsVal);
-    if(Number.isFinite(setsNum)&&Number.isFinite(repsNum)&&Number.isFinite(kgNum)&&setsNum>0&&setsNum<=100&&repsNum>0&&repsNum<=1000&&kgNum>=0&&kgNum<=1000&&(kgVal!==""||meta.bw>0)){
+    if(parseFloat(setsVal)>0 && parseFloat(repsVal)>0 && (kgVal!=="" || meta.bw>0)){
       ex.push({id,n:x[1],kg:kgVal,sets:setsVal,reps:repsVal,...(id.startsWith("cx_")?{meta}:{})});
       last[id]={kg:kgVal,sets:setsVal,reps:repsVal};
     }else{
       delete last[id];
     }
   });
-  if(!ex.length)return msg("wMsg","Enter valid values: sets 1–100, reps 1–1000, and weight 0–1000 kg. At least one exercise is required.",false);
+  if(!ex.length)return msg("wMsg","Enter valid sets & reps for at least one exercise.",false);
   log.push({sid:rnd(10),d:new Date().toISOString(),s:p.title,w:$("weather").selectedOptions[0].text,bw,ex});
   set("log",log);set("last",last);draft={};render();syncClan(true);
   msg("wMsg",stored?`Workout logged (${log.length} total)`:"Logged for this session only",stored);
@@ -603,9 +586,9 @@ function renderLog(){
 // ---- BMR ----
 let bmrLoaded=false;
 function bmrCalc(){
-  const a=Number($("bAge").value),h=Number($("bH").value),w=Number($("bW").value),act=Number($("bAct").value);
-  if(!Number.isFinite(a)||!Number.isFinite(h)||!Number.isFinite(w)||!Number.isFinite(act)||a<1||a>120||h<50||h>260||w<1||w>500||act<1||act>2){$("bRes").textContent="Enter age 1–120, height 50–260 cm and weight 1–500 kg.";return null}
-  const bmr=10*w+6.25*h-5*a+($("bSex").value==="m"?5:-161),tdee=bmr*act;
+  const a=parseFloat($("bAge").value),h=parseFloat($("bH").value),w=parseFloat($("bW").value);
+  if(!(a>0&&h>0&&w>0)){$("bRes").textContent="";return null}
+  const bmr=10*w+6.25*h-5*a+($("bSex").value==="m"?5:-161),tdee=bmr*parseFloat($("bAct").value);
   $("bRes").innerHTML=`BMR: <b>${Math.round(bmr)}</b> kcal/day<br>Maintenance: <b>${Math.round(tdee)}</b> kcal/day`;
   return {bmr:Math.round(bmr),tdee:Math.round(tdee)};
 }
@@ -653,27 +636,21 @@ $("advToggle").addEventListener("change",e=>{set("adv",e.target.checked);renderA
 $("cAdd").addEventListener("click",()=>{
   const name=$("cName").value.trim();if(!name)return msg("cMsg","Give the exercise a name.",false);
   
-  // Prevent custom exercise name collision with default exercises
   const lowerName = name.toLowerCase();
   const isDefault = Object.values(P).some(s => s.ex.some(x => x[1].toLowerCase() === lowerName));
   if(isDefault) return msg("cMsg","That name matches a default built-in exercise. Choose a unique name.",false);
 
-  const t=TYPES[$("cType").value];
-  if(!t)return msg("cMsg","Choose a valid equipment type.",false);
-  const rawPct=$("cBw").value.trim(),pct=rawPct===""?0:Number(rawPct);
-  if(!Number.isFinite(pct)||pct<0||pct>100)return msg("cMsg","Bodyweight percentage must be between 0 and 100.",false);
-  if(name.length>80)return msg("cMsg","Exercise names must be 80 characters or fewer.",false);
+  const t=TYPES[$("cType").value];if(!t)return msg("cMsg","Choose equipment type.",false);
+  const pct=Math.min(100,Math.max(0,parseFloat($("cBw").value)||0));
   const note="Est: "+[pct?pct+"% BW":"",t.db>1?t.db+"x kg":"kg"].filter(Boolean).join(" + ")+(t.m>1?" x 2 sides":"");
   cDraft.push(["cx_"+Date.now().toString(36)+cDraft.length,name,$("cTarget").value.trim()||"Your sets x reps",($("cCue").value.trim()||"Tap the links below to see how it is done."),
     {bw:pct/100,db:t.db,m:t.m,ph:"1-DB kg",note,desc:`Custom: ${t.t}${pct?", "+pct+"% of bodyweight":""}. Enter the weight of ONE dumbbell and reps per side.`}]);
-  ["cName","cTarget","cCue"].forEach(i=>{$(i).value=""});renderAdv();
+  ["cName","cTarget","cCue","cBw"].forEach(i=>{$(i).value=""});renderAdv();
 });
 $("cSave").addEventListener("click",()=>{
   const title=$("cTitle").value.trim();
   if(!title||!cDraft.length)return msg("cMsg","Add a workout name and at least one exercise.",false);
-  if(title.length>60)return msg("cMsg","Workout names must be 60 characters or fewer.",false);
-  const cs=get("custom",[]);if(cs.some(c=>c.title.toLowerCase()===title.toLowerCase()))return msg("cMsg","A custom workout with that name already exists.",false);
-  cs.push({id:Date.now().toString(36),title,ex:cDraft});set("custom",cs);
+  const cs=get("custom",[]);cs.push({id:Date.now().toString(36),title,ex:cDraft});set("custom",cs);
   cDraft=[];$("cTitle").value="";applyCustom();renderAdv();msg("cMsg","Saved. Pick it in the session list.",true);
 });
 $("advCard").addEventListener("click",e=>{
@@ -685,7 +662,7 @@ $("advCard").addEventListener("click",e=>{
 // ---- Clan: Firebase Auth + Realtime Database over REST ----
 const CLOUD_V=2,LOCAL_V=1;
 const MAIL="@clanboard.app",OKURL=/^https:\/\/[\w.-]+\.(firebaseio\.com|firebasedatabase\.app)$/;
-const WR="auth != null && (auth.token.email === 'u-' + $member + '@clanboard.app' || auth.token.email === 'm-' +$clan + '@clanboard.app')";
+const WR="auth != null && (auth.token.email === 'u-' + $member + '@clanboard.app' \vert{}\vert{} auth.token.email === 'm-' +$clan + '@clanboard.app')";
 const MW="auth != null && auth.token.email === 'm-' + $clan + '@clanboard.app'";
 const RULES=JSON.stringify({rules:{".read":false,".write":false,clans:{"$clan":{
   d:{"$kind":{".read":"auth != null","$member":{".write":WR}}},
@@ -748,7 +725,7 @@ async function renderClan(){
   $("kJoin").hidden=!!c;$("kBoard").hidden=!c;if(!c)return;
   const admin=tokA.t&&tokA.exp>Date.now();
   $("kTitle").textContent="Signed in as "+c.name+(c.owner?" (clan creator)":"")+(admin?" - admin unlocked":"")+(c.sv>=2?"":" (pokes need a clan created with the newest version)");
-  $("kAdminBox").hidden=!c.owner||admin;$("kShareVol").checked=c.shareVol!==false;
+  $("kAdminBox").hidden=!c.owner\vert{}\vert{}admin;$("kShareVol").checked=c.shareVol!==false;
   try{
     await tok(c);
     const [bd,cu,md0]=await Promise.all(["board","custom","mod"].map(n=>db(c,"GET",n==="mod"?n:np(c,n))));
@@ -805,7 +782,7 @@ async function joinWith(base,name,owner){
 $("kJoinBtn").addEventListener("click",async()=>{
   let b;
   if(/^\s*CLAN[2-9]\d*\./.test($("kCode").value))return msg("kMsg","This invite is from a newer version of the app. Refresh the app and try again.",false);
-  try{const d=dec($("kCode").value);b={url:String(d.u).replace(/\/+$/, ""),ak:String(d.a),clan:String(d.c),sv:Number(d.s)||1};if(!OKURL.test(b.url)||!/^[A-Za-z0-9_-]{10,}$/.test(b.ak)||!/^[\w-]{10,80}$/.test(b.clan)||!Number.isInteger(b.sv)||b.sv<1)throw 0}
+  try{const d=dec($("kCode").value);b={url:String(d.u),ak:String(d.a),clan:String(d.c),sv:Number(d.s)\vert{}\vert{}1};if(!OKURL.test(b.url)\vert{}\vert{}!b.ak\vert{}\vert{}!/^\w{10,}$/.test(b.clan))throw 0}
   catch(e){return msg("kMsg","That invite code isn't valid. Paste the whole thing.",false)}
   const name=cleanName($("kName").value);if(!name)return msg("kMsg","Enter a display name.",false);
   try{await joinWith(b,name,false)}catch(e){msg("kMsg",why(e),false)}
@@ -897,9 +874,9 @@ function migrate(){
   }catch(e){msg("wMsg","Data upgrade failed. Your data is unchanged.",false)}
 }
 async function exportFile(name,text,type){
-  const blob=new Blob([text],{type});let f=null;try{if(typeof File!=="undefined")f=new File([blob],name,{type})}catch(e){}
-  try{if(f&&navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}}catch(e){if(e.name==="AbortError")return}
-  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  const f=new File([text],name,{type});
+  try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}}catch(e){if(e.name==="AbortError")return}
+  const a=document.createElement("a");a.href=URL.createObjectURL(f);a.download=name;document.body.appendChild(a);a.click();a.remove();
 }
 $("lBak").addEventListener("click",()=>{
   const data={};DATA_KEYS.forEach(k=>{data[k]=get(k,DEFAULTS[k])});
@@ -909,19 +886,15 @@ $("lRes").addEventListener("click",()=>$("lFile").click());
 $("lFile").addEventListener("change",async e=>{
   const f=e.target.files[0];e.target.value="";if(!f)return;
   try{
-    const j=JSON.parse(await f.text()),d=j.data;
-    const validNum=(v,min,max)=>Number.isFinite(Number(v))&&Number(v)>=min&&Number(v)<=max;
-    const okLog=Array.isArray(d&&d.log)&&d.log.every(s=>s&&typeof s.d==="string"&&!Number.isNaN(Date.parse(s.d))&&typeof s.s==="string"&&Array.isArray(s.ex)&&s.ex.every(x=>x&&typeof x.n==="string"&&validNum(x.sets,0,100)&&validNum(x.reps,0,1000)&&(x.kg===""||validNum(x.kg,0,1000))));
-    const okCus=Array.isArray(d&&d.custom)&&d.custom.every(c=>c&&typeof c.id==="string"&&c.id.length<=80&&typeof c.title==="string"&&c.title.trim().length>0&&c.title.length<=60&&Array.isArray(c.ex)&&c.ex.length>0&&c.ex.every(x=>Array.isArray(x)&&x.length>=5&&typeof x[0]==="string"&&typeof x[1]==="string"&&x[1].length<=80&&x[4]&&typeof x[4]==="object"&&validNum(x[4].bw,0,1)&&validNum(x[4].db,1,2)&&validNum(x[4].m,1,2)));
-    const okBmr=Array.isArray(d&&d.bmr)&&d.bmr.every(x=>x&&typeof x.d==="string"&&!Number.isNaN(Date.parse(x.d))&&validNum(x.age,1,120)&&validNum(x.h,50,260)&&validNum(x.kg,1,500)&&validNum(x.act,1,2)&&validNum(x.bmr,0,5000)&&validNum(x.tdee,0,10000));
-    const okLast=d&&d.last&&typeof d.last==="object"&&!Array.isArray(d.last)&&Object.values(d.last).every(x=>x&&typeof x==="object"&&(x.kg===""||validNum(x.kg,0,1000))&&validNum(x.sets,0,100)&&validNum(x.reps,0,1000));
-    const required=["log","last","custom","bmr","bmrIn","adv"];
-    if(j.app!=="training-hub"||!Number.isInteger(j.schema)||j.schema<0||!d||typeof d!=="object"||!required.every(k=>Object.prototype.hasOwnProperty.call(d,k))||!okLog||!okCus||!okBmr||!okLast||typeof d.adv!=="boolean"||(d.bmrIn!==null&&!(d.bmrIn&&validNum(d.bmrIn.age,1,120)&&validNum(d.bmrIn.h,50,260)&&validNum(d.bmrIn.kg,1,500)&&validNum(d.bmrIn.act,1,2))))throw new Error("bad");
+    const j=JSON.parse(await f.text()),d=j.data||{};
+    const okLog=(d.log||[]).every(s=>s&&typeof s.d==="string"&&typeof s.s==="string"&&Array.isArray(s.ex));
+    const okCus=(d.custom||[]).every(c=>c&&typeof c.id==="string"&&typeof c.title==="string"&&Array.isArray(c.ex)&&c.ex.every(x=>Array.isArray(x)&&x.length>=5&&x[4]&&typeof x[4]==="object"));
+    if(j.app!=="training-hub"||typeof j.schema!=="number"||!okLog||!okCus||!Array.isArray(d.bmr||[]))throw new Error("bad");
     if(j.schema>LOCAL_V)return msg("lMsg","That backup is from a newer app version. Refresh the app first.",false);
     if(!confirm(`Replace ALL data on this device with this backup (${(d.log||[]).length} workouts)?`))return;
     DATA_KEYS.forEach(k=>set(k,d[k]??DEFAULTS[k]));
-    set("schema",j.schema);migrate();applyCustom();renderAdv();render();renderLog();
-    msg("lMsg",stored?"Backup restored.":"Backup loaded for this tab only because browser storage is blocked. Export it again before closing.",stored);
+    set("schema",j.schema);bmrLoaded=false;migrate();applyCustom();renderAdv();render();renderLog();checkBwStale();
+    msg("lMsg","Backup restored.",true);
   }catch(err){msg("lMsg","That file isn't a valid backup.",false)}
 });
 
@@ -942,7 +915,9 @@ async function sendPoke(id){
   try{
     await db(c,"PUT",`${np(c,"pokes")}/${c.me}/${id}`,{t:now,n:c.name});
     cd[id]=now;set("pokeCd",cd);msg("kMsg","Poked! They'll see it when they next open the app.",true);
-  }catch(e){msg("kMsg",why(e),false)}
+  }catch(e){
+    msg("kMsg",why(e),false);
+  }
 }
 async function checkPokes(){
   const c=get("clan2",null);if(!c||c.sv<2||document.hidden)return;
@@ -952,7 +927,7 @@ async function checkPokes(){
     Object.entries(pk||{}).forEach(([from,to])=>{
       const q=to&&to[c.me];if(!q||from===c.me||(md&&md[from]&&md[from].hide))return;
       const t=num(q.t);
-      if(t>now+3e5||now-t>1728e5||t<=(seen[from]||0))return;
+      if(t>now+3e5||now-t>1728e5||t<=(seen[from]||0)+6e5)return;
       hits.push(String(q.n||"A clan member").slice(0,20));seen[from]=t;
     });
     if(hits.length){
@@ -975,54 +950,5 @@ checkPokes();
 migrate();
 applyCustom();renderAdv();render();checkBwStale();
 </script>
-
-<style>
-#diagLauncher{position:fixed;left:10px;bottom:10px;z-index:2147483646;border:2px solid #f59e0b;border-radius:999px;padding:10px 14px;background:#111827;color:#fff;font:600 13px/1.2 system-ui,sans-serif;box-shadow:0 3px 14px #0005;max-width:calc(100vw - 20px)}
-#diagPanel{position:fixed;inset:auto 8px 58px 8px;z-index:2147483647;max-height:58vh;overflow:auto;background:#111827;color:#f9fafb;border:1px solid #64748b;border-radius:12px;padding:12px;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;box-shadow:0 8px 30px #0008;white-space:pre-wrap;overflow-wrap:anywhere}
-#diagPanel[hidden]{display:none}
-#diagPanel button{font:600 12px system-ui,sans-serif;margin:0 6px 8px 0;padding:7px 10px;border-radius:8px;border:1px solid #94a3b8;background:#334155;color:white}
-#diagLog{margin:8px 0 0}
-</style>
-<div id="diagPanel" hidden role="status" aria-live="polite">
-  <div style="font:700 14px system-ui,sans-serif;margin-bottom:8px">Page diagnostics</div>
-  <button id="diagCopy" type="button">Copy report</button><button id="diagClear" type="button">Clear log</button><button id="diagClose" type="button">Close</button>
-  <div id="diagLog">Starting diagnostics…</div>
-</div>
-<button id="diagLauncher" type="button">Diagnostics · starting</button>
-<script>
-(function(){
-  const entries=(window.__diagEarly||[]).slice(); let errorCount=entries.filter(x=>x.includes('ERROR:')||x.includes('REJECTION:')).length;
-  const panel=document.getElementById('diagPanel');
-  const log=document.getElementById('diagLog');
-  const launch=document.getElementById('diagLauncher');
-  function add(kind,message){
-    const stamp=new Date().toLocaleTimeString();
-    const line='['+stamp+'] '+kind+': '+String(message);
-    entries.push(line); if(entries.length>100)entries.shift();
-    if(kind==='ERROR'||kind==='REJECTION')errorCount++;
-    log.textContent=entries.join('\n');
-    launch.textContent='Diagnostics · '+errorCount+' error(s)';
-  }
-  window.addEventListener('error',function(e){add('ERROR',(e.message||'Script error')+(e.filename?' — '+e.filename.split('/').pop():'')+(e.lineno?':'+e.lineno:''));});
-  window.addEventListener('unhandledrejection',function(e){let reason=e.reason;add('REJECTION',reason&&(reason.stack||reason.message)||reason||'Unknown rejected promise');});
-  document.addEventListener('click',function(e){
-    const target=e.target&&e.target.closest?e.target.closest('button,[role="button"],input[type="button"],input[type="submit"]'):null;
-    if(target && !target.closest('#diagPanel') && target.id!=='diagLauncher'){
-      add('TAP','id="'+(target.id||'(no id)')+'" text="'+((target.innerText||target.value||'').trim().replace(/\s+/g,' ').slice(0,90))+'"');
-    }
-  },true);
-  launch.addEventListener('click',function(){panel.hidden=!panel.hidden;});
-  document.getElementById('diagClose').addEventListener('click',function(){panel.hidden=true;});
-  document.getElementById('diagClear').addEventListener('click',function(){entries.length=0;errorCount=0;log.textContent='Log cleared. Tap a button to test it.';launch.textContent='Diagnostics · 0 error(s)';});
-  document.getElementById('diagCopy').addEventListener('click',async function(){
-    const report='Training & Weather Hub diagnostics\nURL: '+location.href+'\nUser agent: '+navigator.userAgent+'\nTime: '+new Date().toISOString()+'\n\n'+entries.join('\n');
-    try{await navigator.clipboard.writeText(report);this.textContent='Copied!';}
-    catch(e){log.textContent=report+'\n\n(Clipboard not available. Long-press the text to select and copy.)';}
-  });
-  add('INFO','Diagnostics installed. Page: '+location.pathname);
-  window.addEventListener('load',function(){add('INFO','Page load completed. If a button does nothing, tap it and check for its TAP entry and any errors above.');});
-})();
-</script>
-
 </body>
 </html>
