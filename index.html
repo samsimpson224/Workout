@@ -307,7 +307,7 @@ textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);c
       <b>C. Admin Surgical Edits &amp; NordPass Support</b>
       <ul>
         <li><b>NordPass / Password Manager Ready:</b> Tap <b>👑 Clan creator login</b> at the bottom of the board on any device. The form exposes your clan's unique admin username (<code>m-...</code>) so NordPass, iCloud Keychain, or Chrome can save and autofill your Master Password with a single tap.</li>
-        <li><b>Surgical Retro-Edits:</b> Once unlocked, tap <b>Manage</b> next to any member to edit their session Sets or Volume in place (or fix doubled unilateral exercises) without deleting their workout. Corrections are locked into the admin <code>mod</code> record so future syncs from their phone won't undo your fix!</li>
+        <li><b>Surgical Retro-Edits:</b> Once unlocked, tap <b>Manage / Edit</b> next to any member to edit their session Sets or Volume in place (or fix doubled unilateral exercises) without deleting their workout. Corrections are locked into the admin <code>mod</code> record so future syncs from their phone won't undo your fix!</li>
       </ul>
     </div>
 
@@ -657,7 +657,7 @@ function checkUnilateralGuardrail(){
   const flagged=[];
   p.ex.forEach(x=>{
     const id=x[0],name=x[1],outline=parseTargetOutline(x[2]),meta=getMeta({id,n:name,meta:x[4]});
-    const v={...(outline||{}),*last[id],...draft[id]};
+    const v={...(outline||{}),...(last[id]||{}),...(draft[id]||{})};
     const setsNum=Number(v.sets)||0;
     const targetSets=outline?Number(outline.sets)||3:3;
     const isUni=(meta&&meta.m>1)||inferUnilateral(name);
@@ -687,7 +687,7 @@ function render(){
     :`No bodyweight saved in BMR tab yet (using neutral <b>${bw} kg</b> placeholder for estimates; locks to your real weight once you save a BMR entry).`;
   let h=`<div class="badge">${esc(p.title)}</div>`;
   p.ex.forEach((x,i)=>{
-    const id=x[0],meta=getMeta({id,n:x[1],meta:x[4]}),outline=parseTargetOutline(x[2]),v={...(outline||{}),*last[id],...draft[id]};
+    const id=x[0],meta=getMeta({id,n:x[1],meta:x[4]}),outline=parseTargetOutline(x[2]),v={...(outline||{}),...(last[id]||{}),...(draft[id]||{})};
     const defKg=v.kg!==undefined?v.kg:(meta.bw>0?"0":"");
     const eff=calcEffKg(defKg,meta,bw);
     const bwPart=Math.round(bw*(meta.bw||0)*10)/10;
@@ -734,7 +734,7 @@ $("weather").addEventListener("change",()=>{$("advice").textContent=ADV[$("weath
 $("logBtn").addEventListener("click",()=>{
   const sk=$("split").value,p=P[sk],last=get("last",{}),log=get("log",[]),savedBw=getSavedBW(),ex=[];
   p.ex.forEach(x=>{
-    const id=x[0],meta=getMeta({id,n:x[1],meta:x[4]}),outline=parseTargetOutline(x[2]),v={...(outline||{}),*last[id],...draft[id]};
+    const id=x[0],meta=getMeta({id,n:x[1],meta:x[4]}),outline=parseTargetOutline(x[2]),v={...(outline||{}),...(last[id]||{}),...(draft[id]||{})};
     const kgVal=v.kg!==undefined?String(v.kg).trim():(meta.bw>0?"0":"");
     const setsVal=v.sets!==undefined?String(v.sets).trim():"";
     const repsVal=v.reps!==undefined?String(v.reps).trim():"";
@@ -1091,7 +1091,6 @@ async function syncClan(quiet){
 let lastData={},adm=[],rawBoardCache={},rawCustomCache={};
 function relTime(ms,dStr,syncMs){
   const now=Date.now();
-  // If session timestamp is midnight UTC (date-only string) or stale Android tab (>10h older than the actual sync push on the same day), use syncMs
   let eff=ms;
   if(syncMs&&dStr===ld(new Date(syncMs))&&(!eff||syncMs-eff>6*36e5))eff=syncMs;
   if(!eff)return "";
@@ -1110,7 +1109,6 @@ async function renderClan(){
   }
   if(c.g===undefined&&bg){c.g=bg;set("clan2",c)}
   $("kMyGen").value=c.g||"";
-  // Populate NordPass username identifier
   $("kAdminUser").value="m-"+c.clan+MAIL;
   const admin=Boolean(tokA.t&&tokA.exp>Date.now());
   $("kTitle").textContent="Signed in as "+c.name+(c.owner?" (clan creator)":"")+(admin?" — Admin Unlocked 👑":"");
@@ -1288,12 +1286,10 @@ $("kManage").addEventListener("click",async e=>{
     const newSets=Math.max(1,Math.round(Number($("edSets_"+i).value)||1));
     const newVol=Math.max(0,Math.round(Number($("edVol_"+i).value)||0));
     try{
-      // 1. Save override in admin-locked mod node so member device re-syncs never revert it
       await db(c,"PUT",`mod/${x.id}/ovr/${x.sKey}`,{sets:newSets,vol:newVol,k:x.k},tokA.t);
       if(x.legacyKey&&x.legacyKey!==x.sKey){
         await db(c,"PUT",`mod/${x.id}/ovr/${x.legacyKey}`,{sets:newSets,vol:newVol,k:x.k},tokA.t);
       }
-      // 2. Also update their live board node directly
       const uBoard=rawBoardCache[x.id];
       if(uBoard&&Array.isArray(uBoard.s)&&x.sIdx>=0&&uBoard.s[x.sIdx]){
         uBoard.s[x.sIdx].sets=newSets;
