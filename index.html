@@ -1275,10 +1275,9 @@ function renderCreatureSVG(g, bondStage, pal, sil){
 
 // state: cap (captured) | cur (this week) | sil (upcoming) | esc (escaped)
 function renderMiniSVG(g,state){
-  // The calendar is a bestiary preview, not a capture-status mask: render each
-  // week's own creature in its biome palette even before it is captured.
-  const svg=renderCreatureSVG(g,3,PALETTES[g.biome]);
-  return state==="esc"?svg.replace("<svg ",'<svg style="opacity:.4" '):svg;
+  const sil = (state === "sil" || state === "esc");
+  const svg = renderCreatureSVG(g, sil ? 1 : 3, PALETTES[g.biome], sil);
+  return state === "esc" ? svg.replace("<svg ", '<svg style="opacity:.4" ') : svg;
 }
 
 
