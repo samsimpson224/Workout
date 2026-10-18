@@ -8,91 +8,92 @@
 <meta name="apple-mobile-web-app-title" content="Training">
 <title>Training &amp; Weather Hub</title>
 <style>
-:root{--bg:#121212;--card:#1e1e1e;--acc:#d4af37;--tx:#f0f0f0;--mu:#aaa;--bd:#333}
+:root{--bg:#0f1015;--card:#181a22;--acc:#d4af37;--acc-glow:rgba(212,175,55,0.28);--tx:#f2f4f8;--mu:#9aa0b4;--bd:#2a2e3d}
 *{box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--tx);margin:0 auto;padding:16px;padding-top:max(16px,env(safe-area-inset-top));padding-bottom:max(16px,env(safe-area-inset-bottom));max-width:600px}
-h1,h2{color:var(--acc);text-align:center;font-size:1.4rem;margin:8px 0}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:16px}
-label{display:block;margin:8px 0;font-weight:bold;color:var(--acc)}
-select,input{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);color:#fff;border-radius:8px;font-size:1rem;margin-bottom:8px}
-button{background:var(--acc);color:#121212;border:0;padding:12px;font-weight:bold;border-radius:8px;width:100%;font-size:1rem;margin-top:8px;cursor:pointer}
-button:active{opacity:.8}
-button:disabled{opacity:.5;cursor:not-allowed}
-button.alt{background:#333;color:var(--acc)}
-button.danger{background:#3a1d1d;color:#ff6b6b;margin-top:10px}
-.tabs{display:flex;gap:6px;margin:12px 0}
-.tabs button{margin:0;background:#2a2a2a;color:var(--mu);font-size:.85rem;padding:10px 2px}
-.tabs button.on{background:var(--acc);color:var(--bg)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:radial-gradient(circle at 50% 0%,#1b1e2b 0%,var(--bg) 70%);background-attachment:fixed;color:var(--tx);margin:0 auto;padding:16px;padding-top:max(16px,env(safe-area-inset-top));padding-bottom:max(24px,env(safe-area-inset-bottom));max-width:600px;color-scheme:dark}
+h1,h2{color:var(--acc);text-align:center;font-size:1.35rem;margin:8px 0;letter-spacing:.3px;text-shadow:0 2px 10px rgba(0,0,0,.5)}
+.card{background:linear-gradient(165deg,#1e212b 0%,#15171f 100%);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:0 8px 24px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.04);transition:border-color .3s,box-shadow .3s}
+.card.tamed-card{border-color:var(--acc);box-shadow:0 8px 28px rgba(212,175,55,.22),inset 0 1px 0 rgba(255,215,0,.15)}
+label{display:block;margin:8px 0 4px;font-weight:600;color:var(--acc);font-size:.92rem}
+select,input,textarea{width:100%;padding:12px;background:#232734;border:1px solid var(--bd);color:#fff;border-radius:9px;font-size:16px !important;margin-bottom:8px;transition:border-color .2s,box-shadow .2s}
+select:focus,input:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-glow)}
+textarea{min-height:90px}
+button{background:linear-gradient(180deg,#e0bd42 0%,#c49d27 100%);color:#121212;border:0;padding:12px;font-weight:700;border-radius:9px;width:100%;font-size:1rem;margin-top:8px;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.3);transition:transform .1s,opacity .15s,box-shadow .2s}
+button:active{transform:translateY(1px);opacity:.9}
+button:disabled{opacity:.5;cursor:not-allowed;transform:none}
+button.alt{background:#262a38;color:var(--acc);border:1px solid #363b4e;box-shadow:none}
+button.danger{background:#3a1d22;color:#ff7b7b;border:1px solid #5c2831;margin-top:10px}
+.tabs{display:flex;gap:6px;margin:12px 0;background:#161820;padding:5px;border-radius:12px;border:1px solid var(--bd)}
+.tabs button{margin:0;background:transparent;color:var(--mu);font-size:.85rem;padding:9px 2px;border-radius:8px;box-shadow:none}
+.tabs button.on{background:linear-gradient(180deg,#e0bd42 0%,#c49d27 100%);color:#121212;box-shadow:0 2px 8px var(--acc-glow)}
 .timer-bar{display:flex;gap:5px;align-items:center;overflow-x:auto;white-space:nowrap;margin-bottom:12px;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .timer-bar::-webkit-scrollbar{display:none}
-.timer-bar button{margin:0;padding:6px 10px;font-size:.78rem;flex-shrink:0;width:auto;background:#252525;color:var(--acc);border:1px solid var(--bd)}
-@keyframes pulseAlert {
-  0% { background: #252525; color: var(--acc); transform: scale(1); }
-  50% { background: var(--acc); color: #121212; transform: scale(1.05); }
-  100% { background: #252525; color: var(--acc); transform: scale(1); }
-}
-.timer-done {
-  animation: pulseAlert 0.7s infinite ease-in-out;
-  border: 2px solid var(--acc) !important;
-}
+.timer-bar button{margin:0;padding:6px 10px;font-size:.78rem;flex-shrink:0;width:auto;background:#1e212b;color:var(--acc);border:1px solid var(--bd);box-shadow:none}
+@keyframes pulseAlert{0%,100%{background:#252525;color:var(--acc);transform:scale(1)}50%{background:var(--acc);color:#121212;transform:scale(1.04)}}
+.timer-done{animation:pulseAlert .7s infinite ease-in-out;border:2px solid var(--acc) !important}
 #alarm{position:fixed;inset:0;z-index:99;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#000;font-size:3.2rem;font-weight:900;text-align:center;animation:flash .3s infinite alternate}
 #alarm[hidden]{display:none}
 #alarm small{font-size:1.1rem;font-weight:700;margin-top:12px}
 @keyframes flash{from{background:#ff1a1a}to{background:#ffee00}}
-code{word-break:break-all}
-.poke{position:sticky;top:0;z-index:50;background:var(--acc);color:#121212;padding:10px;border-radius:8px;margin-bottom:8px;font-weight:bold;text-align:center}
+code{word-break:break-all;background:#12141c;padding:2px 5px;border-radius:4px;color:#ffd700}
+.poke{position:sticky;top:0;z-index:50;background:linear-gradient(90deg,#d4af37,#f3d058);color:#121212;padding:10px;border-radius:10px;margin-bottom:8px;font-weight:bold;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.5)}
 .poke[hidden]{display:none}.poke button{background:#121212;color:var(--acc)}
-.bw-warn{background:#2a2211;border:1px solid #d4af37;color:#fce38a;padding:10px;border-radius:8px;margin-bottom:12px;font-size:0.85rem;line-height:1.4}
+.bw-warn{background:#282112;border:1px solid #b89328;color:#fce38a;padding:10px 12px;border-radius:9px;margin-bottom:12px;font-size:.85rem;line-height:1.4}
 .cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
-.stat{background:#252525;border-radius:8px;padding:10px;text-align:center}
-.stat b{display:block;font-size:1.4rem;color:var(--acc)}.stat small{color:var(--mu)}
+.stat{background:#212532;border:1px solid #2e3346;border-radius:10px;padding:12px 10px;text-align:center}
+.stat b{display:block;font-size:1.45rem;color:var(--acc)}.stat small{color:var(--mu)}
 .dg{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 12px}
-.dd{width:18px;height:18px;border-radius:4px;background:#2a2a2a}.dd.on{background:var(--acc)}.dd.td{outline:2px solid #fff}
+.dd{width:18px;height:18px;border-radius:4px;background:#232734}.dd.on{background:var(--acc);box-shadow:0 0 6px var(--acc-glow)}.dd.td{outline:2px solid #fff}
 .bar{fill:var(--acc)}.ax{stroke:#444}.tx{fill:#aaa;font-size:9px}
-textarea{width:100%;padding:12px;background:#2a2a2a;border:1px solid var(--bd);color:#fff;border-radius:8px;font-size:.85rem;margin-bottom:8px;min-height:90px}
-.sub{display:flex;gap:6px;margin:8px 0}.sub button{margin:0;background:#2a2a2a;color:var(--mu);padding:10px}.sub button.on{background:var(--acc);color:#121212}
-.box{background:#252525;border-left:4px solid var(--acc);padding:12px;border-radius:0 8px 8px 0;font-size:.95rem;line-height:1.4}
-.info-panel{background:#181818;border:1px solid var(--bd);border-left:3px solid var(--acc);padding:12px;border-radius:8px;margin:8px 0;font-size:.85rem;line-height:1.45;color:#ddd}
+.sub{display:flex;gap:6px;margin:8px 0;background:#14161f;padding:4px;border-radius:10px;border:1px solid var(--bd)}.sub button{margin:0;background:transparent;color:var(--mu);padding:9px;box-shadow:none}.sub button.on{background:var(--acc);color:#121212}
+.box{background:#212532;border-left:4px solid var(--acc);padding:12px;border-radius:0 8px 8px 0;font-size:.95rem;line-height:1.4}
+.info-panel{background:#151720;border:1px solid var(--bd);border-left:3px solid var(--acc);padding:12px;border-radius:9px;margin:8px 0;font-size:.85rem;line-height:1.45;color:#ddd}
 .info-panel b{color:var(--acc)}
 .info-panel ul,.info-panel ol{margin:6px 0;padding-left:18px}
 .info-panel li{margin-bottom:6px}
-.badge{display:inline-block;padding:4px 8px;font-size:.75rem;background:#333;border-radius:4px;color:var(--acc);margin-bottom:8px}
-.ex{background:#252525;padding:10px;border-radius:8px;margin-bottom:8px}
+.badge{display:inline-block;padding:4px 10px;font-size:.76rem;font-weight:600;background:#262a38;border:1px solid #3a4056;border-radius:99px;color:var(--acc);margin-bottom:8px}
+.ex{background:#212532;border:1px solid #2d3244;padding:12px;border-radius:10px;margin-bottom:10px}
 .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
-.info b{display:block}.info small{color:var(--mu);display:block}
-.norm-tag{color:var(--acc);font-size:.74rem;margin-top:3px;opacity:.95}
-.btn-grp{display:flex;gap:4px;flex-shrink:0;flex-wrap:wrap}
-.mini{width:auto;margin:0;padding:6px 9px;font-size:.78rem;background:#333;color:var(--acc)}
+.info b{display:block;font-size:.98rem}.info small{color:var(--mu);display:block;margin-top:2px}
+.norm-tag{color:var(--acc);font-size:.75rem;margin-top:4px;opacity:.95}
+.btn-grp{display:flex;gap:5px;flex-shrink:0;flex-wrap:wrap}
+.mini{width:auto;margin:0;padding:6px 10px;font-size:.78rem;background:#2d3244;color:var(--acc);border:1px solid #3d445c;box-shadow:none}
 .mini.hype{background:#3a2e11;color:#ffd700;border:1px solid #d4af37}
-.inp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
-.inp input{margin:0;padding:8px;text-align:center}
-.guide{margin-top:8px;font-size:.88rem;line-height:1.45;background:#1b1b1b;padding:10px;border-radius:6px;border:1px solid #2e2e2e}
-.lnk{display:inline-block;margin:6px 8px 0 0;padding:6px 10px;background:#333;color:var(--acc);border-radius:6px;text-decoration:none;font-weight:bold;font-size:.8rem}
+.inp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.inp input{margin:0;padding:9px;text-align:center;font-weight:600}
+.guide{margin-top:8px;font-size:.88rem;line-height:1.45;background:#161822;padding:10px;border-radius:8px;border:1px solid #2a2e3d}
+.lnk{display:inline-block;margin:6px 8px 0 0;padding:6px 10px;background:#262a38;color:var(--acc);border-radius:6px;text-decoration:none;font-weight:bold;font-size:.8rem;border:1px solid #3a4056}
 .msg{text-align:center;font-size:.85rem;margin-top:8px;min-height:1em}
 .res{font-size:1.1rem;text-align:center;line-height:1.6}
-.row{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bd);padding:6px 0;font-size:.9rem;gap:8px}
+.row{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bd);padding:8px 0;font-size:.9rem;gap:8px}
 .hint{color:var(--mu);font-size:.8rem;margin:6px 0;line-height:1.35}
 .filter-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
 .up{color:#4caf50;font-weight:bold}
 .dn{color:#ff6b6b;font-weight:bold}
-.s-pill{display:inline-block;padding:2px 6px;border-radius:99px;font-size:.72rem;font-weight:bold;margin-left:4px;background:#2a2415;color:#ffd700;border:1px solid #665218}
-.ticker{background:#181818;border:1px solid #2c2c2c;border-radius:8px;padding:8px 10px;margin:8px 0;font-size:.82rem}
-.ticker-item{padding:4px 0;border-bottom:1px solid #252525;display:flex;justify-content:space-between;gap:8px}
+.s-pill{display:inline-block;padding:2px 7px;border-radius:99px;font-size:.72rem;font-weight:bold;margin-left:4px;background:#2a2415;color:#ffd700;border:1px solid #7a621d;transition:box-shadow .3s,background .3s}
+@keyframes badgeGlow{0%,100%{box-shadow:0 0 6px rgba(255,215,0,.35)}50%{box-shadow:0 0 14px rgba(255,215,0,.75)}}
+.s-pill.tamed{background:linear-gradient(90deg,#3d3110,#594614);border-color:#ffd700;color:#fff;animation:badgeGlow 2.2s infinite ease-in-out}
+.ticker{background:#161822;border:1px solid var(--bd);border-radius:10px;padding:10px 12px;margin:8px 0;font-size:.82rem}
+.ticker-item{padding:5px 0;border-bottom:1px solid #222634;display:flex;justify-content:space-between;gap:8px}
 .ticker-item:last-child{border-bottom:0}
-.podium-card{background:#232323;border:1px solid #333;border-radius:8px;padding:10px;margin-top:8px}
-.podium-bar{height:8px;background:#161616;border-radius:4px;overflow:hidden;margin:4px 0 6px}
-.podium-fill{height:100%;background:var(--acc);border-radius:4px}
-.np-user{font-size:.78rem;padding:8px;background:#1a1a1a;color:var(--mu);border:1px dashed #444;margin-bottom:6px}
-.edit-box{background:#222;border:1px solid var(--acc);border-radius:8px;padding:10px;margin:6px 0}
-input,select,textarea{font-size:16px !important}
-body{color-scheme:dark}
-.arena{position:relative;border-radius:10px;overflow:hidden;border:1px solid #333;background:#090a0f;aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;margin:8px 0}
+.podium-card{background:#1f2330;border:1px solid var(--bd);border-radius:10px;padding:12px;margin-top:8px}
+.podium-bar{height:10px;background:#10121a;border-radius:99px;overflow:hidden;margin:6px 0;border:1px solid #282c3e}
+.podium-fill{height:100%;background:linear-gradient(90deg,#b89018,#ffd700);border-radius:99px;box-shadow:0 0 10px var(--acc-glow);transition:width .45s cubic-bezier(.22,1,.36,1)}
+.podium-fill.tamed{background:linear-gradient(90deg,#d4af37,#fff3a1,#ffd700);box-shadow:0 0 14px rgba(255,215,0,.6)}
+.np-offscreen{position:absolute;opacity:0;height:0;width:0;overflow:hidden;pointer-events:none}
+.edit-box{background:#1c1f2b;border:1px solid var(--acc);border-radius:9px;padding:10px;margin:6px 0}
+.arena{position:relative;border-radius:12px;overflow:hidden;border:1px solid #34394e;background:#090a0f;aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;margin:10px 0;box-shadow:inset 0 0 30px rgba(0,0,0,.75),0 4px 14px rgba(0,0,0,.4)}
 .arena svg{width:100%;height:100%;display:block}
-.calendar-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:6px;margin-top:10px;max-height:260px;overflow-y:auto;padding-right:4px}
-.cal-cell{background:#17181f;border:1px solid #2a2e3d;border-radius:8px;padding:6px;text-align:center;font-size:.75rem}
-.cal-cell.unlocked{border-color:var(--acc);background:#1e1c14}
-.cal-cell.current{outline:2px solid var(--acc)}
-.cal-cell svg{width:36px;height:36px;margin:2px auto;display:block}
+.calendar-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:7px;margin-top:10px;max-height:270px;overflow-y:auto;padding:2px 4px 2px 2px}
+.cal-cell{background:#161822;border:1px solid #2a2e3d;border-radius:9px;padding:6px;text-align:center;font-size:.72rem;cursor:pointer;display:flex;flex-direction:column;gap:3px;transition:transform .12s,border-color .15s}
+.cal-cell:hover{transform:translateY(-2px);border-color:#555c78}
+.cal-cell svg{width:100%;height:44px;margin:0;display:block;border-radius:5px}
+.cal-cell .cn{font-size:.65rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--mu)}
+.cal-cell.cap{border-color:var(--acc);background:linear-gradient(180deg,#242015 0%,#181712 100%);box-shadow:0 0 10px rgba(212,175,55,.15)}
+.cal-cell.cap .cn{color:var(--tx);font-weight:600}
+.cal-cell.cur{outline:2px solid var(--acc);background:#1c202e}
+.cal-cell.cur .cn{color:var(--acc);font-weight:700}
+.cal-cell .fx-draft{animation:none}
 @keyframes floatHover{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 @keyframes wingDraft{0%{stroke-dasharray:18 42;stroke-dashoffset:60;opacity:0}40%{opacity:.7}100%{stroke-dasharray:18 42;stroke-dashoffset:0;opacity:0}}
 @keyframes boltFlash{0%,82%,100%{opacity:0}85%,92%{opacity:1}88%{opacity:.2}}
@@ -104,12 +105,11 @@ body{color-scheme:dark}
 .p-ember{animation:emberRise 3s linear infinite}
 .p-snow{animation:snowDrift 3.4s linear infinite}
 @media (prefers-reduced-motion:reduce){.boss-rig,.fx-draft{animation:none}.p-ember,.p-snow,.fx-bolt{display:none}}
-.cal-cell{cursor:pointer;display:flex;flex-direction:column;gap:2px}.cal-cell svg{width:100%;height:44px;margin:0}.cal-cell .cn{font-size:.65rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cal-cell.cap{border-color:var(--acc);background:#1e1c14}.cal-cell.cur{outline:2px solid var(--acc)}.cal-cell .fx-draft{animation:none}
 </style>
 </head>
 <body>
 <h1 id="appTitle">Training &amp; Weather Hub</h1>
-<div id="storageWarning" class="bw-warn" hidden>⚠️ Browser storage is unavailable. Changes are temporary in this tab; export a backup before closing or refreshing.</div>
+<div id="storageWarning" class="bw-warn" hidden>&#x26A0;&#xFE0F; Browser storage is unavailable. Changes are temporary in this tab; export a backup before closing or refreshing.</div>
 
 <div id="alarm" hidden>REST OVER<small>Tap anywhere to dismiss</small></div>
 <div id="pokeBar" class="poke" hidden></div>
@@ -138,7 +138,7 @@ body{color-scheme:dark}
 </div>
 
 <section id="tW">
-  <div id="bwWarnBox" class="bw-warn" hidden>⚠️ It has been over 30 days since you updated your weight in the BMR tab. Tap <a href="#" id="gotoBmr" style="color:var(--acc);font-weight:bold">here</a> to update it for accurate volume normalization.</div>
+  <div id="bwWarnBox" class="bw-warn" hidden>&#x26A0;&#xFE0F; It has been over 30 days since you updated your weight in the BMR tab. Tap <a href="#" id="gotoBmr" style="color:var(--acc);font-weight:bold">here</a> to update it for accurate volume normalization.</div>
   <div id="streakNudgeBox" class="bw-warn" hidden></div>
   <div class="card" style="padding:10px 16px"><label style="display:flex;align-items:center;gap:10px;margin:0"><input type="checkbox" id="advToggle" style="width:auto;margin:0"> Advanced mode (build &amp; share custom workouts)</label></div>
   <div class="card" id="advCard" hidden>
@@ -306,7 +306,7 @@ body{color-scheme:dark}
 <section id="tC" hidden>
   <div class="card">
     <h2>Clan Leaderboard</h2>
-    <div class="sub" style="margin-bottom:12px"><button id="clanTabLead" class="on" type="button">🏆 Leaderboard</button><button id="clanTabSanc" type="button">🌱 Sanctuary</button></div>
+    <div class="sub" style="margin-bottom:12px"><button id="clanTabLead" class="on" type="button">&#x1F3C6; Leaderboard</button><button id="clanTabSanc" type="button">&#x1F331; Sanctuary</button></div>
     <div id="clanSubLeaderboard">
     <button id="kGuideBtn" class="alt" style="padding:8px;font-size:.85rem">? Setup guide (iPhone &amp; Android)</button>
     <div id="kGuide" class="info-panel" hidden>
@@ -314,7 +314,7 @@ body{color-scheme:dark}
       <ol>
         <li><b>Install the app.</b> Open the link your clan creator sent.<br><i>iPhone:</i> in Safari tap Share &rarr; Add to Home Screen &rarr; Add.<br><i>Android:</i> in Chrome tap the &#8942; menu &rarr; Add to Home screen (or Install app) &rarr; Add. Open it from the new icon.</li>
         <li><b>Paste the invite code.</b> Tap the Clan tab &rarr; Join a clan. Copy the long code starting <code>CLAN1.</code> from your creator's message, then press and hold in the code box and tap Paste. Type a display name (and optionally choose a division).</li>
-        <li><b>Tap Join.</b> Log a workout and your name appears on the board. That's it. No accounts or passwords for you.</li>
+        <li><b>Tap Join &amp; Bond with the Sanctuary.</b> Log a workout and your name appears on the leaderboard. Every hard set you log contributes to bonding with the clan's weekly Sanctuary companion (capturing standard beasts at 85% target completion, &#x2726; sub-bosses at 92%, and &#x2694; bosses at 100%!).</li>
       </ol>
       <b>B. Clan creator: one-time setup (about 10 minutes, free)</b>
       <p>Easiest on a computer. On a phone, switch the page to desktop view first:<br><i>iPhone Safari:</i> tap <b>aA</b> in the address bar &rarr; Request Desktop Website.<br><i>Android Chrome:</i> tap &#8942; &rarr; tick Desktop site. Pinch to zoom as needed. On a phone, open Firebase's &#9776; menu to see Build.</p>
@@ -330,7 +330,7 @@ body{color-scheme:dark}
       <p>Everything stays on Firebase's free plan. If Firebase asks for a card or a plan upgrade, stop and cancel. Button names occasionally change; pick the closest match.</p>
       <b>C. Admin Surgical Edits &amp; NordPass Support</b>
       <ul>
-        <li><b>NordPass / Password Manager Ready:</b> Tap <b>👑 Clan creator login</b> at the bottom of the board on any device. The form exposes your clan's unique admin username (<code>m-...</code>) so NordPass, iCloud Keychain, or Chrome can save and autofill your Master Password with a single tap.</li>
+        <li><b>NordPass / Password Manager Ready:</b> Tap <b>&#x1F451; Clan creator login</b> at the bottom of the board on any device. The form exposes your clan's unique admin username in the background DOM so NordPass, iCloud Keychain, or Chrome can save and autofill your Master Password with a single tap.</li>
         <li><b>Surgical Retro-Edits:</b> Once unlocked, tap <b>Manage / Edit</b> next to any member to edit their session Sets or Volume in place (or fix doubled unilateral exercises) without deleting their workout. Corrections are locked into the admin <code>mod</code> record so future syncs from their phone won't undo your fix!</li>
       </ul>
     </div>
@@ -399,19 +399,21 @@ body{color-scheme:dark}
       <div id="kCust"></div>
       <div id="kManage"></div>
       <button id="kSync">Sync my logs &amp; refresh</button>
-	<label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-weight:normal;font-size:.85rem">
-      <input type="checkbox" id="kNudgeInvite" style="width:auto;margin:0"> Include clan invite link in message
-	</label>
+      <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-weight:normal;font-size:.85rem">
+        <input type="checkbox" id="kNudgeInvite" style="width:auto;margin:0"> Include clan invite link in message
+      </label>
       <button id="kNudge" class="alt">Send a nudge by message</button>
       <button id="kInvite" class="alt">Share invite code</button>
       <button id="kLinkDevice" class="alt">Copy my personal device-link code (PC/Phone sync)</button>
-      <button id="kAdminToggle" class="alt" type="button">👑 Clan creator login (unlock admin tools)</button>
+      <button id="kAdminToggle" class="alt" type="button">&#x1F451; Clan creator login (unlock admin tools)</button>
       <!-- Semantic NordPass / Password Manager form for Admin Unlock -->
       <form id="kAdminBox" class="info-panel" hidden autocomplete="on" data-np-autofill-form-type="login">
-        <b>👑 Clan Creator Admin Login (NordPass Ready)</b>
+        <b>&#x1F451; Clan Creator Admin Login (NordPass Ready)</b>
         <div class="hint">Unlocking on this device also restores your permanent <code>(clan creator)</code> status here.</div>
-        <label for="kAdminUser" style="font-size:.78rem;margin:4px 0 2px">Admin Account ID (for NordPass / Keychain matching)</label>
-        <input id="kAdminUser" name="username" type="text" autocomplete="username" readonly class="np-user" data-np-autofill-field-type="username">
+        <div class="np-offscreen">
+          <label for="kAdminUser">Admin Account ID</label>
+          <input id="kAdminUser" name="username" type="text" autocomplete="username" readonly tabindex="-1" data-np-autofill-field-type="username">
+        </div>
         <label for="kMaster" style="font-size:.82rem;margin:4px 0 2px">Master password</label>
         <input id="kMaster" name="password" type="password" autocomplete="current-password" placeholder="Enter or autofill master password" data-np-autofill-field-type="password">
         <button id="kUnlock" type="submit">Unlock admin tools</button>
@@ -420,8 +422,8 @@ body{color-scheme:dark}
     </div>
     </div>
     <div id="clanSubSanctuary" hidden>
-      <div class="card" style="background:#171922;padding:12px;margin-bottom:14px">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b style="color:var(--acc)" id="sancTitle">������ Epoch Sanctuary</b><span id="sancBadge" class="s-pill"></span></div>
+      <div id="sancMainCard" class="card" style="background:linear-gradient(165deg,#191c28 0%,#12141d 100%);padding:14px;margin-bottom:14px;border-color:#2e344a">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b style="color:var(--acc)" id="sancTitle">&#x1F331; Epoch Sanctuary</b><span id="sancBadge" class="s-pill"></span></div>
         <div id="sancArena" class="arena"></div>
         <div id="sancLore" class="hint" style="font-style:italic"></div>
         <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-top:8px">
@@ -431,14 +433,14 @@ body{color-scheme:dark}
         <div class="podium-bar" style="margin:4px 0 2px"><div id="sancFill" class="podium-fill" style="width:0%"></div></div>
         <div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--mu)"><span id="sancSetsNum">0 / 0 Hard Sets</span><span id="sancPctLabel">0%</span></div>
       </div>
-      <div class="info-panel"><b>📜 Clan Bestiary (52 weeks)</b>
-        <div class="hint">Every week's companion is captured at Stage 3: 85% of the target, 92% for ✦ sub-boss dragons, or 100% for ⚔ boss weeks. Tap any entry to open it; captured ones list who earned the capture.</div>
+      <div class="info-panel"><b>&#x1F4DC; Clan Bestiary (52 weeks)</b>
+        <div class="hint">Every week's companion is captured at Stage 3: 85% of the target, 92% for &#x2726; sub-boss dragons, or 100% for &#x2694; boss weeks. Tap any entry to open it; captured ones list who earned the capture.</div>
         <select id="bestiarySet" hidden style="margin:6px 0"></select>
         <div id="calendarGrid" class="calendar-grid"></div>
         <div id="bestiaryEntry" class="info-panel" hidden></div>
       </div>
       <div id="adminViewerCard" class="info-panel" hidden>
-        <b>👑 Admin bestiary inspector</b>
+        <b>&#x1F451; Admin bestiary inspector</b>
         <input id="adminWeekSel" type="range" min="1" max="52" value="1" style="accent-color:var(--acc)">
         <div style="display:flex;justify-content:space-between;gap:8px;font-size:.82rem;color:var(--acc)"><span id="awTitle"></span><span id="awBiome"></span></div>
         <div id="adminArena" class="arena"></div>
@@ -451,7 +453,7 @@ body{color-scheme:dark}
 
 <script>
 window.__diagEarly=window.__diagEarly||[];
-window.addEventListener('error',function(e){window.__diagEarly.push('[early] ERROR: '+(e.message||'Script error')+(e.filename?' — '+e.filename.split('/').pop():'')+(e.lineno?':'+e.lineno:''));});
+window.addEventListener('error',function(e){window.__diagEarly.push('[early] ERROR: '+(e.message||'Script error')+(e.filename?' \u2014 '+e.filename.split('/').pop():'')+(e.lineno?':'+e.lineno:''));});
 window.addEventListener('unhandledrejection',function(e){var r=e.reason;window.__diagEarly.push('[early] REJECTION: '+(r&&(r.stack||r.message)||r||'Unknown rejected promise'));});
 </script>
 <script>
@@ -639,7 +641,7 @@ function wakeOn(){try{navigator.wakeLock&&navigator.wakeLock.request("screen").t
 document.querySelector(".timer-bar").addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b||b.id==="tInfoBtn")return;
   stopAlarm();clearInterval(tInt);tInt=null;$("tStop").classList.remove("timer-done");
-  if(b.id==="tTest"){triggerAlert();if(window.AudioContext||window.webkitAudioContext)msg("wMsg","Test alert triggered (ambient mode — background music stays playing).",true);return}
+  if(b.id==="tTest"){triggerAlert();if(window.AudioContext||window.webkitAudioContext)msg("wMsg","Test alert triggered (ambient mode \u2014 background music stays playing).",true);return}
   if(b.id==="tStop"){tEnd=0;$("tStop").hidden=true;return}
   try{if(navigator.audioSession)navigator.audioSession.type="ambient"}catch(err){}
   tEnd=Date.now()+parseInt(b.dataset.sec,10)*1000;
@@ -721,7 +723,7 @@ function checkUnilateralGuardrail(){
     }
   });
   if(!flagged.length){box.hidden=true;box.innerHTML="";return}
-  box.innerHTML=`⚠️ <b>Unilateral Set Check (Non-Blocking):</b><br>`+flagged.map(f=>`&bull; <b>${esc(f.name)}</b> has <b>${f.setsNum} sets</b> entered. Since this is a single-side exercise, entering left+right sets together doubles your volume and sets! (You can still log as-is, or tap below to normalize):<br><button type="button" class="mini" style="margin-top:6px" data-normid="${esc(f.id)}" data-normsets="${f.half}">Normalize ${esc(f.name)} to ${f.half} sets</button>`).join("<br>");
+  box.innerHTML=`\u26A0\uFE0F <b>Unilateral Set Check (Non-Blocking):</b><br>`+flagged.map(f=>`&bull; <b>${esc(f.name)}</b> has <b>${f.setsNum} sets</b> entered. Since this is a single-side exercise, entering left+right sets together doubles your volume and sets! (You can still log as-is, or tap below to normalize):<br><button type="button" class="mini" style="margin-top:6px" data-normid="${esc(f.id)}" data-normsets="${f.half}">Normalize ${esc(f.name)} to ${f.half} sets</button>`).join("<br>");
   box.hidden=false;
 }
 $("uniWarnBox")?.addEventListener("click",e=>{
@@ -799,7 +801,7 @@ $("logBtn").addEventListener("click",()=>{
       last[id]={kg:kgVal,sets:setsVal,reps:repsVal};
     }
   });
-  if(!ex.length)return msg("wMsg","Enter valid values: sets 1–100, reps 1–1000, and weight 0–1000 kg. At least one exercise is required.",false);
+  if(!ex.length)return msg("wMsg","Enter valid values: sets 1\u2013100, reps 1\u20131000, and weight 0\u20131000 kg. At least one exercise is required.",false);
   const nowMs=Date.now();
   const entry={sid:rnd(10),d:new Date(nowMs).toISOString(),ts:nowMs,s:p.title,w:$("weather").selectedOptions[0].text,ex};
   if(savedBw!==null)entry.bw=savedBw;
@@ -866,7 +868,7 @@ function renderLog(){
 let bmrLoaded=false;
 function bmrCalc(){
   const a=Number($("bAge").value),h=Number($("bH").value),w=Number($("bW").value),act=Number($("bAct").value);
-  if(!Number.isFinite(a)||!Number.isFinite(h)||!Number.isFinite(w)||!Number.isFinite(act)||a<1||a>120||h<50||h>260||w<1||w>500||act<1||act>2){$("bRes").textContent="Enter age 1–120, height 50–260 cm and weight 1–500 kg.";return null}
+  if(!Number.isFinite(a)||!Number.isFinite(h)||!Number.isFinite(w)||!Number.isFinite(act)||a<1||a>120||h<50||h>260||w<1||w>500||act<1||act>2){$("bRes").textContent="Enter age 1\u2013120, height 50\u2013260 cm and weight 1\u2013500 kg.";return null}
   const bmr=10*w+6.25*h-5*a+($("bSex").value==="m"?5:-161),tdee=bmr*act;
   $("bRes").innerHTML=`BMR: <b>${Math.round(bmr)}</b> kcal/day<br>Maintenance: <b>${Math.round(tdee)}</b> kcal/day`;
   return {bmr:Math.round(bmr),tdee:Math.round(tdee)};
@@ -921,8 +923,8 @@ $("bExp").addEventListener("click",()=>{
 const TYPES={
   a:{db:1,m:1,t:"1 dumbbell / cable / machine",hint:"Enter total weight lifted. Sets = working sets."},
   b:{db:2,m:1,t:"2 dumbbells (bilateral)",hint:"Enter the weight of ONE dumbbell (doubled automatically). Sets = working sets."},
-  c:{db:1,m:2,t:"1 dumbbell, each side (unilateral)",hint:"⚠️ Enter the weight of ONE dumbbell and the sets done on ONE side (e.g. 3 sets, NOT 6). Volume doubles automatically for both sides!"},
-  d:{db:2,m:2,t:"2 dumbbells, each side (unilateral)",hint:"⚠️ Enter ONE dumbbell weight and sets done on ONE leg/side (e.g. 3 sets, NOT 6)."}
+  c:{db:1,m:2,t:"1 dumbbell, each side (unilateral)",hint:"\u26A0\uFE0F Enter the weight of ONE dumbbell and the sets done on ONE side (e.g. 3 sets, NOT 6). Volume doubles automatically for both sides!"},
+  d:{db:2,m:2,t:"2 dumbbells, each side (unilateral)",hint:"\u26A0\uFE0F Enter ONE dumbbell weight and sets done on ONE leg/side (e.g. 3 sets, NOT 6)."}
 };
 $("cType").addEventListener("change",()=>{
   const t=TYPES[$("cType").value];
@@ -1008,7 +1010,7 @@ $("cAdd").addEventListener("click",()=>{
   if(BUILTIN_NAMES.has(lowerName)){
     const sug=name.slice(0,68)+" (Custom)";
     const box=$("cConflictBox");
-    box.innerHTML=`💡 <b>Friendly heads-up:</b> "${esc(name)}" is already the exact name of a built-in exercise. To keep your stats and progression history from mixing together, tap below to add it with a unique tag:<br><button type="button" id="cAutoRenameBtn" style="margin-top:8px;padding:9px">Use "${esc(sug)}" &amp; Add</button>`;
+    box.innerHTML=`\u{1F4A1} <b>Friendly heads-up:</b> "${esc(name)}" is already the exact name of a built-in exercise. To keep your stats and progression history from mixing together, tap below to add it with a unique tag:<br><button type="button" id="cAutoRenameBtn" style="margin-top:8px;padding:9px">Use "${esc(sug)}" &amp; Add</button>`;
     box.hidden=false;
     $("cAutoRenameBtn")?.addEventListener("click",()=>addDraftExercise(sug),{once:true});
     return;
@@ -1156,7 +1158,7 @@ const wkMs=(x,w)=>x.ms+(w-1)*WEEK_MS;
 const epochKeyOf=d=>{const t=Date.parse(String(d).slice(0,10)+"T00:00:00Z");if(!Number.isFinite(t))return null;const x=epochAt(t);return x?{id:x.id,w:Math.floor((t-x.ms)/WEEK_MS)+1}:null};
 const fmtD=ms=>new Date(ms).toLocaleDateString(undefined,{day:"numeric",month:"short",timeZone:"UTC"});
 const targetFor=n=>Math.max(30,Math.max(1,num(n))*45);
-const needOf=g=>g.boss?1:g.sub?.92:.85,tierMark=g=>g.boss?"⚔ ":g.sub?"✦ ":"",pctOf=g=>Math.round(needOf(g)*100);
+const needOf=g=>g.boss?1:g.sub?.92:.85,tierMark=g=>g.boss?"\u2694 ":g.sub?"\u2726 ":"",pctOf=g=>Math.round(needOf(g)*100);
 const stageOf=(s,tg,g)=>{const r=num(s)/tg;return r<.35?1:r<needOf(g)?2:3};
 const rank=r=>Object.values((r&&r.m)||{}).filter(m=>m.s>0).sort((a,b)=>b.s-a.s).map(m=>[m.name,m.s]);
 // ---- Unique High-Fantasy Companion Anatomy & Silhouette Engine (one hand-built design per creature) ----
@@ -1285,7 +1287,6 @@ function renderMiniSVG(g,state){
   return state === "esc" ? svg.replace("<svg ", '<svg style="opacity:.4" ') : svg;
 }
 
-
 const loadDex=()=>{const raw=get("epochDex",{}),o={};for(const k of Object.keys(raw||{}))o[/^\d+$/.test(k)?"e1:"+k:k]=raw[k];return o};
 const whoOf=r=>(Array.isArray(r&&r.who)?r.who:[]).filter(Array.isArray).map(([n,s])=>[String(n),num(s)]);
 // Merges every member's saved captures (remote = {memberId:{"e1:3":record}}) with this phone's, then adds new captures.
@@ -1303,7 +1304,7 @@ function recordCaptures(remote,meId){
   return{dex,dirty:ch||Object.keys(dex).length>Object.keys(mine).length};
 }
 const capturedMap=(dex,x)=>{const m={};Object.keys(dex).forEach(k=>{const[id,w]=k.split(":");if(id!==x.id)return;const i=(+w-1)%x.roster.length+1;m[i]=Math.max(m[i]||0,+w)});return m};
-const contribHTML=(list,total)=>list.map(([n,s],i)=>`<div class="row"><span>${["🥇","🥈","🥉"][i]||(i+1)+"."} <b>${esc(n)}</b></span><span>${s} sets · ${Math.round(s/Math.max(1,total)*100)}%</span></div>`).join("")||`<div class="hint">No sets logged yet.</div>`;
+const contribHTML=(list,total)=>list.map(([n,s],i)=>`<div class="row"><span>${["\u{1F947}","\u{1F948}","\u{1F949}"][i]||(i+1)+"."} <b>${esc(n)}</b></span><span>${s} sets \u00b7 ${Math.round(s/Math.max(1,total)*100)}%</span></div>`).join("")||`<div class="hint">No sets logged yet.</div>`;
 const viewEpoch=()=>EPOCHS.find(x=>x.id===viewId)||getCur().e;
 
 function openEntry(idx){
@@ -1315,13 +1316,13 @@ function openEntry(idx){
   const tag=g.boss||g.sub?`<div class="hint">${tierMark(g)}${g.boss?"Boss encounter":"Sub-boss"}: the clan needs ${pctOf(g)}% of the target to capture it.</div>`:"";
   let h;
   if(capW){const r=dexNow[ek(x.id,capW)];
-    h=`${art(3)}<b>${esc(g.name)}</b> <span class="s-pill">${esc(g.title)}</span>${tag}<div class="hint" style="font-style:italic">${esc(g.lore)}</div><div class="hint">Captured the week of ${fmtD(wkMs(x,capW))} · ${num(r.t)} of ${num(r.tg)} hard sets</div><b>Captured by</b>${contribHTML(whoOf(r),num(r.t))}`;
-  }else if(isCur&&idx===pos){const r=epochData.wk[ek(x.id,cur.w)]||{t:0,m:{}},tg=targetFor(epochData.n);
-    h=`${art(stageOf(r.t,tg,g))}<b>${esc(g.name)}</b>${tag}<div class="hint">Bonding in progress: ${r.t} / ${tg} hard sets (captured at ${pctOf(g)}%).</div><b>Contributors so far</b>${contribHTML(rank(r),r.t)}`;
+    h=`${art(3,false)}<b>${esc(g.name)}</b> <span class="s-pill tamed">${esc(g.title)}</span>${tag}<div class="hint" style="font-style:italic">${esc(g.lore)}</div><div class="hint">Captured the week of ${fmtD(wkMs(x,capW))} \u00b7 ${num(r.t)} of ${num(r.tg)} hard sets</div><b>Captured by</b>${contribHTML(whoOf(r),num(r.t))}`;
+  }else if(isCur&&idx===pos){const r=epochData.wk[ek(x.id,cur.w)]||{t:0,m:{}},tg=targetFor(epochData.n),reqSets=Math.ceil(tg*needOf(g));
+    h=`${art(stageOf(r.t,tg,g),false)}<b>${esc(g.name)}</b>${tag}<div class="hint">Bonding in progress: ${r.t} / ${reqSets} required hard sets (${pctOf(g)}% of ${tg} baseline).</div><b>Contributors so far</b>${contribHTML(rank(r),r.t)}`;
   }else if(idx<pos){
-    h=`${art(3)}<b>???</b><div class="hint">This one escaped before the clan could bond with it.</div>`;
+    h=`${art(1,true)}<b>???</b><div class="hint">This companion escaped before the clan could finish bonding with it.</div>`;
   }else{const w=cur.w+idx-pos,days=Math.ceil((wkMs(x,w)-Date.now())/864e5);
-    h=`${art(3)}<b>???</b><div class="hint">Appears ${fmtD(wkMs(x,w))}, in ${days} day${days===1?"":"s"}.${g.boss?" ⚔ A boss encounter.":g.sub?" ✦ A sub-boss.":""}</div>`;
+    h=`${art(1,true)}<b>???</b><div class="hint">Appears ${fmtD(wkMs(x,w))}, in ${days} day${days===1?"":"s"}.${g.boss?" \u2694 A boss encounter.":g.sub?" \u2726 A sub-boss.":""}</div>`;
   }
   box.innerHTML=h+`<button type="button" class="alt" id="beClose">Close</button>`;
   box.hidden=false;
@@ -1356,26 +1357,28 @@ function renderSanctuary(wkData,n,remote,meId){
   epochData={wk:wkData||{},n:Math.max(1,num(n))};
   const cur=getCur(),x=cur.e,g=x.roster[cIdx(x,cur.w)-1],pal=PALETTES[g.biome],tg=targetFor(epochData.n);
   const sets=num((epochData.wk[ek(x.id,cur.w)]||{}).t);
-  
-  // Calculate specific requirements & capture threshold percentage
-  const reqPct = pctOf(g); // e.g., 85% for standard beasts, 92% for sub-bosses, 100% for bosses
-  const reqSets = Math.ceil(tg * needOf(g));
-  const currentPct = Math.min(100, Math.round((sets / reqSets) * 100));
-  const barPct = Math.min(100, Math.floor(sets / tg * 100));
+  const reqPct=pctOf(g);
+  const reqSets=Math.ceil(tg*needOf(g));
+  const currentPct=Math.min(100,Math.round((sets/reqSets)*100));
   const stage=stageOf(sets,tg,g);
+  const isTamed=stage===3;
 
-  $("sancTitle").textContent=`������ ${x.name} · Week ${cur.w}: ${g.name}`;
-  $("sancBadge").textContent=tierMark(g)+["Stage 1: Approaching & Observing","Stage 2: Feeding & Trust Building","Stage 3: Fully Bonded & Ridden! ������"][stage-1];
+  $("sancTitle").textContent=`\u{1F331} ${x.name} \u00b7 Week ${cur.w}: ${g.name}`;
+  const badge=$("sancBadge");
+  badge.textContent=tierMark(g)+["Stage 1: Approaching & Observing","Stage 2: Feeding & Trust Building","Stage 3: Fully Bonded & Ridden! \u{1F409}"][stage-1];
+  badge.classList.toggle("tamed",isTamed);
+  $("sancMainCard")?.classList.toggle("tamed-card",isTamed);
   $("sancLore").textContent=g.lore;
-  
-  // Update labels with explicit set and percentage goals
-  $("sancBondText").textContent = g.boss ? "⚔ Boss Tame Requirement" : g.sub ? "✦ Sub-Boss Tame Requirement" : "Companion Tame Requirement";
-  $("sancTargetInfo").textContent = `Required: ${reqSets} sets (${reqPct}% of ${tg} baseline)`;
-  $("sancSetsNum").textContent=`${sets} / ${reqSets} Hard Sets`;
-  $("sancPctLabel").textContent = `${currentPct}%`;
-  $("sancFill").style.width=barPct+"%";
-  
-  $("sancArena").innerHTML=renderCreatureSVG(g,stage,pal);
+
+  $("sancBondText").textContent=g.boss?"\u2694 Boss Tame Progress":g.sub?"\u2726 Sub-Boss Tame Progress":"Companion Tame Progress";
+  $("sancTargetInfo").textContent=`Required: ${reqSets} sets (${reqPct}% of ${tg}) \u00b7 Next: ${fmtD(wkMs(x,cur.w+1))}`;
+  $("sancSetsNum").textContent=`${sets} / ${reqSets} Hard Sets to Tame`;
+  $("sancPctLabel").textContent=`${currentPct}%`;
+  const fill=$("sancFill");
+  fill.style.width=currentPct+"%";
+  fill.classList.toggle("tamed",isTamed);
+
+  $("sancArena").innerHTML=renderCreatureSVG(g,stage,pal,false);
   const rc=recordCaptures(remote,meId);dexNow=rc.dex;
   renderGrid();focusCurrentWeek();
   if(openIdx)openEntry(openIdx);
@@ -1397,9 +1400,9 @@ function renderAdminWeek(){
   const sel=$("adminWeekSel");if(!sel)return;
   const x=getCur().e,g=x.roster.find(r=>r.w===num(sel.value))||x.roster[0];
   $("awTitle").textContent=`Creature ${g.w}: ${g.name} (${g.title})`;
-  $("awBiome").textContent=`Biome: ${g.biome.toUpperCase()} (${g.kind})${g.boss?" ⚔ boss":g.sub?" ✦ sub-boss":""}`;
+  $("awBiome").textContent=`Biome: ${g.biome.toUpperCase()} (${g.kind})${g.boss?" \u2694 boss":g.sub?" \u2726 sub-boss":""}`;
   $("awLore").textContent=g.lore;
-  $("adminArena").innerHTML=renderCreatureSVG(g,3,PALETTES[g.biome]);
+  $("adminArena").innerHTML=renderCreatureSVG(g,3,PALETTES[g.biome],false);
 }
 const adminSel=$("adminWeekSel");
 if(adminSel){const c0=getCur();adminSel.value=cIdx(c0.e,c0.w);adminSel.addEventListener("input",renderAdminWeek);renderAdminWeek()}
@@ -1498,14 +1501,11 @@ async function renderClan(){
   $("kMyGen").value=c.g||"";
   $("kAdminUser").value="m-"+c.clan+MAIL;
   const admin=Boolean(tokA.t&&tokA.exp>Date.now());
-  // Update visibility before network work below; a failed/slow clan refresh must
-  // not leave a successfully authenticated inspector hidden on this device.
   $("adminViewerCard").hidden=!admin;
   if(admin)renderAdminWeek();
-  $("kTitle").textContent="Signed in as "+c.name+(c.owner?" (clan creator)":"")+(admin?" — Admin Unlocked 👑":"");
+  $("kTitle").textContent="Signed in as "+c.name+(c.owner?" (clan creator)":"")+(admin?" \u2014 Admin Unlocked \u{1F451}":"");
   $("kAdminToggle").hidden=admin;
   if(admin)$("kAdminBox").hidden=true;
-  else if(c.owner)$("kAdminBox").hidden=false;
   $("kShareVol").checked=c.shareVol!==false;
 
   try{
@@ -1629,7 +1629,7 @@ function showManage(id){
   const d=lastData[id];if(!d)return;
   adm=d.items.map(x=>({id,...x}));
   const cEx=d.customExItems||[];
-  let h=`<div class="info-panel"><b>👑 Surgical Admin Editor &mdash; ${esc(d.name)}</b><div class="hint">Edit sets/volume directly (locked into admin <code>mod</code> so their phone syncs won't overwrite your fix) or remove an entry.</div>`;
+  let h=`<div class="info-panel"><b>\u{1F451} Surgical Admin Editor &mdash; ${esc(d.name)}</b><div class="hint">Edit sets/volume directly (locked into admin <code>mod</code> so their phone syncs won't overwrite your fix) or remove an entry.</div>`;
   h+=adm.map((x,i)=>`<div class="row" style="flex-wrap:wrap"><span>${esc(x.label)}</span><span class="btn-grp"><button class="mini" data-ed="${i}">Edit Sets/Vol</button><button class="mini" data-rm="${i}">Remove</button></span></div>
     <div id="edBox_${i}" class="edit-box" hidden>
       <div style="font-size:.8rem;color:var(--acc);margin-bottom:6px"><b>Surgical Adjustment (${esc(x.d)} &bull; ${esc(x.k)})</b></div>
@@ -1692,7 +1692,7 @@ $("kManage").addEventListener("click",async e=>{
         uBoard.s[x.sIdx].vol=newVol;
         await db(c,"PUT",`${np(c,"board")}/${x.id}`,uBoard,tokA.t);
       }
-      msg("kMsg",`Surgical fix saved! (${newSets} sets · ${newVol.toLocaleString()} kg)`,true);
+      msg("kMsg",`Surgical fix saved! (${newSets} sets \u00b7 ${newVol.toLocaleString()} kg)`,true);
       await renderClan();
       showManage(x.id);
     }catch(err){msg("kMsg",why(err),false)}
@@ -1710,7 +1710,7 @@ $("kManage").addEventListener("click",async e=>{
         uCust.s[cx.cIdx].v=newVol;
         await db(c,"PUT",`${np(c,"custom")}/${uid}`,uCust,tokA.t);
       }
-      msg("kMsg",`Fixed ${cx.exName} to ${newSets} sets · ${newVol} kg!`,true);
+      msg("kMsg",`Fixed ${cx.exName} to ${newSets} sets \u00b7 ${newVol} kg!`,true);
       await renderClan();
       showManage(uid);
     }catch(err){msg("kMsg",why(err),false)}
@@ -1802,7 +1802,6 @@ $("kAdminBox").addEventListener("submit",async e=>{
     tokA={t:j.idToken,exp:Date.now()+3e6};
     if(!c.owner){c.owner=true;set("clan2",c)}
     $("kMaster").value="";
-    // Put the inspector in view immediately after successful authentication.
     $("clanTabSanc").classList.add("on");$("clanTabLead").classList.remove("on");
     $("clanSubSanctuary").hidden=false;$("clanSubLeaderboard").hidden=true;
     $("adminViewerCard").hidden=false;renderAdminWeek();
@@ -2050,9 +2049,9 @@ applyCustom();renderAdv();render();checkBwStale();checkStreakNudge();
 <div id="diagPanel" hidden role="status" aria-live="polite">
   <div style="font:700 14px system-ui,sans-serif;margin-bottom:8px">Page diagnostics</div>
   <button id="diagCopy" type="button">Copy report</button><button id="diagClear" type="button">Clear log</button><button id="diagClose" type="button">Close</button>
-  <div id="diagLog">Starting diagnostics…</div>
+  <div id="diagLog">Starting diagnostics\u2026</div>
 </div>
-<button id="diagLauncher" type="button" hidden>Diagnostics · 0 error(s)</button>
+<button id="diagLauncher" type="button" hidden>Diagnostics \u00b7 0 error(s)</button>
 <script>
 (function(){
   const entries=(window.__diagEarly||[]).slice();
@@ -2077,9 +2076,9 @@ applyCustom();renderAdv();render();checkBwStale();checkStreakNudge();
     entries.push(line); if(entries.length>100)entries.shift();
     if(kind==='ERROR'||kind==='REJECTION'){errorCount++;launch.hidden=false;}
     log.textContent=entries.join('\n');
-    launch.textContent='Diagnostics · '+errorCount+' error(s)';
+    launch.textContent='Diagnostics \u00b7 '+errorCount+' error(s)';
   }
-  window.addEventListener('error',function(e){add('ERROR',(e.message||'Script error')+(e.filename?' — '+e.filename.split('/').pop():'')+(e.lineno?':'+e.lineno:''));});
+  window.addEventListener('error',function(e){add('ERROR',(e.message||'Script error')+(e.filename?' \u2014 '+e.filename.split('/').pop():'')+(e.lineno?':'+e.lineno:''));});
   window.addEventListener('unhandledrejection',function(e){let reason=e.reason;add('REJECTION',reason&&(reason.stack||reason.message)||reason||'Unknown rejected promise');});
   document.addEventListener('click',function(e){
     const target=e.target&&e.target.closest?e.target.closest('button,[role="button"],input[type="button"],input[type="submit"]'):null;
@@ -2089,7 +2088,7 @@ applyCustom();renderAdv();render();checkBwStale();checkStreakNudge();
   },true);
   launch.addEventListener('click',function(){panel.hidden=!panel.hidden;});
   document.getElementById('diagClose').addEventListener('click',function(){panel.hidden=true;});
-  document.getElementById('diagClear').addEventListener('click',function(){entries.length=0;errorCount=0;log.textContent='Log cleared. Tap a button to test it.';launch.textContent='Diagnostics · 0 error(s)';});
+  document.getElementById('diagClear').addEventListener('click',function(){entries.length=0;errorCount=0;log.textContent='Log cleared. Tap a button to test it.';launch.textContent='Diagnostics \u00b7 0 error(s)';});
   document.getElementById('diagCopy').addEventListener('click',async function(){
     const report='Training & Weather Hub diagnostics\nURL: '+location.href+'\nUser agent: '+navigator.userAgent+'\nTime: '+new Date().toISOString()+'\n\n'+entries.join('\n');
     try{await navigator.clipboard.writeText(report);this.textContent='Copied!';}
