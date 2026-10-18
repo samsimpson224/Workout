@@ -398,6 +398,9 @@ body{color-scheme:dark}
       <div id="kCust"></div>
       <div id="kManage"></div>
       <button id="kSync">Sync my logs &amp; refresh</button>
+	<label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-weight:normal;font-size:.85rem">
+      <input type="checkbox" id="kNudgeInvite" style="width:auto;margin:0"> Include clan invite link in message
+	</label>
       <button id="kNudge" class="alt">Send a nudge by message</button>
       <button id="kInvite" class="alt">Share invite code</button>
       <button id="kLinkDevice" class="alt">Copy my personal device-link code (PC/Phone sync)</button>
@@ -1071,58 +1074,58 @@ const cleanName=v=>v.trim().replace(/[^\p{L}\p{N} _-]/gu,"").slice(0,20);
 const arr=v=>Array.isArray(v)?v.filter(Boolean):Object.values(v||{});
 const num=v=>Number(v)||0;
 // ---- Epoch Sanctuary (hardened) ----
-const E1_TXT=`Glacier Yeti|Snowpeak Watcher|b|A gentle, shaggy giant of the upper snows who watches lifters with quiet, approving nods.
-Frostbound Lynx|Glacial Prowler|b|A silent stalker with frost-tipped whiskers that maps the perimeter of your training zone.
-Rime Bastion Golem|Permafrost Guardian|g|Carved from blue glacier ice that hums with ancient cold energy.
-Aurora Vulpine|Northern Light Spirit|b|Its nine tails trace shimmering auroral ribbons across the evening sky.
-Prismatic Pangolin|Crystal Scale Guardian|g|Scales refract winter moonlight into blinding, multicoloured defensive beams.
-Glacial Tempest Golem|Blizzard Construct|g|Animated by howling high-altitude gales and compressed powder snow.
-Boreal Wise-Owl|Frostfeather Oracle|b|Perches above the porch, tracking form precision with piercing sapphire eyes.
-Starlight Puffin|Cliffside Dwellers|b|Waddles around cheerfully between heavy sets, offering lighthearted morale.
-Tundra Titan Mammoth|Primeval Ice-Bearer|b|A majestic woolly behemoth radiating calm, immovable strength through heavy lifts.
-Trench Seraph Wyrm|Crystal Abyss Serpent|l|Coils gracefully around porch railings, humming with high-frequency crystalline resonance.
-Nebula Ice-Seal|Starlit Swimmer|b|Glides through snowdrifts as if swimming through deep cosmic tides.
-Hearth-Hearted Blizzard Bear|Winter Endurance Incarnate|b|A massive, warm-hearted beast who embodies relentless cold-weather grit.
-Vaelgor the Abyssal Rime-Wyrm|Q1 Seasonal Apex|l|Grand ice serpent of the deep winter trench; arcs crackling frost-lightning along its spine.
-Blossom Kitsune|Spring Petal Spirit|b|Leaves trails of sweet-scented cherry blossoms with every playful bound.
-Dewdrop Bubble Slime|Meadow Spring Blob|b|Bouncing and cheerful; sparkles with pristine morning dew and fresh vitality.
-Verdant Sprout Treant|Forest Awakening|g|A tiny walking tree rooted in unyielding resilience and steady growth.
-Thistledown Sprinter Hare|Gale-Footed Racer|b|Possesses incredible explosive energy tailored for rapid sprint sets and fast reps.
-Gale-Winged Griffin|Spring Tempest Cub|f|Practices its first majestic wing-sweeps against the brisk seasonal updrafts.
-Moss-Clad Wall Gecko|Apex Grip Climber|b|Clings effortlessly to vertical stone with unmatched, unshakeable hold strength.
-Terrarium Blossom Tortoise|Living Garden Shield|g|A walking botanical ecosystem blooming with vibrant spring wildflowers.
-Thunder-Scarred Badger|Storm Brawler|b|Unstoppable grit and tenacious drive through punishing high-intensity training blocks.
-Pond-Sage Lotus Frog|Stillwater Philosopher|b|Meditates peacefully by garden puddles, teaching breath control between sets.
-Sky-Fleeced Cloud Sheep|Updraft Drifter|b|Fluffy and warm, floating gently on rising spring thermals.
-Sunbeam Clover Stag|Fortune Bringer|b|Its branching antlers catch early morning sunbeams, bringing luck to the roster.
-Golden-Armored Bee-Knight|Meadow Sentinel|b|Defends the training sanctuary perimeter with precise, chivalrous focus.
-Aetherion the Tempest Lindworm|Q2 Seasonal Apex|l|Coiled leviathan of pure spring ozone; commands roaring thunder and wind-shear.
-Solstice Pride Lion|Golden Sun Emperor|b|Radiates pure solar warmth, blazing confidence, and unyielding training morale.
-Tidal Reef Golem|Coral Construct|g|A living oceanic guardian pulsing with vibrant, rhythmic wave energy.
-Riverine Playmate Otter|Agility Juggler|b|Juggles smooth river pebbles with lightning-fast hand-eye coordination.
-Volcanic Magma Scuttler|Obsidian Crab|b|Carries a heavy shell heated by pure midsummer radiance and inner fire.
-Mirage Desert Fennec|Heat-Wave Phantom|b|Sleek and agile, darting effortlessly through shimmering desert heat waves.
-Ancient Sandstone Sphinx|Riddle Keeper of Reps|g|Carved from desert monoliths, guarding the secrets of mechanical efficiency.
-Zenith Sky Falcon|Apex Vision Hunter|f|Soars high above the training yard, spotting every personal record from afar.
-Bioluminescent Axolotl|Glow-Gill Sage|b|Radiates soothing pink light during late-evening summer cooldown sessions.
-Golden Carapace Beetle|Titan Strength Insect|b|Lifts many times its own bodyweight with immaculate, effortless form.
-Ocean Vine Kelp Serpent|Fluid Flow Wyrm|l|Flowing smoothly like ocean currents during compound fluid movements.
-Thermal Geyser Turtle|Steam Elder|g|Vents gentle, relaxing geothermal steam to soothe tired muscle fibers.
-Cosmic Twilight Starwhale|Firmament Swimmer|b|Breaches majestically across the fading summer evening sky.
-Pyreclaw the Caldera Forge-Drake|Q3 Seasonal Apex|f|Massive volcanic wyrm whose heavy wingbeats generate intense thermal updrafts.
-Emberwild Cinderfox|Hearth-Coal Scout|b|A swift vulpine spirit forged in glowing embers; leaves trails of drifting warmth.
-Velvet Mossgolem|Ancient Woodland Sentinel|g|Covered in deep green moss and crisp fallen autumn foliage.
-Hardwood Acorn Golem|Core Stability Spirit|g|Sturdy and compact, embodying unshakeable core strength and balance.
-Autumn Charger Bramble Boar|Momentum Juggernaut|b|Unstoppable forward drive through heavy barbell and dumbbell compound sets.
-Twilight Dusk Owl|Evening Watcher|b|Silently glides through amber twilight as nightfall descends upon the gym.
-Copper Trickster Tanuki|Hearth Jester|b|Brings mischievous cheer, keeping training sessions lighthearted and fun.
-Hearth-Flame Salamander|Warmth Basking Lizard|b|Basks in post-workout warmth right beside the porch heater.
-Cozy Spiny Hedgehog|Determination Ball|b|Curls into a secure, unbreakable ball of pure grit and focus.
-Harvest-Crowned Amber Stag|Autumn Monarch|b|Crowned in glowing amber antlers that cast a warm harvest light.
-Hearth-Spark Soot Sprite|Rep Dancer|b|A tiny, energetic floating spark of kinetic energy dancing around your dumbbells.
-Flame-Bearer Smolder Cub|Apprentice Pyre Bear|b|Learning the ancient ways of strength with boundless, fiery enthusiasm.
-Reed-Woven Harvest Guardian|Sanctuary Sentinel|g|Woven from autumn reeds and sturdy vines, standing steadfast guard.
-Aurelius, Dawn-Crowned Sovereign|Week 52 Grand Apex|s|Six-winged elder dragon of the solar eclipse; commands a radiant corona of eternal strength.`;
+const E1_TXT=`Glacier Yeti|Snowpeak Watcher|b|A gentle, shaggy giant of the upper snows who watches lifters with quiet, approving nods during heavy sets.
+Frostbound Lynx|Glacial Prowler|b|A silent stalker whose frost-tipped whiskers twitch in rhythm with explosive fast-twitch muscle fiber contractions.
+Rime Bastion Golem|Permafrost Guardian|g|Carved from blue glacier ice; its unbreakable structural integrity mirrors textbook eccentric form control.
+Aurora Vulpine|Northern Light Spirit|b|Its nine tails trace auroral ribbons that shimmer like glycogen stores refilling after a grueling leg day.
+Prismatic Pangolin|Crystal Scale Guardian|g|Scales refract winter moonlight into blinding beams, hardening like dense core bracing under a heavy load.
+Glacial Tempest Golem|Blizzard Construct|g|Animated by howling gales; teaches the relentless conditioning needed to push through the final rep of failure.
+Boreal Wise-Owl|Frostfeather Oracle|b|Perches above the porch, tracking strict movement patterns and flawless range-of-motion precision.
+Starlight Puffin|Cliffside Dwellers|b|Waddles around cheerfully between working sets, optimizing rest intervals to clear out metabolic fatigue.
+Tundra Titan Mammoth|Primeval Ice-Bearer|b|A massive woolly behemoth embodying absolute mechanical tension, progressive overload, and immovable strength.
+Trench Seraph Wyrm|Crystal Abyss Serpent|l|Coils gracefully around porch railings, humming with the high-frequency cellular resonance of deep muscle hypertrophy.
+Nebula Ice-Seal|Starlit Swimmer|b|Glides smoothly through snowdrifts with the effortless joint mobility and fluidity of a seasoned warm-up routine.
+Hearth-Hearted Blizzard Bear|Winter Endurance Incarnate|b|A massive beast embodying deep aerobic capacity, lung endurance, and relentless cold-weather grit.
+Vaelgor the Abyssal Rime-Wyrm|Q1 Seasonal Apex|l|Grand ice serpent of the deep winter trench; arcs crackling frost-lightning that awakens dormant stabilizer muscles.
+Blossom Kitsune|Spring Petal Spirit|b|Leaves trails of cherry blossoms, speeding up cellular recovery and flushing out post-workout lactic acid.
+Dewdrop Bubble Slime|Meadow Spring Blob|b|Bouncing and cheerful; sparkles with pristine hydration and cellular electrolyte balance.
+Verdant Sprout Treant|Forest Awakening|g|A tiny walking tree rooted in unyielding structural adaptation and steady skeletal growth.
+Thistledown Sprinter Hare|Gale-Footed Racer|b|Possesses explosive Type-II muscle fiber reactivity tailored for rapid sprint sets and fast-twitch power.
+Gale-Winged Griffin|Spring Tempest Cub|f|Practices its first majestic wing-sweeps against resistance, mastering dynamic variable tension.
+Moss-Clad Wall Gecko|Apex Grip Climber|b|Clings effortlessly to vertical stone with forearm endurance that never suffers from grip fatigue.
+Terrarium Blossom Tortoise|Living Garden Shield|g|A walking botanical ecosystem symbolizing steady pacing, joint health, and injury-proof longevity.
+Thunder-Scarred Badger|Storm Brawler|b|Unstoppable grit and tenacious drive through punishing high-intensity metabolic conditioning blocks.
+Pond-Sage Lotus Frog|Stillwater Philosopher|b|Meditates by garden puddles, teaching diaphragmatic breath control between high-exertion sets.
+Sky-Fleeced Cloud Sheep|Updraft Drifter|b|Fluffy and light, floating gently on rising thermals like a well-managed central nervous system recovery.
+Sunbeam Clover Stag|Fortune Bringer|b|Its branching antlers catch morning sunbeams, boosting natural testosterone and training motivation.
+Golden-Armored Bee-Knight|Meadow Sentinel|b|Defends the training sanctuary perimeter with strict, disciplined neuromuscular focus.
+Aetherion the Tempest Lindworm|Q2 Seasonal Apex|l|Coiled leviathan of pure spring ozone; commands roaring thunder that fires up every motor unit in the body.
+Solstice Pride Lion|Golden Sun Emperor|b|Radiates pure solar warmth, blazing confidence, and the unstoppable mental drive of a true PR day.
+Tidal Reef Golem|Coral Construct|g|A living oceanic guardian pulsing with rhythmic wave volume and sustained muscular endurance.
+Riverine Playmate Otter|Agility Juggler|b|Juggles smooth river pebbles with lightning-fast hand-eye coordination and agile neuromuscular reflexes.
+Volcanic Magma Scuttler|Obsidian Crab|b|Carries a shell heated by pure metabolic thermogenesis and core internal fire.
+Mirage Desert Fennec|Heat-Wave Phantom|b|Sleek and agile, darting effortlessly through high-temperature conditioning sessions without fading.
+Ancient Sandstone Sphinx|Riddle Keeper of Reps|g|Carved from desert monoliths, guarding the sacred biomechanical laws of time-under-tension.
+Zenith Sky Falcon|Apex Vision Hunter|f|Soars high above the training yard, tracking micro-progressions and macro-nutrient targets with precision.
+Bioluminescent Axolotl|Glow-Gill Sage|b|Radiates soothing pink light that accelerates myofibrillar protein synthesis during late-evening rest.
+Golden Carapace Beetle|Titan Strength Insect|b|Lifts many times its own bodyweight with immaculate leverage and flawless joint alignment.
+Ocean Vine Kelp Serpent|Fluid Flow Wyrm|l|Flowing smoothly like ocean currents to enhance fascial release and dynamic flexibility.
+Thermal Geyser Turtle|Steam Elder|g|Vents gentle, relaxing geothermal steam to soothe tired muscle fibers and loosen tight fascia.
+Cosmic Twilight Starwhale|Firmament Swimmer|b|Breaches majestically across the sky, reminding lifters of the vast universe outside the gym walls.
+Pyreclaw the Caldera Forge-Drake|Q3 Seasonal Apex|f|Massive volcanic wyrm whose heavy wingbeats generate the intense thermal heat of a true max-effort warmup.
+Emberwild Cinderfox|Hearth-Coal Scout|b|A swift vulpine spirit forged in glowing embers, stoking the internal metabolic fire.
+Velvet Mossgolem|Ancient Woodland Sentinel|g|Covered in deep green moss, symbolizing low-impact recovery and restorative joint mobility.
+Hardwood Acorn Golem|Core Stability Spirit|g|Sturdy and compact, locking in absolute spinal neutrality and unbreakable core bracing.
+Autumn Charger Bramble Boar|Momentum Juggernaut|b|Unstoppable forward drive pushing through heavy barbell plateaus and sticking points.
+Twilight Dusk Owl|Evening Watcher|b|Silently glides through amber twilight as nighttime melatonin production prepares the body for deep sleep.
+Copper Trickster Tanuki|Hearth Jester|b|Brings mischievous cheer, keeping training sessions lighthearted to lower cortisol and stress.
+Hearth-Flame Salamander|Warmth Basking Lizard|b|Basks in post-workout warmth right beside the heater, maximizing blood flow to exhausted tissues.
+Cozy Spiny Hedgehog|Determination Ball|b|Curls into a secure, unbreakable ball of pure mental fortitude when the last rep gets heavy.
+Harvest-Crowned Amber Stag|Autumn Monarch|b|Crowned in glowing amber antlers, symbolizing peak athletic harvest after a hard training block.
+Hearth-Spark Soot Sprite|Rep Dancer|b|A tiny, energetic spark of ATP energy dancing around your dumbbells with micro-bursts of speed.
+Flame-Bearer Smolder Cub|Apprentice Pyre Bear|b|Learning the foundational mechanics of strength training with boundless, eager enthusiasm.
+Reed-Woven Harvest Guardian|Sanctuary Sentinel|g|Woven from autumn reeds, standing steadfast guard over your home gym setup and equipment.
+Aurelius, Dawn-Crowned Sovereign|Week 52 Grand Apex|s|Six-winged elder dragon of the solar eclipse; commands the ultimate radiant corona of lifetime peak strength.`;
 const PALETTES={
   ember:{bg1:"#1a0704",bg2:"#090302",p:"#ff5e00",s:"#ffb700",acc:"#ff2a00",glow:"#ff4500"},
   frost:{bg1:"#051626",bg2:"#030811",p:"#00d2ff",s:"#aefeff",acc:"#3a86ff",glow:"#00e1ff"},
@@ -1272,8 +1275,10 @@ function renderCreatureSVG(g, bondStage, pal, sil){
 
 // state: cap (captured) | cur (this week) | sil (upcoming) | esc (escaped)
 function renderMiniSVG(g,state){
-  const sil=state==="sil"||state==="esc",pal=sil?SIL:PALETTES[g.biome];
-  return `<svg viewBox="20 20 280 150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"${state==="esc"?' style="opacity:.4"':""}><rect x="20" y="20" width="280" height="150" rx="14" fill="${sil?"#2b3040":pal.bg2}"/>${creatureRig(g,pal,sil?"#000":"#2b3040",1)}</svg>`;
+  // The calendar is a bestiary preview, not a capture-status mask: render each
+  // week's own creature in its biome palette even before it is captured.
+  const svg=renderCreatureSVG(g,3,PALETTES[g.biome]);
+  return state==="esc"?svg.replace("<svg ",'<svg style="opacity:.4" '):svg;
 }
 
 
@@ -1310,9 +1315,9 @@ function openEntry(idx){
   }else if(isCur&&idx===pos){const r=epochData.wk[ek(x.id,cur.w)]||{t:0,m:{}},tg=targetFor(epochData.n);
     h=`${art(stageOf(r.t,tg,g))}<b>${esc(g.name)}</b>${tag}<div class="hint">Bonding in progress: ${r.t} / ${tg} hard sets (captured at ${pctOf(g)}%).</div><b>Contributors so far</b>${contribHTML(rank(r),r.t)}`;
   }else if(idx<pos){
-    h=`${art(1,true)}<b>???</b><div class="hint">This one escaped before the clan could bond with it.</div>`;
+    h=`${art(3)}<b>???</b><div class="hint">This one escaped before the clan could bond with it.</div>`;
   }else{const w=cur.w+idx-pos,days=Math.ceil((wkMs(x,w)-Date.now())/864e5);
-    h=`${art(1,true)}<b>???</b><div class="hint">Appears ${fmtD(wkMs(x,w))}, in ${days} day${days===1?"":"s"}.${g.boss?" ⚔ A boss encounter.":g.sub?" ✦ A sub-boss.":""}</div>`;
+    h=`${art(3)}<b>???</b><div class="hint">Appears ${fmtD(wkMs(x,w))}, in ${days} day${days===1?"":"s"}.${g.boss?" ⚔ A boss encounter.":g.sub?" ✦ A sub-boss.":""}</div>`;
   }
   box.innerHTML=h+`<button type="button" class="alt" id="beClose">Close</button>`;
   box.hidden=false;
@@ -1367,6 +1372,7 @@ $("clanTabLead")?.addEventListener("click",()=>{
 $("clanTabSanc")?.addEventListener("click",()=>{
   $("clanTabSanc").classList.add("on");$("clanTabLead").classList.remove("on");
   $("clanSubSanctuary").hidden=false;$("clanSubLeaderboard").hidden=true;
+  if(tokA.t&&tokA.exp>Date.now()){$("adminViewerCard").hidden=false;renderAdminWeek()}
   focusCurrentWeek();
 });
 
@@ -1475,6 +1481,10 @@ async function renderClan(){
   $("kMyGen").value=c.g||"";
   $("kAdminUser").value="m-"+c.clan+MAIL;
   const admin=Boolean(tokA.t&&tokA.exp>Date.now());
+  // Update visibility before network work below; a failed/slow clan refresh must
+  // not leave a successfully authenticated inspector hidden on this device.
+  $("adminViewerCard").hidden=!admin;
+  if(admin)renderAdminWeek();
   $("kTitle").textContent="Signed in as "+c.name+(c.owner?" (clan creator)":"")+(admin?" — Admin Unlocked 👑":"");
   $("kAdminToggle").hidden=admin;
   if(admin)$("kAdminBox").hidden=true;
@@ -1775,7 +1785,11 @@ $("kAdminBox").addEventListener("submit",async e=>{
     tokA={t:j.idToken,exp:Date.now()+3e6};
     if(!c.owner){c.owner=true;set("clan2",c)}
     $("kMaster").value="";
-    msg("kMsg","Admin unlocked! Tap 'Manage / Edit' next to any member to adjust entries.",true);
+    // Put the inspector in view immediately after successful authentication.
+    $("clanTabSanc").classList.add("on");$("clanTabLead").classList.remove("on");
+    $("clanSubSanctuary").hidden=false;$("clanSubLeaderboard").hidden=true;
+    $("adminViewerCard").hidden=false;renderAdminWeek();
+    msg("kMsg","Admin unlocked! Bestiary inspector is available below the calendar; member editing remains in the leaderboard.",true);
     renderClan();
   }catch(err){msg("kMsg",why(err),false)}
 });
@@ -1976,9 +1990,29 @@ async function checkPokes(){
 }
 $("pokeBar").addEventListener("click",e=>{if(e.target.closest("button"))$("pokeBar").hidden=true});
 $("kNudge").addEventListener("click",async()=>{
-  const t="\u{1F4AA} Time to check in on the training clan! Open the app and log your session.";
-  try{if(navigator.share){await navigator.share({text:t});return}}catch(e){if(e.name==="AbortError")return}
-  try{await navigator.clipboard.writeText(t);msg("kMsg","Copied. Paste it into a message.",true)}catch(e){msg("kMsg","Couldn't copy the message.",false)}
+  const c=get("clan2",null);
+  const includeLink=$("kNudgeInvite")&&$("kNudgeInvite").checked;
+  let t="\u{1F4AA} Time to check in on the training clan! Open the app and log your session.";
+  
+  if(includeLink&&c&&c.code){
+    t+="\n\nJoin our training clan here:\n"+c.code;
+  }
+  
+  try{
+    if(navigator.share){
+      await navigator.share({text:t});
+      return;
+    }
+  }catch(e){
+    if(e.name==="AbortError")return;
+  }
+  
+  try{
+    await navigator.clipboard.writeText(t);
+    msg("kMsg",includeLink?"Nudge & invite link copied to clipboard!":"Nudge copied to clipboard.",true);
+  }catch(e){
+    msg("kMsg","Couldn't copy the message.",false);
+  }
 });
 setInterval(checkPokes,45000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkPokes()});
