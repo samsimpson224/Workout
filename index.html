@@ -2171,7 +2171,15 @@ document.addEventListener("visibilitychange",()=>{if(!document.hidden&&checkPoke
 checkPokes();
 
 migrate();
-applyCustom();renderAdv();render();checkBwStale();checkStreakNudge();
+applyCustom();
+renderAdv();
+
+// Immediately initialize Sanctuary data so the Workout tab mini-banner resolves instantly
+renderSanctuary({}, 1);
+
+render();
+checkBwStale();
+checkStreakNudge();
 </script>
 
 </body>
