@@ -309,11 +309,11 @@ body{color-scheme:dark}
     <div id="clanSubLeaderboard">
     <button id="kGuideBtn" class="alt" style="padding:8px;font-size:.85rem">? Setup guide (iPhone &amp; Android)</button>
     <div id="kGuide" class="info-panel" hidden>
-    <b>A. Friends: join in 3 steps</b>
+      <b>A. Friends: join in 3 steps</b>
       <ol>
         <li><b>Install the app.</b> Open the link your clan creator sent.<br><i>iPhone:</i> in Safari tap Share &rarr; Add to Home Screen &rarr; Add.<br><i>Android:</i> in Chrome tap the &#8942; menu &rarr; Add to Home screen (or Install app) &rarr; Add. Open it from the new icon.</li>
         <li><b>Paste the invite code.</b> Tap the Clan tab &rarr; Join a clan. Copy the long code starting <code>CLAN1.</code> from your creator's message, then press and hold in the code box and tap Paste. Type a display name (and optionally choose a division).</li>
-        <li><b>Tap Join &amp; Bond with the Sanctuary.</b> Log a workout and your name appears on the leaderboard. Every hard set you log contributes to bonding with the clan's weekly Sanctuary companion (capturing standard beasts at 85% target completion and epic bosses at 100%!).</li>
+        <li><b>Tap Join.</b> Log a workout and your name appears on the board. That's it. No accounts or passwords for you.</li>
       </ol>
       <b>B. Clan creator: one-time setup (about 10 minutes, free)</b>
       <p>Easiest on a computer. On a phone, switch the page to desktop view first:<br><i>iPhone Safari:</i> tap <b>aA</b> in the address bar &rarr; Request Desktop Website.<br><i>Android Chrome:</i> tap &#8942; &rarr; tick Desktop site. Pinch to zoom as needed. On a phone, open Firebase's &#9776; menu to see Build.</p>
@@ -398,7 +398,6 @@ body{color-scheme:dark}
       <div id="kCust"></div>
       <div id="kManage"></div>
       <button id="kSync">Sync my logs &amp; refresh</button>
-      <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-weight:normal;font-size:.85rem"><input type="checkbox" id="kNudgeInvite" style="width:auto;margin:0"> Include clan invite link in nudge message</label>
       <button id="kNudge" class="alt">Send a nudge by message</button>
       <button id="kInvite" class="alt">Share invite code</button>
       <button id="kLinkDevice" class="alt">Copy my personal device-link code (PC/Phone sync)</button>
@@ -407,10 +406,8 @@ body{color-scheme:dark}
       <form id="kAdminBox" class="info-panel" hidden autocomplete="on" data-np-autofill-form-type="login">
         <b>👑 Clan Creator Admin Login (NordPass Ready)</b>
         <div class="hint">Unlocking on this device also restores your permanent <code>(clan creator)</code> status here.</div>
-      <div style="position: absolute; opacity: 0; height: 0; width: 0; overflow: hidden; pointer-events: none;">
-          <label for="kAdminUser">Admin Account ID</label>
-          <input id="kAdminUser" name="username" type="text" autocomplete="username" readonly class="np-user" data-np-autofill-field-type="username">
-        </div>
+        <label for="kAdminUser" style="font-size:.78rem;margin:4px 0 2px">Admin Account ID (for NordPass / Keychain matching)</label>
+        <input id="kAdminUser" name="username" type="text" autocomplete="username" readonly class="np-user" data-np-autofill-field-type="username">
         <label for="kMaster" style="font-size:.82rem;margin:4px 0 2px">Master password</label>
         <input id="kMaster" name="password" type="password" autocomplete="current-password" placeholder="Enter or autofill master password" data-np-autofill-field-type="password">
         <button id="kUnlock" type="submit">Unlock admin tools</button>
@@ -427,7 +424,7 @@ body{color-scheme:dark}
         <div class="podium-bar"><div id="sancFill" class="podium-fill" style="width:0%"></div></div>
       </div>
       <div class="info-panel"><b>📜 Clan Bestiary (52 weeks)</b>
-        <div class="hint">Every week's companion is captured at Stage 3: 85% of the target, or 100% for ⚔ boss weeks. Tap any entry to open it; captured ones list who earned the capture.</div>
+        <div class="hint">Every week's companion is captured at Stage 3: 85% of the target, 92% for ✦ sub-boss dragons, or 100% for ⚔ boss weeks. Tap any entry to open it; captured ones list who earned the capture.</div>
         <select id="bestiarySet" hidden style="margin:6px 0"></select>
         <div id="calendarGrid" class="calendar-grid"></div>
         <div id="bestiaryEntry" class="info-panel" hidden></div>
@@ -1055,12 +1052,17 @@ const CLOUD_V=2,LOCAL_V=1;
 const MAIL="@clanboard.app",OKURL=/^https:\/\/[\w.-]+\.(firebaseio\.com|firebasedatabase\.app)$/;
 const WR="auth != null && (auth.token.email === 'u-' + $member + '@clanboard.app' || auth.token.email === 'm-' + $clan + '@clanboard.app')";
 const MW="auth != null && auth.token.email === 'm-' + $clan + '@clanboard.app'";
+const MV={".validate":"newData.hasChildren(['name','t'])",name:{".validate":"newData.isString() && newData.val().length <= 40"},t:{".validate":"newData.isNumber()"},g:{".validate":"newData.isString() && newData.val().length <= 1"}};
+const MEM={".read":"auth != null","$member":{".write":WR,...MV}};
 const RULES=JSON.stringify({rules:{".read":false,".write":false,clans:{"$clan":{
-  d:{"$kind":{".read":"auth != null","$member":{".write":WR}}},
   meta:{".read":"auth != null",".write":MW},
   mod:{".read":"auth != null",".write":MW},
-  board:{".read":"auth != null","$member":{".write":WR}},
-  custom:{".read":"auth != null","$member":{".write":WR}}}}}},null,1);
+  d:{
+    board:MEM,custom:MEM,lib:MEM,
+    dex:{".read":"auth != null","$member":{".write":WR,"$rec":{".validate":"newData.hasChildren(['t','tg']) && newData.child('t').isNumber() && newData.child('tg').isNumber()"}}},
+    pokes:{".read":"auth != null","$from":{".write":"auth != null && (auth.token.email === 'u-' + $from + '@clanboard.app' || auth.token.email === 'm-' + $clan + '@clanboard.app')","$to":{".validate":"newData.hasChildren(['t','n','k']) && newData.child('t').isNumber() && newData.child('n').isString() && newData.child('n').val().length <= 40 && (newData.child('k').val() === 'hype' || newData.child('k').val() === 'poke')"}}}
+  },
+  board:MEM,custom:MEM}}}},null,1);
 $("kRules").value=RULES;
 const rnd=n=>[...crypto.getRandomValues(new Uint8Array(n))].map(b=>(b%36).toString(36)).join("");
 const enc=(pfx,o)=>pfx+btoa(JSON.stringify(o)).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
@@ -1133,7 +1135,7 @@ let svgUid=0,epochData={wk:{},n:1},openIdx=0,viewId="",dexNow={};
 const BIO=w=>w<=13?"frost":w<=26?"storm":w<=38?"solar":w<=51?"ember":"solar";
 const KINDS={b:"beast",g:"golem",l:"lindworm",f:"forgedrake",s:"sovereign"};
 // A title containing "Apex" marks a boss: it needs 100% of the target. Everything else captures at 85%.
-const parseRoster=(txt,bio)=>txt.split("\n").map((l,i)=>{const[name,title,k,lore]=l.split("|"),w=i+1;return{w,name,title,lore,kind:KINDS[k],biome:bio(w),boss:/Apex/.test(title)}});
+const parseRoster=(txt,bio)=>txt.split("\n").map((l,i)=>{const[name,title,k,lore]=l.split("|"),w=i+1;return{w,name,title,lore,kind:KINDS[k],biome:bio(w),boss:/(Seasonal|Grand) Apex/.test(title),sub:/^[lf]$/.test(k)&&!/(Seasonal|Grand) Apex/.test(title)}});
 /* ADD A NEW EPOCH YEAR: paste 52 lines (name|title|kind|lore, kind = b/g/l/f/s) as E2_TXT, then add
    {id:"e2",name:"Epoch II",start:"2027-10-16",roster:parseRoster(E2_TXT,BIO)} to EPOCHS.
    Old epochs, captures and commemorations stay in the bestiary (dropdown). Never reuse or change an id. */
@@ -1146,93 +1148,83 @@ const wkMs=(x,w)=>x.ms+(w-1)*WEEK_MS;
 const epochKeyOf=d=>{const t=Date.parse(String(d).slice(0,10)+"T00:00:00Z");if(!Number.isFinite(t))return null;const x=epochAt(t);return x?{id:x.id,w:Math.floor((t-x.ms)/WEEK_MS)+1}:null};
 const fmtD=ms=>new Date(ms).toLocaleDateString(undefined,{day:"numeric",month:"short",timeZone:"UTC"});
 const targetFor=n=>Math.max(30,Math.max(1,num(n))*45);
-const needOf=g=>g.boss?1:.85;
+const needOf=g=>g.boss?1:g.sub?.92:.85,tierMark=g=>g.boss?"⚔ ":g.sub?"✦ ":"",pctOf=g=>Math.round(needOf(g)*100);
 const stageOf=(s,tg,g)=>{const r=num(s)/tg;return r<.35?1:r<needOf(g)?2:3};
 const rank=r=>Object.values((r&&r.m)||{}).filter(m=>m.s>0).sort((a,b)=>b.s-a.s).map(m=>[m.name,m.s]);
-// ---- Unique High-Fantasy Companion Anatomy & Silhouette Engine ----
-function creatureRig(g, pal, fill, stage){
-  const w = g.w, k = g.kind;
-  
-  // 1. Apex Dragons & Seasonal Bosses
-  if(k === "lindworm" || k === "forgedrake" || k === "sovereign" || w === 13 || w === 26 || w === 39 || w === 52){
-    return `
-      <path class="fx-draft" d="M25,130 Q90,100 150,135 T295,120" stroke="${pal.p}" stroke-width="1.8" fill="none"/>
-      <path d="M55,145 C25,115 65,65 110,92 C155,118 140,158 185,142 C230,125 245,75 205,52 C175,35 148,55 135,44" stroke="${fill}" stroke-width="20" stroke-linecap="round" fill="none"/>
-      <path d="M135,44 L105,30 L120,48 L95,58 L132,62 L152,50" fill="${fill}" stroke="${pal.p}" stroke-width="1.5"/>
-      ${stage >= 2 ? `<path class="fx-bolt" d="M62,92 L118,95 L182,115 L212,72" stroke="${pal.s}" stroke-width="2" fill="none"/>` : ""}`;
-  } 
-
-  // Week 1: Glacier Yeti (Proper Shaggy Gentle Giant)
-  if(w === 1){
-    return `
-      <ellipse cx="160" cy="115" rx="42" ry="30" fill="${fill}" stroke="${pal.p}" stroke-width="1.8"/>
-      <circle cx="160" cy="80" r="24" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
-      <circle cx="144" cy="65" r="9" fill="${fill}" stroke="${pal.s}" stroke-width="1.2"/>
-      <circle cx="176" cy="65" r="9" fill="${fill}" stroke="${pal.s}" stroke-width="1.2"/>
-      <circle cx="152" cy="78" r="3" fill="${pal.s}"/>
-      <circle cx="168" cy="78" r="3" fill="${pal.s}"/>
-      <ellipse cx="160" cy="86" rx="5" ry="3" fill="${pal.p}"/>`;
-  }
-
-  // 2. Heavy Golems, Tortoises, Treants & Monoliths
-  if(k === "golem" || [3,5,6,16,20,28,32,37,41,42,51].includes(w)){
-    return `
-      <polygon points="68,52 112,38 118,86 76,96" fill="${fill}" stroke="${pal.s}" stroke-width="1.5"/>
-      <polygon points="252,52 208,38 202,86 244,96" fill="${fill}" stroke="${pal.s}" stroke-width="1.5"/>
-      <polygon points="160,32 118,62 132,148 160,162 188,148 202,62" fill="${fill}" stroke="${pal.p}" stroke-width="2"/>
-      <rect x="130" y="95" width="60" height="35" rx="8" fill="${fill}" stroke="${pal.p}" stroke-width="1.5"/>
-      <polygon points="160,58 140,85 160,115 180,85" fill="${pal.p}" stroke="${pal.s}" stroke-width="1.2"/>`;
-  } 
-
-  // 3. Mammoths & Massive Beasts (Weeks 9, 12)
-  if([9, 12].includes(w)){
-    return `
-      <ellipse cx="160" cy="115" rx="46" ry="32" fill="${fill}" stroke="${pal.p}" stroke-width="2"/>
-      <circle cx="135" cy="95" r="22" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
-      ${w === 9 ? `<path d="M115,105 Q90,125 95,142" stroke="${pal.s}" stroke-width="5" stroke-linecap="round" fill="none"/>
-                   <path d="M120,100 Q95,120 100,137" stroke="${pal.s}" stroke-width="4" stroke-linecap="round" fill="none"/>` : ""}
-      <circle cx="120" cy="85" r="6" fill="${fill}" stroke="${pal.s}" stroke-width="1"/>`;
-  } 
-
-  // 4. Owls, Falcons, Griffins & Birds
-  if([7, 18, 33, 44].includes(w)){
-    return `
-      <ellipse cx="160" cy="112" rx="26" ry="34" fill="${fill}" stroke="${pal.p}" stroke-width="1.8"/>
-      <circle cx="160" cy="78" r="20" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
-      <polygon points="152,78 168,78 160,92" fill="${pal.p}"/>
-      <path d="M134,105 Q100,90 115,130 Z" fill="${fill}" stroke="${pal.s}" stroke-width="1.5"/>
-      <path d="M186,105 Q220,90 205,130 Z" fill="${fill}" stroke="${pal.s}" stroke-width="1.5"/>`;
-  } 
-
-  // 5. Foxes, Lynx, Wolves, Stags & Canines
-  if([2, 4, 14, 17, 24, 27, 40, 43, 48].includes(w)){
-    return `
-      <ellipse cx="160" cy="118" rx="38" ry="24" fill="${fill}" stroke="${pal.p}" stroke-width="1.8"/>
-      <circle cx="195" cy="85" r="18" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
-      <polygon points="182,72 170,42 192,68" fill="${fill}" stroke="${pal.s}" stroke-width="1"/>
-      <polygon points="208,72 220,42 200,68" fill="${fill}" stroke="${pal.s}" stroke-width="1"/>
-      <path d="M122,115 Q90,95 105,135" stroke="${fill}" stroke-width="7" stroke-linecap="round" fill="none"/>`;
-  } 
-
-  // 6. Aquatic & Amphibious Wildlife
-  if([11, 15, 22, 29, 34, 36, 38].includes(w)){
-    return `
-      <ellipse cx="160" cy="120" rx="42" ry="22" fill="${fill}" stroke="${pal.p}" stroke-width="1.8"/>
-      <path d="M110,120 Q80,105 95,135 Z" fill="${fill}" stroke="${pal.s}" stroke-width="1.2"/>
-      <circle cx="175" cy="95" r="16" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
-      <circle cx="168" cy="90" r="4" fill="${pal.s}"/>
-      <circle cx="182" cy="90" r="4" fill="${pal.s}"/>`;
-  } 
-  
-  // 7. Distinct Default for remaining unique creatures
-  return `
-    <ellipse cx="160" cy="115" rx="32" ry="26" fill="${fill}" stroke="${pal.p}" stroke-width="1.8"/>
-    <circle cx="160" cy="80" r="18" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
-    <circle cx="152" cy="76" r="2.5" fill="${pal.s}"/><circle cx="168" cy="76" r="2.5" fill="${pal.s}"/>
-    <path d="M145,55 Q150,35 155,55" stroke="${pal.s}" stroke-width="3" fill="none"/>
-    <path d="M165,55 Q170,35 175,55" stroke="${pal.s}" stroke-width="3" fill="none"/>`;
+// ---- Unique High-Fantasy Companion Anatomy & Silhouette Engine (one hand-built design per creature) ----
+function creatureRig(g,pal,fill,stage){
+  const R=n=>Math.round(n*10)/10,ST=(c,w)=>`stroke="${c}" stroke-width="${w}"`;
+  const e=(x,y,rx,ry,c=pal.p)=>`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${fill}" ${ST(c,1.6)}/>`;
+  const o=(x,y,r,c=pal.s)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" ${ST(c,1.6)}/>`;
+  const P=(pts,c=pal.s)=>`<polygon points="${pts}" fill="${fill}" ${ST(c,1.3)} stroke-linejoin="round"/>`;
+  const D=(d,c=pal.p)=>`<path d="${d}" fill="${fill}" ${ST(c,1.6)} stroke-linejoin="round"/>`;
+  const L=(d,w=6,c=fill)=>`<path d="${d}" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`;
+  const A=(x,y,r=2.6)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${pal.s}"/>`;
+  const star=(x,y,r1,r2,n)=>{const s=[];for(let i=0;i<n*2;i++){const a=Math.PI*i/n,r=i%2?r2:r1;s.push(R(x+r*Math.cos(a))+","+R(y+r*Math.sin(a)))}return s.join(" ")};
+  const sp=(x,y,r)=>`<polygon points="${star(x,y,r,r*.4,4)}" fill="${pal.s}"/>`;
+  const leaf=(x,y,len,deg,w=8,c=pal.s)=>{const a=deg*Math.PI/180,ca=Math.cos(a),sa=Math.sin(a),tx=x+len*ca,ty=y+len*sa,px=-sa*w,py=ca*w,mx=x+len*.5*ca,my=y+len*.5*sa;return `<path d="M${R(x)},${R(y)} Q${R(mx+px)},${R(my+py)} ${R(tx)},${R(ty)} Q${R(mx-px)},${R(my-py)} ${R(x)},${R(y)}Z" fill="${fill}" ${ST(c,1.3)} stroke-linejoin="round"/>`};
+  const spikes=(pts,h=18,hw=7)=>pts.map(([x,y])=>P(`${x-hw},${y+4} ${x},${y-h} ${x+hw},${y+4}`,pal.p)).join("");
+  const draft=`<path class="fx-draft" d="M25,130 Q90,100 150,135 T295,120" stroke="${pal.p}" stroke-width="1.8" fill="none"/>`;
+  const bolt=d=>stage>=2?`<path class="fx-bolt" d="${d}" stroke="${pal.s}" stroke-width="2" fill="none"/>`:"";
+  // generic four-legged body: back/front strings draw behind/over it
+  const Q=(bx,by,rx,ry,hx,hy,hr,lw=9,back="",front="")=>back+[bx-rx*.55,bx-rx*.25,bx+rx*.35,bx+rx*.65].map(x=>L(`M${R(x)},${by} L${R(x)},152`,lw)).join("")+e(bx,by,rx,ry)+L(`M${R(bx-rx*.7)},${R(by-ry*.3)} L${R(hx+hr*.3)},${R(hy+hr*.4)}`,R(hr*1.3))+o(hx,hy,hr)+A(R(hx-hr*.35),R(hy-hr*.2))+front;
+  const art={
+  1:()=>P(star(160,110,46,38,14),pal.p)+L("M122,92 Q102,122 114,146",16)+L("M198,92 Q218,122 206,146",16)+e(140,150,16,7)+e(180,150,16,7)+o(160,68,22,pal.p)+leaf(144,52,18,-120,5)+leaf(160,48,20,-90,5)+leaf(176,52,18,-60,5)+A(151,68)+A(169,68),
+  2:()=>Q(176,100,42,21,120,82,17,8,P(star(120,88,27,19,9),pal.p)+leaf(110,68,30,-105,6)+leaf(128,68,30,-72,6)+e(220,90,6,11)),
+  3:()=>P("98,62 126,58 124,92 94,88")+P("222,62 194,58 196,92 226,88")+leaf(104,60,34,-115,7)+leaf(116,58,38,-92,7)+leaf(216,60,34,-65,7)+leaf(204,58,38,-88,7)+D("M126,60 H194 L200,128 H120Z")+D("M146,34 H174 V60 H146Z")+L("M104,92 L98,138",17)+L("M216,92 L222,138",17)+D("M124,128 H154 V152 H122Z")+D("M166,128 H196 V152 H198Z")+`<path d="M160,78 L146,98 L160,118 L174,98Z" fill="${pal.p}"/>`+A(153,46)+A(167,46),
+  4:()=>[...Array(9)].map((_,i)=>leaf(198,100,78-(i%2)*10,-108+i*15,7)).join("")+Q(158,106,38,19,114,88,15,7,"",P("102,84 76,98 104,100")+leaf(106,72,24,-105,6)+leaf(122,72,24,-72,6)),
+  5:()=>D("M214,118 Q268,108 294,144 Q252,140 214,130Z")+[130,150,190,206].map(x=>L(`M${x},126 L${x},152`,10)).join("")+e(166,108,54,30)+[...Array(7)].map((_,i)=>{const a=Math.PI*(1.1+i*.13);return o(R(166+50*Math.cos(a)),R(108+27*Math.sin(a)),8)}).join("")+D("M118,94 L78,124 L120,134Z")+A(110,112),
+  6:()=>o(160,120,32)+o(160,78,25)+o(160,46,15)+o(112,104,14)+o(208,104,14)+o(100,56,7)+o(224,64,6)+o(92,120,6)+o(236,112,7)+A(152,76,3)+A(168,76,3),
+  7:()=>L("M92,152 H228",7)+D("M124,88 Q94,118 116,150 Q132,128 134,98Z")+D("M196,88 Q226,118 204,150 Q188,128 186,98Z")+e(160,112,34,40)+o(160,64,27)+leaf(142,46,24,-110,7)+leaf(178,46,24,-70,7)+A(148,64,7)+A(172,64,7)+P("154,72 166,72 160,84",pal.p),
+  8:()=>e(150,152,13,4)+e(176,152,13,4)+leaf(188,140,26,25,6)+e(166,108,30,40)+D("M190,90 Q226,112 202,146 Q198,120 188,100Z")+o(148,64,18)+P("134,58 96,70 134,82",pal.p)+A(148,58)+sp(214,56,7)+sp(104,40,5),
+  9:()=>[138,160,196,214].map(x=>L(`M${x},112 V152`,16)).join("")+e(176,100,58,38)+o(150,68,26,pal.p)+o(106,92,26)+L("M94,104 Q70,128 92,150",15)+L("M100,110 Q68,118 66,86",5,pal.s)+L("M114,112 Q86,128 84,98",4,pal.s)+A(98,84),
+  10:()=>L("M70,138 C70,96 130,90 150,118 C170,146 226,140 232,100 C236,72 210,58 188,66",17)+leaf(70,138,32,150,9)+leaf(176,58,38,-130,10)+leaf(176,58,38,-60,10)+o(184,66,14)+P("172,62 148,70 172,76")+A(180,60,2.5)+spikes([[98,98],[136,104],[198,140],[230,114]],16,6),
+  11:()=>e(172,126,62,27)+L("M128,116 L116,92",22)+o(112,86,18)+o(98,92,6)+L("M92,96 L74,92 M92,100 L74,104",2,pal.s)+D("M132,140 L108,160 L148,152Z")+P("232,128 266,108 262,138")+P("232,134 266,152 258,126")+A(106,88)+sp(160,124,6)+sp(190,134,5),
+  12:()=>Q(172,104,52,34,104,96,20,16,o(142,78,26,pal.p)+e(224,100,7,8),o(98,76,7)+o(120,74,7)+e(88,104,12,8)),
+  13:()=>draft+L("M36,142 C70,106 112,152 152,118 C192,84 232,128 264,86",20)+spikes([[84,114],[118,138],[168,104],[206,100],[240,114]],20,8)+o(268,84,17)+P("278,78 308,72 302,94 278,96")+leaf(260,72,30,-125,6)+leaf(266,68,34,-98,6)+leaf(274,68,30,-70,6)+leaf(282,76,26,-42,5)+A(266,80)+bolt("M44,134 L112,146 L170,112 L232,124 L262,86"),
+  14:()=>leaf(206,126,78,-18,20)+leaf(206,128,80,-52,20)+leaf(206,130,70,10,20)+e(168,114,28,36)+e(190,128,22,24)+L("M146,100 L144,150",8)+o(146,70,16)+P("136,72 120,80 138,84",pal.p)+leaf(136,58,36,-108,9)+leaf(156,58,36,-70,9)+L("M150,92 Q158,104 150,112",8)+A(142,66)+sp(240,60,6)+sp(250,96,5),
+  15:()=>D("M160,48 Q170,78 196,94 Q220,110 216,134 Q212,152 160,152 Q108,152 104,134 Q100,110 124,94 Q150,78 160,48Z")+A(146,122,5)+A(174,122,5)+o(96,92,6)+o(228,84,7)+o(216,50,5)+o(100,58,4),
+  16:()=>L("M160,152 Q130,150 112,144",7)+L("M160,152 Q190,150 208,144",7)+D("M138,152 L144,84 H176 L182,152Z")+L("M146,100 Q118,92 108,66",8)+L("M174,100 Q202,92 212,66",8)+leaf(108,68,34,-150,9)+leaf(212,68,34,-30,9)+leaf(160,86,48,-130,13)+leaf(160,86,48,-50,13)+leaf(160,86,56,-90,14)+A(152,110)+A(168,110),
+  17:()=>L("M200,128 L232,150",9)+L("M142,118 L120,150",8)+e(170,112,40,22)+o(196,116,26)+o(228,106,9)+o(122,92,16)+P("110,90 92,98 112,102",pal.p)+leaf(120,80,52,-98,6)+leaf(132,80,48,-76,6)+A(116,88)+L("M140,128 L132,150",8),
+  18:()=>leaf(184,92,66,-68,22)+leaf(168,94,60,-104,18)+Q(178,112,40,22,116,80,14,8,"",P("104,76 82,86 104,92",pal.p)+leaf(120,68,24,-95,5)+L("M220,108 Q248,100 252,124",5)+o(252,128,7)),
+  19:()=>L("M160,128 Q150,150 120,148 Q96,146 90,124",7)+L("M160,60 L124,40",5)+L("M160,60 L196,40",5)+L("M160,108 L120,130",5)+L("M160,108 L200,130",5)+e(160,92,14,36)+o(160,48,14)+[[120,38],[198,38],[116,132],[204,132]].map(([x,y])=>o(x,y,6)).join("")+leaf(160,70,22,-130,5)+leaf(160,86,22,-50,5)+leaf(160,100,20,-130,5)+A(154,46)+A(166,46),
+  20:()=>L("M100,140 H224",9)+D("M100,134 Q98,60 164,56 Q228,60 226,134Z")+o(136,62,9)+o(168,54,10)+o(198,68,8)+leaf(150,58,26,-100,6)+leaf(186,58,24,-68,6)+e(94,128,14,11)+e(126,148,16,8)+e(200,148,16,8)+A(90,124,2.2),
+  21:()=>[[136,120],[154,120],[190,120],[206,120]].map(([x,y])=>L(`M${x},${y} L${x},150`,13)).join("")+e(170,114,50,24)+o(114,108,19)+P("104,102 80,112 104,120",pal.p)+leaf(126,92,12,-60,5)+leaf(110,88,12,-120,5)+leaf(122,150,16,180,4)+leaf(110,150,16,180,4)+L("M216,110 Q236,108 240,124",8)+`<path d="M104,92 L112,100 L108,104 L118,114" stroke="${pal.s}" stroke-width="2.5" fill="none"/>`+A(108,104),
+  22:()=>leaf(160,150,48,-168,12)+leaf(160,150,48,-12,12)+leaf(160,150,44,-140,11)+leaf(160,150,44,-40,11)+e(160,114,32,26)+e(160,86,30,18)+o(138,68,9)+o(182,68,9)+A(138,68,3.5)+A(182,68,3.5)+e(128,132,18,13)+e(192,132,18,13)+leaf(116,146,22,170,7)+leaf(204,146,22,10,7),
+  23:()=>[[130,152],[150,152],[184,152],[204,152]].map(([x,y])=>L(`M${x},124 L${x},${y}`,6)).join("")+o(140,96,24)+o(170,84,28)+o(202,96,24)+o(160,112,26)+o(192,114,24)+o(128,116,18)+e(106,104,12,15,pal.p)+leaf(100,92,16,-150,5)+A(102,100,2.5)+o(226,70,10)+o(240,62,7),
+  24:()=>Q(172,102,44,22,110,66,14,7,"",L("M104,54 L98,28 M98,28 L86,24 M98,28 L102,14 M112,52 L120,30 M120,30 L132,26 M120,30 L118,14",3.5,pal.s)+leaf(118,80,18,-60,5)+e(216,94,5,8))+sp(240,60,6)+sp(60,70,5),
+  25:()=>leaf(152,92,56,-150,15)+leaf(168,92,56,-30,15)+e(160,128,20,28)+o(160,92,17)+o(160,64,14)+leaf(160,52,26,-92,6)+L("M178,100 L226,58",4)+P("224,50 240,48 232,66")+o(136,108,13)+L("M150,150 V152",3)+A(154,64,2.5)+A(166,64,2.5),
+  26:()=>draft+L("M60,148 L122,114 L102,88 L178,62 L158,32",16)+leaf(60,148,40,160,7)+L("M122,114 L152,128 L140,134",5)+o(160,32,12)+P("148,30 172,16 178,40 158,46")+leaf(154,24,26,-130,5)+leaf(168,22,26,-70,5)+o(208,100,18)+o(232,92,14)+o(224,114,14)+o(192,122,13)+bolt("M66,142 L124,120 L108,92 L182,70 L162,40"),
+  27:()=>Q(172,106,44,23,112,88,17,9,P(star(112,88,36,27,16),pal.p)+L("M216,104 Q246,100 250,124",6),o(252,128,8)),
+  28:()=>[[120,52],[200,52],[104,110],[216,110]].map(([x,y])=>o(x,y,9)).join("")+L("M138,62 L124,30 M124,30 L112,26 M124,30 L128,14 M182,62 L196,30 M196,30 L208,26 M196,30 L192,14",6,pal.s)+e(160,108,40,42)+o(160,62,22)+L("M126,100 Q96,110 100,146",14)+L("M194,100 Q224,110 220,146",14)+e(144,150,14,6)+e(176,150,14,6)+A(152,60)+A(168,60),
+  29:()=>L("M150,130 Q170,150 186,140",7)+L("M110,130 Q90,150 76,140",7)+e(130,118,16,30)+o(130,80,13)+e(190,118,16,30)+o(190,80,13)+L("M122,98 L110,64",9)+L("M138,98 L152,62",9)+L("M182,98 L168,64",9)+L("M198,98 L210,62",9)+o(160,44,5)+o(146,32,5)+o(176,34,5)+A(126,78,2)+A(186,78,2),
+  30:()=>[[-1,0],[-1,1],[-1,2],[1,0],[1,1],[1,2]].map(([s,i])=>L(`M${160+s*30},${118+i*8} L${160+s*(60+i*6)},${142+i*4}`,5)).join("")+e(160,112,50,28)+L("M118,96 L92,64",6)+L("M202,96 L228,64",6)+o(86,52,14)+P("76,48 66,28 86,42")+o(234,52,14)+P("244,48 254,28 234,42")+L("M146,86 L142,70",3)+L("M174,86 L178,70",3)+A(142,68,4)+A(178,68,4),
+  31:()=>Q(166,114,32,16,116,96,13,6,leaf(204,114,56,-8,13)+leaf(126,84,46,-105,12)+leaf(110,86,44,-130,11),P("106,94 88,102 108,106",pal.p))+`<path d="M60,70 q10,-8 20,0 t20,0" stroke="${pal.s}" stroke-width="2.5" fill="none"/>`,
+  32:()=>L("M232,130 Q266,124 260,98",7)+e(184,128,56,22)+leaf(190,112,56,-22,13)+L("M128,144 H88",14)+e(146,124,24,26)+P("102,72 124,56 148,72 144,120 106,120",pal.p)+o(124,94,13)+A(120,92)+A(130,92),
+  33:()=>P("196,100 238,112 234,130 192,114")+D("M138,76 Q190,44 274,52 Q222,70 168,94Z")+D("M140,86 Q196,100 252,140 Q196,128 150,104Z")+leaf(118,64,90,28,17)+o(110,58,13)+P("100,56 80,64 102,70",pal.p)+A(106,54),
+  34:()=>D("M218,124 Q262,98 278,124 Q262,150 218,130Z")+L("M140,138 L132,152",8)+L("M190,138 L198,152",8)+e(170,126,50,18)+o(112,118,22)+[-155,-130,-105].map(d=>leaf(106,106,34,d,6)).join("")+[-25,-50,-75].map(d=>leaf(124,106,30,d,5)).join("")+A(102,114,3)+sp(190,112,5),
+  35:()=>[[-1,0],[-1,1],[-1,2],[1,0],[1,1],[1,2]].map(([s,i])=>L(`M${160+s*34},${96+i*14} L${160+s*(64+i*4)},${108+i*20}`,6)).join("")+e(160,110,40,40)+o(160,66,15)+leaf(160,62,32,-90,5)+L("M154,52 L146,38",3)+L("M166,52 L174,38",3)+`<path d="M160,72 V150" stroke="${pal.s}" stroke-width="2"/>`,
+  36:()=>L("M40,122 C70,82 100,162 130,122 C160,82 190,162 220,122 C240,100 256,92 272,98",11)+o(274,98,11)+P("282,92 304,98 282,106")+leaf(274,88,22,-60,5)+leaf(70,100,38,-100,7)+leaf(130,104,36,-95,7)+leaf(190,142,36,90,7)+leaf(100,142,34,100,7)+leaf(160,100,34,-85,7)+A(276,94,2.2),
+  37:()=>leaf(210,126,36,22,12)+leaf(122,124,42,160,12)+D("M96,128 Q100,78 160,74 Q222,78 226,128Z")+P("128,78 134,52 150,52 152,76")+P("174,76 178,48 196,48 200,78")+o(141,40,8)+o(153,28,7)+o(188,34,9)+o(202,22,6)+e(88,122,14,11)+A(84,118,2.2),
+  38:()=>D("M56,110 Q56,76 110,70 Q180,64 214,100 Q226,112 236,100 L246,74 L254,100 L278,84 L268,114 Q256,130 236,128 Q220,128 208,126 Q180,152 120,148 Q56,144 56,110Z")+L("M100,66 Q100,46 90,38 M100,66 Q108,46 120,40",4,pal.s)+L("M120,134 L98,158",9)+A(86,102,3)+sp(150,100,7)+sp(184,120,5)+sp(120,90,5),
+  39:()=>draft+D("M140,92 L52,32 L82,76 L40,72 L84,100 L58,114 L130,116Z")+D("M180,92 L268,32 L238,76 L280,72 L236,100 L262,114 L190,116Z")+L("M182,128 Q226,144 250,128",10)+P("246,116 272,128 246,142")+e(160,114,30,28)+L("M160,102 L150,68",16)+o(148,58,14)+P("138,56 112,62 138,70",pal.p)+leaf(148,46,24,-112,5)+leaf(158,46,24,-78,5)+L("M148,140 V152",10)+L("M174,140 V152",10)+A(144,54)+bolt("M110,64 L96,58 L104,72 L90,70"),
+  40:()=>[[262,70,4],[244,84,3],[274,92,3.5],[256,104,2.5]].map(([x,y,r])=>o(x,y,r)).join("")+leaf(204,100,72,-28,9)+L("M200,112 L240,136",8)+L("M190,116 L214,142",7)+L("M134,112 L104,140",8)+L("M146,114 L126,144",7)+e(166,104,40,17)+o(116,92,15)+P("106,86 84,98 108,102",pal.p)+leaf(112,80,24,-110,6)+leaf(126,80,24,-75,6)+A(112,90,2.4),
+  41:()=>e(160,116,54,36)+L("M114,100 Q88,128 104,150",20)+L("M206,100 Q232,128 216,150",20)+o(160,70,21)+leaf(130,88,20,-125,6)+leaf(190,86,18,-55,6)+leaf(160,50,22,-90,6)+leaf(142,58,16,-110,5)+leaf(110,126,24,160,5)+A(152,68)+A(168,68),
+  42:()=>L("M120,106 L98,128",9)+L("M200,106 L222,128",9)+o(160,106,42)+D("M112,84 Q112,46 160,44 Q208,46 208,84 Q160,74 112,84Z")+L("M160,46 Q164,28 178,24",7)+e(142,150,13,6)+e(178,150,13,6)+A(150,102)+A(170,102),
+  43:()=>Q(166,106,48,26,112,92,19,12,spikes([[134,84],[150,80],[166,78],[182,80],[198,84],[212,92]],16,6),leaf(100,102,24,150,5,pal.s)+leaf(104,106,22,170,5,pal.s)+e(90,100,13,9)+L("M214,100 Q232,96 232,112",6)),
+  44:()=>D("M148,84 Q90,56 40,80 Q70,84 60,100 Q90,92 80,112 Q112,104 152,112Z")+D("M172,84 Q230,56 280,80 Q250,84 260,100 Q230,92 240,112 Q208,104 168,112Z")+e(160,100,18,30)+o(160,64,18)+leaf(148,50,20,-115,6)+leaf(172,50,20,-65,6)+leaf(160,126,32,90,10)+L("M154,128 L150,142",4)+L("M166,128 L170,142",4)+A(154,64,5)+A(166,64,5),
+  45:()=>leaf(210,106,56,-34,17)+Q(166,112,44,32,116,86,17,9,"",o(104,70,7)+o(130,70,7)+leaf(116,64,16,-70,7)+P("108,80 128,80 126,92 110,92",pal.p))+`<path d="M222,84 l10,-8 M232,90 l10,-8" stroke="${pal.s}" stroke-width="3"/>`,
+  46:()=>L("M206,128 Q246,138 262,118 Q272,104 258,92",9)+leaf(258,92,36,-80,9)+[[130,132],[146,140],[186,140],[202,134]].map(([x,y])=>L(`M${x},${y} L${x+(x<160?-14:14)},152`,6)).join("")+e(160,124,48,13)+e(104,122,16,11)+A(98,118,2.4)+sp(150,118,4),
+  47:()=>e(150,150,10,5)+e(194,150,10,5)+P(star(172,112,54,42,26),pal.p)+o(116,118,15)+P("108,122 82,130 108,136",pal.p)+A(112,114),
+  48:()=>Q(176,106,48,24,106,56,15,8,P(star(122,82,26,19,10),pal.p),L("M98,46 L86,16 M86,16 L72,14 M86,16 L90,2 M96,40 L72,34 M72,34 L58,38 M110,44 L118,18 M118,18 L132,14 M118,18 L120,2 M112,48 L140,40 M140,40 L152,44",3.5,pal.s)+sp(60,70,5)),
+  49:()=>P(star(160,100,42,30,18),pal.p)+o(160,100,30,pal.p)+A(147,96,8)+A(173,96,8)+`<circle cx="147" cy="96" r="3" fill="${pal.p}"/><circle cx="173" cy="96" r="3" fill="${pal.p}"/>`+leaf(160,56,22,-90,6)+o(112,60,3)+o(214,54,3.5)+o(100,120,2.5)+o(224,128,3),
+  50:()=>leaf(194,130,44,-18,11)+leaf(152,50,26,-90,8)+leaf(144,52,20,-122,6)+leaf(160,52,20,-58,6)+e(160,118,34,32)+o(152,76,24)+o(134,56,9)+o(170,56,9)+e(140,86,10,7)+L("M130,112 L120,136",9)+L("M184,110 L196,134",9)+e(138,150,15,7)+e(178,150,15,7)+A(146,72)+A(160,72),
+  51:()=>[-125,-108,-92,-76,-60].map((d,i)=>leaf(160,60,44-(i%2)*8,d,5)).join("")+leaf(138,76,38,-120,5)+leaf(182,76,38,-60,5)+D("M138,152 L130,72 L160,58 L190,72 L182,152Z")+L("M132,86 L104,130",12)+L("M188,86 L216,130",12)+o(160,48,14)+`<path d="M134,108 H186 M136,130 H184" stroke="${pal.s}" stroke-width="3"/>`+A(154,48,2.2)+A(166,48,2.2),
+  52:()=>`<circle cx="160" cy="62" r="36" fill="none" stroke="${fill}" stroke-width="5"/>`+draft+[-165,-140,-115].map((d,i)=>leaf(150,96,92-i*8,d,16)).join("")+[-15,-40,-65].map((d,i)=>leaf(170,96,92-i*8,d,16)).join("")+L("M160,150 C132,138 190,126 160,110 C140,98 160,86 160,76",16)+o(160,68,15)+leaf(150,56,28,-120,6)+leaf(160,52,32,-90,6)+leaf(170,56,28,-60,6)+A(154,66)+A(166,66)+bolt("M160,150 L132,128 L186,112 L160,84")
+  };
+  return (art[g.w]||art[1])();
 }
-	
+
 function renderCreatureSVG(g, bondStage, pal, sil){
   if(sil){ pal = SIL; bondStage = 1; }
   const st = Number.isFinite(Number(bondStage)) ? Number(bondStage) : 1;
@@ -1311,16 +1303,16 @@ function openEntry(idx){
   const cur=getCur(),x=viewEpoch(),isCur=x===cur.e,pos=isCur?cIdx(x,cur.w):x.roster.length+1;
   const g=x.roster[idx-1],pal=PALETTES[g.biome],capW=capturedMap(dexNow,x)[idx];
   const art=(s,sil)=>`<div class="arena">${renderCreatureSVG(g,s,pal,sil)}</div>`;
-  const tag=g.boss?`<div class="hint">⚔ Boss encounter: the clan needs 100% of the target to capture it.</div>`:"";
+  const tag=g.boss||g.sub?`<div class="hint">${tierMark(g)}${g.boss?"Boss encounter":"Sub-boss"}: the clan needs ${pctOf(g)}% of the target to capture it.</div>`:"";
   let h;
   if(capW){const r=dexNow[ek(x.id,capW)];
     h=`${art(3)}<b>${esc(g.name)}</b> <span class="s-pill">${esc(g.title)}</span>${tag}<div class="hint" style="font-style:italic">${esc(g.lore)}</div><div class="hint">Captured the week of ${fmtD(wkMs(x,capW))} · ${num(r.t)} of ${num(r.tg)} hard sets</div><b>Captured by</b>${contribHTML(whoOf(r),num(r.t))}`;
   }else if(isCur&&idx===pos){const r=epochData.wk[ek(x.id,cur.w)]||{t:0,m:{}},tg=targetFor(epochData.n);
-    h=`${art(stageOf(r.t,tg,g))}<b>${esc(g.name)}</b>${tag}<div class="hint">Bonding in progress: ${r.t} / ${tg} hard sets (captured at ${g.boss?100:85}%).</div><b>Contributors so far</b>${contribHTML(rank(r),r.t)}`;
+    h=`${art(stageOf(r.t,tg,g))}<b>${esc(g.name)}</b>${tag}<div class="hint">Bonding in progress: ${r.t} / ${tg} hard sets (captured at ${pctOf(g)}%).</div><b>Contributors so far</b>${contribHTML(rank(r),r.t)}`;
   }else if(idx<pos){
     h=`${art(1,true)}<b>???</b><div class="hint">This one escaped before the clan could bond with it.</div>`;
   }else{const w=cur.w+idx-pos,days=Math.ceil((wkMs(x,w)-Date.now())/864e5);
-    h=`${art(1,true)}<b>???</b><div class="hint">Appears ${fmtD(wkMs(x,w))}, in ${days} day${days===1?"":"s"}.${g.boss?" ⚔ A boss encounter.":""}</div>`;
+    h=`${art(1,true)}<b>???</b><div class="hint">Appears ${fmtD(wkMs(x,w))}, in ${days} day${days===1?"":"s"}.${g.boss?" ⚔ A boss encounter.":g.sub?" ✦ A sub-boss.":""}</div>`;
   }
   box.innerHTML=h+`<button type="button" class="alt" id="beClose">Close</button>`;
   box.hidden=false;
@@ -1335,7 +1327,7 @@ function renderGrid(){
   grid.innerHTML=x.roster.map(r=>{
     const st=cap[r.w]?"cap":isCur&&r.w===pos?"cur":r.w<pos?"esc":"sil",lit=st==="cap"||st==="cur";
     const when=cap[r.w]||(isCur&&r.w>=pos?cur.w+r.w-pos:r.w);
-    return `<div class="cal-cell ${st}" data-i="${r.w}" role="button" tabindex="0" aria-label="${lit?esc(r.name):"Unknown creature"}"><div>${r.boss?"⚔ ":""}${fmtD(wkMs(x,when))}</div>${renderMiniSVG(r,st)}<div class="cn">${lit?esc(r.name):"???"}</div></div>`;
+    return `<div class="cal-cell ${st}" data-i="${r.w}" role="button" tabindex="0" aria-label="${lit?esc(r.name):"Unknown creature"}"><div>${tierMark(r)}${fmtD(wkMs(x,when))}</div>${renderMiniSVG(r,st)}<div class="cn">${lit?esc(r.name):"???"}</div></div>`;
   }).join("");
 }
 $("calendarGrid")?.addEventListener("click",ev=>{const c=ev.target.closest(".cal-cell");if(c)openEntry(+c.dataset.i)});
@@ -1356,9 +1348,9 @@ function renderSanctuary(wkData,n,remote,meId){
   const cur=getCur(),x=cur.e,g=x.roster[cIdx(x,cur.w)-1],pal=PALETTES[g.biome],tg=targetFor(epochData.n);
   const sets=num((epochData.wk[ek(x.id,cur.w)]||{}).t),pct=Math.min(100,Math.floor(sets/tg*100)),stage=stageOf(sets,tg,g);
   $("sancTitle").textContent=`🌱 ${x.name} · Week ${cur.w}: ${g.name}`;
-  $("sancBadge").textContent=(g.boss?"⚔ ":"")+["Stage 1: Approaching & Observing","Stage 2: Feeding & Trust Building","Stage 3: Fully Bonded & Ridden! 🐉"][stage-1];
+  $("sancBadge").textContent=tierMark(g)+["Stage 1: Approaching & Observing","Stage 2: Feeding & Trust Building","Stage 3: Fully Bonded & Ridden! 🐉"][stage-1];
   $("sancLore").textContent=g.lore;
-  $("sancBondText").textContent=`${g.boss?"⚔ Boss: capture at 100%":"Capture at 85%"} · next companion ${fmtD(wkMs(x,cur.w+1))}`;
+  $("sancBondText").textContent=`${g.boss?"⚔ Boss":g.sub?"✦ Sub-boss":"Capture"}${g.boss||g.sub?": capture":""} at ${pctOf(g)}% · next companion ${fmtD(wkMs(x,cur.w+1))}`;
   $("sancSetsNum").textContent=`${sets} / ${tg} Hard Sets`;
   $("sancFill").style.width=pct+"%";
   $("sancArena").innerHTML=renderCreatureSVG(g,stage,pal);
@@ -1382,7 +1374,7 @@ function renderAdminWeek(){
   const sel=$("adminWeekSel");if(!sel)return;
   const x=getCur().e,g=x.roster.find(r=>r.w===num(sel.value))||x.roster[0];
   $("awTitle").textContent=`Creature ${g.w}: ${g.name} (${g.title})`;
-  $("awBiome").textContent=`Biome: ${g.biome.toUpperCase()} (${g.kind})${g.boss?" ⚔ boss":""}`;
+  $("awBiome").textContent=`Biome: ${g.biome.toUpperCase()} (${g.kind})${g.boss?" ⚔ boss":g.sub?" ✦ sub-boss":""}`;
   $("awLore").textContent=g.lore;
   $("adminArena").innerHTML=renderCreatureSVG(g,3,PALETTES[g.biome]);
 }
@@ -1391,7 +1383,7 @@ if(adminSel){const c0=getCur();adminSel.value=cIdx(c0.e,c0.w);adminSel.addEventL
 renderSanctuary({},1);
 
 const key=(...a)=>a.join("|").replace(/[.$#\[\]\/]/g,"_");
-const FR={EMAIL_EXISTS:"That account already exists.",OPERATION_NOT_ALLOWED:"Email/Password sign-in isn't switched on in Firebase (guide step 3).",INVALID_API_KEY:"The API key looks wrong. Re-copy the Firebase config.",API_KEY_INVALID:"The API key looks wrong. Re-copy the Firebase config.",WEAK_PASSWORD:"Password too short.",INVALID_LOGIN_CREDENTIALS:"Wrong master password.",INVALID_PASSWORD:"Wrong master password.",PERMISSION_DENIED:"Firebase rules are missing or not published (guide step 5)."};
+const FR={EMAIL_EXISTS:"That account already exists.",OPERATION_NOT_ALLOWED:"Email/Password sign-in isn't switched on in Firebase (guide step 3).",INVALID_API_KEY:"The API key looks wrong. Re-copy the Firebase config.",API_KEY_INVALID:"The API key looks wrong. Re-copy the Firebase config.",WEAK_PASSWORD:"Password too short.",INVALID_LOGIN_CREDENTIALS:"Wrong master password.",INVALID_PASSWORD:"Wrong master password.",PERMISSION_DENIED:"Firebase rules are missing, out of date or not published (guide step 5: tap Copy rules, paste, Publish)."};
 const why=e=>{const k=String(e&&e.message||e).split(/[ :]/)[0];return FR[k]||"Failed: "+(e&&e.message||e)};
 const np=(c,k)=>(c.sv>=2?"d/":"")+k;
 async function authCall(kind,ak,email,password){
@@ -1482,13 +1474,11 @@ async function renderClan(){
   if(c.g===undefined&&bg){c.g=bg;set("clan2",c)}
   $("kMyGen").value=c.g||"";
   $("kAdminUser").value="m-"+c.clan+MAIL;
-
-  // Single declaration for admin status
   const admin=Boolean(tokA.t&&tokA.exp>Date.now());
-
-  $("kTitle").textContent="Signed in as "+c.name+(c.owner?" (clan creator)":"")+(admin?" — Admin Unlocked \ud83d\udc51":"");
+  $("kTitle").textContent="Signed in as "+c.name+(c.owner?" (clan creator)":"")+(admin?" — Admin Unlocked 👑":"");
   $("kAdminToggle").hidden=admin;
   if(admin)$("kAdminBox").hidden=true;
+  else if(c.owner)$("kAdminBox").hidden=false;
   $("kShareVol").checked=c.shareVol!==false;
 
   try{
@@ -1986,14 +1976,9 @@ async function checkPokes(){
 }
 $("pokeBar").addEventListener("click",e=>{if(e.target.closest("button"))$("pokeBar").hidden=true});
 $("kNudge").addEventListener("click",async()=>{
-  const c=get("clan2",null);
-  const includeLink=$("kNudgeInvite")&&$("kNudgeInvite").checked;
-  let t="\u{1F4AA} Time to check in on the training clan! Open the app and log your session.";
-  if(includeLink&&c&&c.code){
-    t+="\n\nJoin our training clan here:\n"+c.code;
-  }
+  const t="\u{1F4AA} Time to check in on the training clan! Open the app and log your session.";
   try{if(navigator.share){await navigator.share({text:t});return}}catch(e){if(e.name==="AbortError")return}
-  try{await navigator.clipboard.writeText(t);msg("kMsg",includeLink?"Nudge & invite link copied!":"Nudge copied. Paste it into a message.",true)}catch(e){msg("kMsg","Couldn't copy the message.",false)}
+  try{await navigator.clipboard.writeText(t);msg("kMsg","Copied. Paste it into a message.",true)}catch(e){msg("kMsg","Couldn't copy the message.",false)}
 });
 setInterval(checkPokes,45000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkPokes()});
