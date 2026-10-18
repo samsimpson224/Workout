@@ -424,7 +424,7 @@ body{color-scheme:dark}
         <div class="podium-bar"><div id="sancFill" class="podium-fill" style="width:0%"></div></div>
       </div>
       <div class="info-panel"><b>📜 Clan Bestiary (52 weeks)</b>
-        <div class="hint">Every week's companion is captured at Stage 3: 85% of the target, or 100% for ⚔ boss weeks. Tap any entry to open it; captured ones list who earned the capture.</div>
+        <div class="hint">Every week's companion is captured at Stage 3: 85% of the target, 92% for ✦ sub-boss dragons, or 100% for ⚔ boss weeks. Tap any entry to open it; captured ones list who earned the capture.</div>
         <select id="bestiarySet" hidden style="margin:6px 0"></select>
         <div id="calendarGrid" class="calendar-grid"></div>
         <div id="bestiaryEntry" class="info-panel" hidden></div>
@@ -1130,7 +1130,7 @@ let svgUid=0,epochData={wk:{},n:1},openIdx=0,viewId="",dexNow={};
 const BIO=w=>w<=13?"frost":w<=26?"storm":w<=38?"solar":w<=51?"ember":"solar";
 const KINDS={b:"beast",g:"golem",l:"lindworm",f:"forgedrake",s:"sovereign"};
 // A title containing "Apex" marks a boss: it needs 100% of the target. Everything else captures at 85%.
-const parseRoster=(txt,bio)=>txt.split("\n").map((l,i)=>{const[name,title,k,lore]=l.split("|"),w=i+1;return{w,name,title,lore,kind:KINDS[k],biome:bio(w),boss:/Apex/.test(title)}});
+const parseRoster=(txt,bio)=>txt.split("\n").map((l,i)=>{const[name,title,k,lore]=l.split("|"),w=i+1;return{w,name,title,lore,kind:KINDS[k],biome:bio(w),boss:/(Seasonal|Grand) Apex/.test(title),sub:/^[lf]$/.test(k)&&!/(Seasonal|Grand) Apex/.test(title)}});
 /* ADD A NEW EPOCH YEAR: paste 52 lines (name|title|kind|lore, kind = b/g/l/f/s) as E2_TXT, then add
    {id:"e2",name:"Epoch II",start:"2027-10-16",roster:parseRoster(E2_TXT,BIO)} to EPOCHS.
    Old epochs, captures and commemorations stay in the bestiary (dropdown). Never reuse or change an id. */
@@ -1143,7 +1143,7 @@ const wkMs=(x,w)=>x.ms+(w-1)*WEEK_MS;
 const epochKeyOf=d=>{const t=Date.parse(String(d).slice(0,10)+"T00:00:00Z");if(!Number.isFinite(t))return null;const x=epochAt(t);return x?{id:x.id,w:Math.floor((t-x.ms)/WEEK_MS)+1}:null};
 const fmtD=ms=>new Date(ms).toLocaleDateString(undefined,{day:"numeric",month:"short",timeZone:"UTC"});
 const targetFor=n=>Math.max(30,Math.max(1,num(n))*45);
-const needOf=g=>g.boss?1:.85;
+const needOf=g=>g.boss?1:g.sub?.92:.85,tierMark=g=>g.boss?"⚔ ":g.sub?"✦ ":"",pctOf=g=>Math.round(needOf(g)*100);
 const stageOf=(s,tg,g)=>{const r=num(s)/tg;return r<.35?1:r<needOf(g)?2:3};
 const rank=r=>Object.values((r&&r.m)||{}).filter(m=>m.s>0).sort((a,b)=>b.s-a.s).map(m=>[m.name,m.s]);
 // ---- Unique High-Fantasy Companion Anatomy & Silhouette Engine ----
@@ -1308,16 +1308,16 @@ function openEntry(idx){
   const cur=getCur(),x=viewEpoch(),isCur=x===cur.e,pos=isCur?cIdx(x,cur.w):x.roster.length+1;
   const g=x.roster[idx-1],pal=PALETTES[g.biome],capW=capturedMap(dexNow,x)[idx];
   const art=(s,sil)=>`<div class="arena">${renderCreatureSVG(g,s,pal,sil)}</div>`;
-  const tag=g.boss?`<div class="hint">⚔ Boss encounter: the clan needs 100% of the target to capture it.</div>`:"";
+  const tag=g.boss||g.sub?`<div class="hint">${tierMark(g)}${g.boss?"Boss encounter":"Sub-boss"}: the clan needs ${pctOf(g)}% of the target to capture it.</div>`:"";
   let h;
   if(capW){const r=dexNow[ek(x.id,capW)];
     h=`${art(3)}<b>${esc(g.name)}</b> <span class="s-pill">${esc(g.title)}</span>${tag}<div class="hint" style="font-style:italic">${esc(g.lore)}</div><div class="hint">Captured the week of ${fmtD(wkMs(x,capW))} · ${num(r.t)} of ${num(r.tg)} hard sets</div><b>Captured by</b>${contribHTML(whoOf(r),num(r.t))}`;
   }else if(isCur&&idx===pos){const r=epochData.wk[ek(x.id,cur.w)]||{t:0,m:{}},tg=targetFor(epochData.n);
-    h=`${art(stageOf(r.t,tg,g))}<b>${esc(g.name)}</b>${tag}<div class="hint">Bonding in progress: ${r.t} / ${tg} hard sets (captured at ${g.boss?100:85}%).</div><b>Contributors so far</b>${contribHTML(rank(r),r.t)}`;
+    h=`${art(stageOf(r.t,tg,g))}<b>${esc(g.name)}</b>${tag}<div class="hint">Bonding in progress: ${r.t} / ${tg} hard sets (captured at ${pctOf(g)}%).</div><b>Contributors so far</b>${contribHTML(rank(r),r.t)}`;
   }else if(idx<pos){
     h=`${art(1,true)}<b>???</b><div class="hint">This one escaped before the clan could bond with it.</div>`;
   }else{const w=cur.w+idx-pos,days=Math.ceil((wkMs(x,w)-Date.now())/864e5);
-    h=`${art(1,true)}<b>???</b><div class="hint">Appears ${fmtD(wkMs(x,w))}, in ${days} day${days===1?"":"s"}.${g.boss?" ⚔ A boss encounter.":""}</div>`;
+    h=`${art(1,true)}<b>???</b><div class="hint">Appears ${fmtD(wkMs(x,w))}, in ${days} day${days===1?"":"s"}.${g.boss?" ⚔ A boss encounter.":g.sub?" ✦ A sub-boss.":""}</div>`;
   }
   box.innerHTML=h+`<button type="button" class="alt" id="beClose">Close</button>`;
   box.hidden=false;
@@ -1332,7 +1332,7 @@ function renderGrid(){
   grid.innerHTML=x.roster.map(r=>{
     const st=cap[r.w]?"cap":isCur&&r.w===pos?"cur":r.w<pos?"esc":"sil",lit=st==="cap"||st==="cur";
     const when=cap[r.w]||(isCur&&r.w>=pos?cur.w+r.w-pos:r.w);
-    return `<div class="cal-cell ${st}" data-i="${r.w}" role="button" tabindex="0" aria-label="${lit?esc(r.name):"Unknown creature"}"><div>${r.boss?"⚔ ":""}${fmtD(wkMs(x,when))}</div>${renderMiniSVG(r,st)}<div class="cn">${lit?esc(r.name):"???"}</div></div>`;
+    return `<div class="cal-cell ${st}" data-i="${r.w}" role="button" tabindex="0" aria-label="${lit?esc(r.name):"Unknown creature"}"><div>${tierMark(r)}${fmtD(wkMs(x,when))}</div>${renderMiniSVG(r,st)}<div class="cn">${lit?esc(r.name):"???"}</div></div>`;
   }).join("");
 }
 $("calendarGrid")?.addEventListener("click",ev=>{const c=ev.target.closest(".cal-cell");if(c)openEntry(+c.dataset.i)});
@@ -1353,9 +1353,9 @@ function renderSanctuary(wkData,n,remote,meId){
   const cur=getCur(),x=cur.e,g=x.roster[cIdx(x,cur.w)-1],pal=PALETTES[g.biome],tg=targetFor(epochData.n);
   const sets=num((epochData.wk[ek(x.id,cur.w)]||{}).t),pct=Math.min(100,Math.floor(sets/tg*100)),stage=stageOf(sets,tg,g);
   $("sancTitle").textContent=`🌱 ${x.name} · Week ${cur.w}: ${g.name}`;
-  $("sancBadge").textContent=(g.boss?"⚔ ":"")+["Stage 1: Approaching & Observing","Stage 2: Feeding & Trust Building","Stage 3: Fully Bonded & Ridden! 🐉"][stage-1];
+  $("sancBadge").textContent=tierMark(g)+["Stage 1: Approaching & Observing","Stage 2: Feeding & Trust Building","Stage 3: Fully Bonded & Ridden! 🐉"][stage-1];
   $("sancLore").textContent=g.lore;
-  $("sancBondText").textContent=`${g.boss?"⚔ Boss: capture at 100%":"Capture at 85%"} · next companion ${fmtD(wkMs(x,cur.w+1))}`;
+  $("sancBondText").textContent=`${g.boss?"⚔ Boss":g.sub?"✦ Sub-boss":"Capture"}${g.boss||g.sub?": capture":""} at ${pctOf(g)}% · next companion ${fmtD(wkMs(x,cur.w+1))}`;
   $("sancSetsNum").textContent=`${sets} / ${tg} Hard Sets`;
   $("sancFill").style.width=pct+"%";
   $("sancArena").innerHTML=renderCreatureSVG(g,stage,pal);
@@ -1379,7 +1379,7 @@ function renderAdminWeek(){
   const sel=$("adminWeekSel");if(!sel)return;
   const x=getCur().e,g=x.roster.find(r=>r.w===num(sel.value))||x.roster[0];
   $("awTitle").textContent=`Creature ${g.w}: ${g.name} (${g.title})`;
-  $("awBiome").textContent=`Biome: ${g.biome.toUpperCase()} (${g.kind})${g.boss?" ⚔ boss":""}`;
+  $("awBiome").textContent=`Biome: ${g.biome.toUpperCase()} (${g.kind})${g.boss?" ⚔ boss":g.sub?" ✦ sub-boss":""}`;
   $("awLore").textContent=g.lore;
   $("adminArena").innerHTML=renderCreatureSVG(g,3,PALETTES[g.biome]);
 }
