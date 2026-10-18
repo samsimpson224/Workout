@@ -6,6 +6,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Training">
+<meta name="theme-color" content="#0f1015">
+<link rel="manifest" href="data:application/manifest+json,{&quot;name&quot;:&quot;Training &amp; Weather Hub&quot;,&quot;short_name&quot;:&quot;Training&quot;,&quot;start_url&quot;:&quot;./&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#0f1015&quot;,&quot;theme_color&quot;:&quot;#0f1015&quot;,&quot;icons&quot;:[{&quot;src&quot;:&quot;data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%तलाtext y=%27.9em%27 font-size=%2790%27>🏋️‍♂️</text></svg>&quot;,&quot;sizes&quot;:&quot;192x192&quot;,&quot;type&quot;:&quot;image/svg+xml&quot;}]}">
 <title>Training &amp; Weather Hub</title>
 <style>
 :root{--bg:#0f1015;--card:#181a22;--acc:#d4af37;--acc-glow:rgba(212,175,55,0.28);--tx:#f2f4f8;--mu:#9aa0b4;--bd:#2a2e3d}
@@ -61,6 +63,9 @@ code{word-break:break-all;background:#12141c;padding:2px 5px;border-radius:4px;c
 .mini.hype{background:#3a2e11;color:#ffd700;border:1px solid #d4af37}
 .inp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
 .inp input{margin:0;padding:9px;text-align:center;font-weight:600}
+.set-pills{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.set-pill{padding:4px 8px;font-size:.75rem;font-weight:700;background:#161822;border:1px solid var(--bd);border-radius:6px;color:var(--mu);cursor:pointer;transition:all .15s}
+.set-pill.done{background:var(--acc);color:#121212;border-color:var(--acc);box-shadow:0 0 6px var(--acc-glow)}
 .guide{margin-top:8px;font-size:.88rem;line-height:1.45;background:#161822;padding:10px;border-radius:8px;border:1px solid #2a2e3d}
 .lnk{display:inline-block;margin:6px 8px 0 0;padding:6px 10px;background:#262a38;color:var(--acc);border-radius:6px;text-decoration:none;font-weight:bold;font-size:.8rem;border:1px solid #3a4056}
 .msg{text-align:center;font-size:.85rem;margin-top:8px;min-height:1em}
@@ -138,6 +143,21 @@ code{word-break:break-all;background:#12141c;padding:2px 5px;border-radius:4px;c
 </div>
 
 <section id="tW">
+  <!-- Live Sanctuary Status Strip on Workout Tab -->
+  <div id="workoutSancBanner" class="card" style="background:linear-gradient(135deg,#171922 0%,#202331 100%);border:1px solid var(--acc);padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div id="bannerMiniSvg" style="width:40px;height:40px;flex-shrink:0"></div>
+      <div>
+        <div style="font-size:.7rem;color:var(--acc);font-weight:bold;text-transform:uppercase;letter-spacing:0.5px">Active Sanctuary Companion</div>
+        <div id="bannerCreatureTitle" style="font-size:0.86rem;font-weight:bold;color:#fff">Loading weekly beast...</div>
+      </div>
+    </div>
+    <div style="text-align:right;flex-shrink:0">
+      <span id="bannerStagePill" class="s-pill" style="font-size:.68rem">Stage 1</span>
+      <div id="bannerProgressTxt" style="font-size:.7rem;color:var(--mu);margin-top:2px">0 sets</div>
+    </div>
+  </div>
+
   <div id="bwWarnBox" class="bw-warn" hidden>&#x26A0;&#xFE0F; It has been over 30 days since you updated your weight in the BMR tab. Tap <a href="#" id="gotoBmr" style="color:var(--acc);font-weight:bold">here</a> to update it for accurate volume normalization.</div>
   <div id="streakNudgeBox" class="bw-warn" hidden></div>
   <div class="card" style="padding:10px 16px"><label style="display:flex;align-items:center;gap:10px;margin:0"><input type="checkbox" id="advToggle" style="width:auto;margin:0"> Advanced mode (build &amp; share custom workouts)</label></div>
@@ -179,8 +199,11 @@ code{word-break:break-all;background:#12141c;padding:2px 5px;border-radius:4px;c
     <div id="cClanLib"><div class="hint">Join a clan and tap Sync to browse shared workouts.</div></div>
   </div>
   <div class="card">
-    <label for="weather">1. Current conditions</label>
-    <select id="weather">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+      <label for="weather" style="margin:0">1. Current conditions</label>
+      <button id="autoWeatherBtn" class="alt" type="button" style="width:auto;margin:0;padding:6px 10px;font-size:.78rem">&#x1F4CD; Auto-detect GPS</button>
+    </div>
+    <select id="weather" style="margin-top:6px">
       <option value="dry_porch">Dry &amp; Mild (Porch / Open Air)</option>
       <option value="cold_wind">Cold &amp; Windy (Porch Protected)</option>
       <option value="pouring_rain">Pouring Rain / Freezing (Move to Garage)</option>
@@ -261,6 +284,7 @@ code{word-break:break-all;background:#12141c;padding:2px 5px;border-radius:4px;c
     </div>
     <div id="lSum" class="hint"></div>
     <button id="lExp">Export all workouts (CSV)</button>
+    <button id="lShareSummary" class="alt">&#x1F4E4; Share Workout &amp; Sanctuary Summary Card</button>
     <button id="lUndo" class="danger">Delete most recent workout</button>
     <button id="lBak" class="alt">Export full backup (JSON)</button>
     <button id="lRes" class="alt">Restore from backup</button>
@@ -297,6 +321,9 @@ code{word-break:break-all;background:#12141c;padding:2px 5px;border-radius:4px;c
     <div id="sVol"></div>
     <div class="hint" style="margin-top:12px">Volume by session type</div>
     <div id="sType"></div>
+    <h2 style="font-size:1.1rem;margin-top:16px">&#x1F3C6; Personal Records Cabinet (Estimated 1RM)</h2>
+    <div class="hint">Calculated using the Epley formula from your heavy working sets.</div>
+    <div id="sPrs" style="margin-top:8px"></div>
     <div class="hint" style="margin-top:12px">Exercise progression (First vs. Latest in period)</div>
     <div id="sExDelta"></div>
     <div class="hint">Volume is an estimate (bodyweight share + weights). Use it to compare yourself over time.</div>
@@ -749,11 +776,21 @@ function render(){
     const eff=calcEffKg(defKg,meta,bw);
     const bwPart=Math.round(bw*(meta.bw||0)*10)/10;
     const q=encodeURIComponent(x[1]);
+    const targetSets=Math.min(6, Math.max(1, parseInt(outline?.sets || v.sets || 3, 10)));
+    const currentSets=parseInt(v.sets || 0, 10);
+
+    let pillsHTML="";
+    for(let s=1; s<=targetSets; s++){
+      const isDone = s <= currentSets;
+      pillsHTML+=`<button type="button" class="set-pill${isDone?" done":""}" data-setbtn="${id}" data-setidx="${s}">Set ${s}</button>`;
+    }
+
     const f=(n,ph,m,val)=>`<input inputmode="${m}" data-k="${id}" data-f="${n}" placeholder="${ph}" value="${esc(val??"")}">`;
     h+=`<div class="ex"><div class="top"><div class="info"><b>${esc(x[1])}</b><small>${esc(x[2])}</small>
     <div class="norm-tag" id="nt_${id}">${esc(meta.note||"Effective load")} &rarr; <b>${eff} kg</b> eff/rep</div></div>
     <div class="btn-grp"><button class="mini" data-m="${i}">Math</button><button class="mini" data-g="${i}">Form</button></div></div>
     <div class="inp">${f("kg",meta.ph||"kg","decimal",defKg)}${f("sets","sets","numeric",v.sets)}${f("reps","reps","numeric",v.reps)}</div>
+    <div class="set-pills" id="pills_${id}">${pillsHTML}</div>
     <div class="guide" id="m${i}" hidden><b>Biomechanical Estimate:</b><br>${esc(meta.desc||"Automatically normalizes bilateral/unilateral load and bodyweight leverage.")}<br><small style="color:var(--acc)">Est. BW lever: ${bwPart} kg (${Math.round((meta.bw||0)*100)}% of ${bw} kg) &bull; DBs held: ${meta.db||1}x &bull; Side/Set mult: ${meta.m||1}x</small></div>
     <div class="guide" id="g${i}" hidden><p style="margin:0 0 6px">${esc(x[3])}</p>
     <a class="lnk" target="_blank" rel="noopener" href="https://www.google.com/search?tbm=isch&q=${q}+exercise+form">Illustrations</a>
@@ -762,7 +799,34 @@ function render(){
   $("list").innerHTML=h;
   checkUnilateralGuardrail();
 }
+
+// Interactive Set Checkboxes / Pills Click Handler
 $("list").addEventListener("click",e=>{
+  const pill=e.target.closest("[data-setbtn]");
+  if(pill){
+    const id=pill.dataset.setbtn,clickedSet=parseInt(pill.dataset.setidx,10);
+    const inp=document.querySelector(`input[data-k="${id}"][data-f="sets"]`);
+    if(inp){
+      inp.value=clickedSet;
+      (draft[id]=draft[id]||{}).sets=String(clickedSet);
+      // Refresh pill styling live
+      const container=$("pills_"+id);
+      if(container){
+        container.querySelectorAll("[data-setidx]").forEach(p=>{
+          const idx=parseInt(p.dataset.setidx,10);
+          p.classList.toggle("done",idx<=clickedSet);
+        });
+      }
+      checkUnilateralGuardrail();
+      // Auto-trigger rest timer (90s default for completed set)
+      stopAlarm();clearInterval(tInt);tInt=null;
+      try{if(navigator.audioSession)navigator.audioSession.type="ambient"}catch(err){}
+      tEnd=Date.now()+90*1000;
+      $("tStop").hidden=false;tickTimer();tInt=setInterval(tickTimer,250);wakeOn();
+      msg("wMsg",`Set ${clickedSet} logged! 90s Rest timer started.`,true);
+    }
+    return;
+  }
   const gBtn=e.target.closest("[data-g]");
   if(gBtn){
     const g=$("g"+gBtn.dataset.g);g.hidden=!g.hidden;
@@ -775,6 +839,7 @@ $("list").addEventListener("click",e=>{
     mBtn.textContent=m.hidden?"Math":"Hide";
   }
 });
+
 $("list").addEventListener("input",e=>{
   const t=e.target;if(!t.dataset.k)return;
   const id=t.dataset.k,meta=EX_MAP[id];
@@ -783,10 +848,40 @@ $("list").addEventListener("input",e=>{
     const eff=calcEffKg(t.value,meta,getBW());
     const tag=$("nt_"+id);if(tag)tag.innerHTML=`${esc(meta.note)} &rarr; <b>${eff} kg</b> eff/rep`;
   }
-  if(t.dataset.f==="sets")checkUnilateralGuardrail();
+  if(t.dataset.f==="sets"){
+    const val=parseInt(t.value,10)||0;
+    const container=$("pills_"+id);
+    if(container){
+      container.querySelectorAll("[data-setidx]").forEach(p=>{
+        const idx=parseInt(p.dataset.setidx,10);
+        p.classList.toggle("done",idx<=val);
+      });
+    }
+    checkUnilateralGuardrail();
+  }
 });
 $("split").addEventListener("change",render);
 $("weather").addEventListener("change",()=>{$("advice").textContent=ADV[$("weather").value]});
+
+// ---- GPS Weather Auto-Detection (Open-Meteo API) ----
+$("autoWeatherBtn")?.addEventListener("click",async()=>{
+  if(!navigator.geolocation)return msg("wMsg","Geolocation is not supported by your browser.",false);
+  msg("wMsg","Detecting location & weather...",true);
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    try{
+      const lat=pos.coords.latitude,lon=pos.coords.longitude;
+      const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,precipitation,wind_speed_10m`);
+      const j=await r.json();
+      if(!j||!j.current)throw 0;
+      const temp=j.current.temperature_2m,precip=j.current.precipitation,wind=j.current.wind_speed_10m;
+      const sel=$("weather");
+      if(precip>0.2||temp<2){sel.value="pouring_rain";msg("wMsg",`Detected ${temp}\u00b0C, ${precip}mm rain \u2192 Set to Garage.`,true)}
+      else if(wind>25||temp<10){sel.value="cold_wind";msg("wMsg",`Detected ${temp}\u00b0C, wind ${wind}km/h \u2192 Set to Protected Porch.`,true)}
+      else{sel.value="dry_porch";msg("wMsg",`Detected ${temp}\u00b0C, calm \u2192 Set to Open Air Porch.`,true)}
+      $("advice").textContent=ADV[sel.value];
+    }catch(err){msg("wMsg","Could not fetch live weather data.",false)}
+  },()=>msg("wMsg","GPS permission denied or unavailable.",false),{timeout:10000});
+});
 
 $("logBtn").addEventListener("click",()=>{
   const sk=$("split").value,p=P[sk],last=get("last",{}),log=get("log",[]),savedBw=getSavedBW(),ex=[];
@@ -805,9 +900,25 @@ $("logBtn").addEventListener("click",()=>{
   const nowMs=Date.now();
   const entry={sid:rnd(10),d:new Date(nowMs).toISOString(),ts:nowMs,s:p.title,w:$("weather").selectedOptions[0].text,ex};
   if(savedBw!==null)entry.bw=savedBw;
+
+  // PR Detection (Epley 1RM formula)
+  const prs=get("prs",{});let newPrCount=0;
+  ex.forEach(e=>{
+    const wKg=num(e.kg),rNum=num(e.reps);
+    if(wKg>0&&rNum>0){
+      const est1RM=Math.round(wKg*(1+rNum/30));
+      if(!prs[e.n]||est1RM>prs[e.n].orm){
+        prs[e.n]={orm:est1RM,w:wKg,r:rNum,d:entry.d.slice(0,10)};
+        newPrCount++;
+      }
+    }
+  });
+  set("prs",prs);
+
   log.push(entry);
   set("log",log);set("last",last);draft={};render();checkStreakNudge();syncClan(true);
-  msg("wMsg",stored?`Workout logged (${log.length} total)`:"Logged for this session only",stored);
+  const prMsg=newPrCount>0?` \u{1F3C6} ${newPrCount} New PR${newPrCount>1?"s":""} smashed!`:"";
+  msg("wMsg",stored?`Workout logged (${log.length} total)${prMsg}`:`Logged for this session only${prMsg}`,stored);
 });
 
 // ---- CSV & Log ----
@@ -847,6 +958,22 @@ $("lExp").addEventListener("click",()=>{
   }));
   exportCSV("workout-log.csv",toCSV(["Date","Time","Workout","Weather","Bodyweight_kg","Exercise","Weight_kg","Effective_kg","Sets","Reps","Volume_kg"],rows));
 });
+
+// Share Summary Card Feature
+$("lShareSummary")?.addEventListener("click",async()=>{
+  const log=get("log",[]);if(!log.length)return msg("lMsg","Log a workout first before sharing.",false);
+  const lastSess=log[log.length-1];
+  const tVol=lastSess.ex.reduce((a,x)=>a+(vol(x,lastSess.bw)||0),0);
+  const tSets=lastSess.ex.reduce((a,x)=>a+(parseFloat(x.sets)||0),0);
+  const cur=getCur(),x=cur.e,g=x.roster[cIdx(x,cur.w)-1];
+  const text=`\u{1F3CB}\uFE0F Training & Weather Hub Summary\n\u{1F4C5} Date: ${lastSess.d.slice(0,10)}\n\u{1F3AF} Session: ${sessLabel(lastSess.s)}\n\u{1F4AA} Total Hard Sets: ${tSets}\n\u{1F4CA} Est. Volume: ${Math.round(tVol).toLocaleString()} kg\n\u{1F331} Active Sanctuary: Week ${cur.w} - ${g.name}\n\n#TrainingHub #Fitness`;
+  try{
+    if(navigator.share){await navigator.share({title:"Workout Summary",text});return;}
+  }catch(e){if(e.name==="AbortError")return;}
+  try{await navigator.clipboard.writeText(text);msg("lMsg","Summary card text copied to clipboard!",true);}
+  catch(e){msg("lMsg","Could not share summary.",false);}
+});
+
 $("lUndo").addEventListener("click",()=>{
   const log=get("log",[]);
   if(!log.length)return msg("lMsg","No workouts to delete.",false);
@@ -1057,7 +1184,7 @@ $("advCard").addEventListener("click",async e=>{
   }
 });
 
-// ---- Clan: Firebase Auth + Realtime Database over REST ----
+// ---- Epoch Sanctuary & Clan Realtime Database Sync ----
 const CLOUD_V=2,LOCAL_V=1;
 const MAIL="@clanboard.app",OKURL=/^https:\/\/[\w.-]+\.(firebaseio\.com|firebasedatabase\.app)$/;
 const WR="auth != null && (auth.token.email === 'u-' + $member + '@clanboard.app' || auth.token.email === 'm-' + $clan + '@clanboard.app')";
@@ -1080,7 +1207,7 @@ const dec=(t,pfxLen)=>JSON.parse(atob(t.trim().replace(/\s/g,"").slice(pfxLen).r
 const cleanName=v=>v.trim().replace(/[^\p{L}\p{N} _-]/gu,"").slice(0,20);
 const arr=v=>Array.isArray(v)?v.filter(Boolean):Object.values(v||{});
 const num=v=>Number(v)||0;
-// ---- Epoch Sanctuary (hardened) ----
+
 const E1_TXT=`Glacier Yeti|Snowpeak Watcher|b|A gentle, shaggy giant of the upper snows who watches lifters with quiet, approving nods during heavy sets.
 Frostbound Lynx|Glacial Prowler|b|A silent stalker whose frost-tipped whiskers twitch in rhythm with explosive fast-twitch muscle fiber contractions.
 Rime Bastion Golem|Permafrost Guardian|g|Carved from blue glacier ice; its unbreakable structural integrity mirrors textbook eccentric form control.
@@ -1144,11 +1271,7 @@ const SIL={bg1:"#2b3040",bg2:"#12141c",p:"#000",s:"#000",acc:"#000",glow:"#000"}
 let svgUid=0,epochData={wk:{},n:1},openIdx=0,viewId="",dexNow={};
 const BIO=w=>w<=13?"frost":w<=26?"storm":w<=38?"solar":w<=51?"ember":"solar";
 const KINDS={b:"beast",g:"golem",l:"lindworm",f:"forgedrake",s:"sovereign"};
-// A title containing "Apex" marks a boss: it needs 100% of the target. Everything else captures at 85%.
 const parseRoster=(txt,bio)=>txt.split("\n").map((l,i)=>{const[name,title,k,lore]=l.split("|"),w=i+1;return{w,name,title,lore,kind:KINDS[k],biome:bio(w),boss:/(Seasonal|Grand) Apex/.test(title),sub:/^[lf]$/.test(k)&&!/(Seasonal|Grand) Apex/.test(title)}});
-/* ADD A NEW EPOCH YEAR: paste 52 lines (name|title|kind|lore, kind = b/g/l/f/s) as E2_TXT, then add
-   {id:"e2",name:"Epoch II",start:"2027-10-16",roster:parseRoster(E2_TXT,BIO)} to EPOCHS.
-   Old epochs, captures and commemorations stay in the bestiary (dropdown). Never reuse or change an id. */
 const EPOCHS=[{id:"e1",name:"Epoch I",start:"2026-10-17",roster:parseRoster(E1_TXT,BIO)}];
 EPOCHS.forEach(x=>x.ms=Date.parse(x.start+"T00:00:00Z"));EPOCHS.sort((a,b)=>a.ms-b.ms);
 const epochAt=t=>{let r=null;for(const x of EPOCHS)if(x.ms<=t)r=x;return r};
@@ -1161,7 +1284,7 @@ const targetFor=n=>Math.max(30,Math.max(1,num(n))*45);
 const needOf=g=>g.boss?1:g.sub?.92:.85,tierMark=g=>g.boss?"\u2694 ":g.sub?"\u2726 ":"",pctOf=g=>Math.round(needOf(g)*100);
 const stageOf=(s,tg,g)=>{const r=num(s)/tg;return r<.35?1:r<needOf(g)?2:3};
 const rank=r=>Object.values((r&&r.m)||{}).filter(m=>m.s>0).sort((a,b)=>b.s-a.s).map(m=>[m.name,m.s]);
-// ---- Unique High-Fantasy Companion Anatomy & Silhouette Engine (one hand-built design per creature) ----
+
 function creatureRig(g,pal,fill,stage){
   const R=n=>Math.round(n*10)/10,ST=(c,w)=>`stroke="${c}" stroke-width="${w}"`;
   const e=(x,y,rx,ry,c=pal.p)=>`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${fill}" ${ST(c,1.6)}/>`;
@@ -1176,7 +1299,6 @@ function creatureRig(g,pal,fill,stage){
   const spikes=(pts,h=18,hw=7)=>pts.map(([x,y])=>P(`${x-hw},${y+4} ${x},${y-h} ${x+hw},${y+4}`,pal.p)).join("");
   const draft=`<path class="fx-draft" d="M25,130 Q90,100 150,135 T295,120" stroke="${pal.p}" stroke-width="1.8" fill="none"/>`;
   const bolt=d=>stage>=2?`<path class="fx-bolt" d="${d}" stroke="${pal.s}" stroke-width="2" fill="none"/>`:"";
-  // generic four-legged body: back/front strings draw behind/over it
   const Q=(bx,by,rx,ry,hx,hy,hr,lw=9,back="",front="")=>back+[bx-rx*.55,bx-rx*.25,bx+rx*.35,bx+rx*.65].map(x=>L(`M${R(x)},${by} L${R(x)},152`,lw)).join("")+e(bx,by,rx,ry)+L(`M${R(bx-rx*.7)},${R(by-ry*.3)} L${R(hx+hr*.3)},${R(hy+hr*.4)}`,R(hr*1.3))+o(hx,hy,hr)+A(R(hx-hr*.35),R(hy-hr*.2))+front;
   const art={
   1:()=>P(star(160,110,46,38,14),pal.p)+L("M122,92 Q102,122 114,146",16)+L("M198,92 Q218,122 206,146",16)+e(140,150,16,7)+e(180,150,16,7)+o(160,68,22,pal.p)+leaf(144,52,18,-120,5)+leaf(160,48,20,-90,5)+leaf(176,52,18,-60,5)+A(151,68)+A(169,68),
@@ -1289,7 +1411,6 @@ function renderMiniSVG(g,state){
 
 const loadDex=()=>{const raw=get("epochDex",{}),o={};for(const k of Object.keys(raw||{}))o[/^\d+$/.test(k)?"e1:"+k:k]=raw[k];return o};
 const whoOf=r=>(Array.isArray(r&&r.who)?r.who:[]).filter(Array.isArray).map(([n,s])=>[String(n),num(s)]);
-// Merges every member's saved captures (remote = {memberId:{"e1:3":record}}) with this phone's, then adds new captures.
 function recordCaptures(remote,meId){
   const cur=getCur(),curKey=ek(cur.e.id,cur.w),tg=targetFor(epochData.n),dex=loadDex();let ch=false;
   for(const m of Object.values(remote||{}))for(const[k,r]of Object.entries(m||{}))if(r&&typeof r==="object"&&(!dex[k]||num(r.t)>num(dex[k].t))){dex[k]=r;ch=true}
@@ -1322,7 +1443,7 @@ function openEntry(idx){
   }else if(idx<pos){
     h=`${art(1,true)}<b>???</b><div class="hint">This companion escaped before the clan could finish bonding with it.</div>`;
   }else{const w=cur.w+idx-pos,days=Math.ceil((wkMs(x,w)-Date.now())/864e5);
-    h=`${art(1,true)}<b>???</b><div class="hint">Appears ${fmtD(wkMs(x,w))}, in ${days} day${days===1?"":"s"}.${g.boss?" \u2694 A boss encounter.":g.sub?" \u2726 A sub-boss.":""}</div>`;
+    h=`${art(1,true)}<b>???</b><div class="hint">Appears ${fmtD(wkMs(x,w))}, in ${days} day${days==1?"":"s"}.${g.boss?" \u2694 A boss encounter.":g.sub?" \u2726 A sub-boss.":""}</div>`;
   }
   box.innerHTML=h+`<button type="button" class="alt" id="beClose">Close</button>`;
   box.hidden=false;
@@ -1351,8 +1472,6 @@ function focusCurrentWeek(){
   grid.scrollTo({top:Math.max(0,grid.scrollTop+off-(grid.clientHeight-cur.offsetHeight)/2),behavior:"smooth"});
 }
 
-// wkData = {"e1:3":{t:totalSets,m:{memberId:{name,s}}}}; n = active members; remote = clan-wide saved captures.
-// Returns this phone's capture record when it should be uploaded to the clan, else null.
 function renderSanctuary(wkData,n,remote,meId){
   epochData={wk:wkData||{},n:Math.max(1,num(n))};
   const cur=getCur(),x=cur.e,g=x.roster[cIdx(x,cur.w)-1],pal=PALETTES[g.biome],tg=targetFor(epochData.n);
@@ -1379,6 +1498,18 @@ function renderSanctuary(wkData,n,remote,meId){
   fill.classList.toggle("tamed",isTamed);
 
   $("sancArena").innerHTML=renderCreatureSVG(g,stage,pal,false);
+
+  // Update Workout Tab Sanctuary Mini-Banner
+  const banner=$("workoutSancBanner");
+  if(banner){
+    $("bannerMiniSvg").innerHTML=renderMiniSVG(g, isTamed?"cap":"cur");
+    $("bannerCreatureTitle").textContent=`Week ${cur.w}: ${g.name}`;
+    $("bannerStagePill").textContent=g.boss?"\u2694 Boss":g.sub?"\u2726 Sub-Boss":`Stage ${stage}`;
+    $("bannerStagePill").classList.toggle("tamed",isTamed);
+    $("bannerProgressTxt").textContent=`${sets} / ${reqSets} sets (${currentPct}%)`;
+    banner.onclick=()=>{ document.querySelector('[data-t="tC"]').click(); $("clanTabSanc").click(); };
+  }
+
   const rc=recordCaptures(remote,meId);dexNow=rc.dex;
   renderGrid();focusCurrentWeek();
   if(openIdx)openEntry(openIdx);
@@ -1878,6 +2009,11 @@ function renderStats(){
   const tmax=Math.max(1,...Object.values(type));
   $("sType").innerHTML=Object.entries(type).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div style="display:flex;align-items:center;gap:8px;margin:5px 0;font-size:.85rem"><span style="width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;${sp!=="all"&&k.toLowerCase()===sp.toLowerCase()?"color:var(--acc);font-weight:bold":""}">${esc(k)}</span><div style="flex:1;background:#2a2a2a;border-radius:4px"><div style="width:${v/tmax*100}%;background:var(--acc);height:14px;border-radius:4px;opacity:${sp==="all"||k.toLowerCase()===sp.toLowerCase()?1:0.35}"></div></div><span style="width:56px;text-align:right">${Math.round(v).toLocaleString()}</span></div>`).join("")||'<div class="hint">No workouts in this period.</div>';
 
+  // Render PR Cabinet
+  const prs=get("prs",{});
+  const prList=Object.entries(prs);
+  $("sPrs").innerHTML=prList.length?prList.map(([exName,p])=>`<div class="row"><span><b>${esc(exName)}</b><br><small style="color:var(--mu)">${p.w}kg \u00d7 ${p.r} reps (${p.d})</small></span><span style="text-align:right;color:var(--acc);font-weight:bold">Est. 1RM: ${p.orm} kg</span></div>`).join(""):`<div class="hint">No personal records logged yet. Log heavy sets to establish your PR cabinet!</div>`;
+
   let targetList=matchingSessions;
   let targetLabel=sp==="all"?"":sp;
   if(sp==="all"&&matchingSessions.length){
@@ -1918,7 +2054,7 @@ function renderStats(){
 ["sRange","sSplit"].forEach(id=>$(id).addEventListener("change",renderStats));
 
 // ---- Data versioning, migration & backup ----
-const DATA_KEYS=["log","last","custom","bmr","bmrIn","adv"],DEFAULTS={log:[],last:{},custom:[],bmr:[],bmrIn:null,adv:false};
+const DATA_KEYS=["log","last","custom","bmr","bmrIn","adv","prs"],DEFAULTS={log:[],last:{},custom:[],bmr:[],bmrIn:null,adv:false,prs:{}};
 const MIG={1:()=>{
   const byName={};Object.values(P).forEach(p=>p.ex.forEach(x=>{byName[x[1]]=x[0]}));
   const log=get("log",[]);
@@ -2031,72 +2167,11 @@ $("kNudge").addEventListener("click",async()=>{
   }
 });
 setInterval(checkPokes,45000);
-document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkPokes()});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&checkPokes()});
 checkPokes();
 
 migrate();
 applyCustom();renderAdv();render();checkBwStale();checkStreakNudge();
-</script>
-
-<style>
-#diagLauncher{position:fixed;left:10px;bottom:10px;z-index:2147483646;border:2px solid #f59e0b;border-radius:999px;padding:10px 14px;background:#111827;color:#fff;font:600 13px/1.2 system-ui,sans-serif;box-shadow:0 3px 14px #0005;max-width:calc(100vw - 20px);width:auto}
-#diagLauncher[hidden]{display:none}
-#diagPanel{position:fixed;inset:auto 8px 58px 8px;z-index:2147483647;max-height:58vh;overflow:auto;background:#111827;color:#f9fafb;border:1px solid #64748b;border-radius:12px;padding:12px;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;box-shadow:0 8px 30px #0008;white-space:pre-wrap;overflow-wrap:anywhere}
-#diagPanel[hidden]{display:none}
-#diagPanel button{font:600 12px system-ui,sans-serif;margin:0 6px 8px 0;padding:7px 10px;border-radius:8px;border:1px solid #94a3b8;background:#334155;color:white;width:auto}
-#diagLog{margin:8px 0 0}
-</style>
-<div id="diagPanel" hidden role="status" aria-live="polite">
-  <div style="font:700 14px system-ui,sans-serif;margin-bottom:8px">Page diagnostics</div>
-  <button id="diagCopy" type="button">Copy report</button><button id="diagClear" type="button">Clear log</button><button id="diagClose" type="button">Close</button>
-  <div id="diagLog">Starting diagnostics\u2026</div>
-</div>
-<button id="diagLauncher" type="button" hidden>Diagnostics \u00b7 0 error(s)</button>
-<script>
-(function(){
-  const entries=(window.__diagEarly||[]).slice();
-  let errorCount=entries.filter(x=>x.includes('ERROR:')||x.includes('REJECTION:')).length;
-  const panel=document.getElementById('diagPanel');
-  const log=document.getElementById('diagLog');
-  const launch=document.getElementById('diagLauncher');
-  const forceShow=location.search.includes('diag=1')||location.hash.includes('diag');
-  if(forceShow||errorCount>0)launch.hidden=false;
-
-  let titleTaps=0,tapTimer=null;
-  const appTitle=document.getElementById('appTitle');
-  if(appTitle)appTitle.addEventListener('click',function(){
-    clearTimeout(tapTimer);
-    if(++titleTaps>=5){titleTaps=0;launch.hidden=!launch.hidden;}
-    else tapTimer=setTimeout(()=>{titleTaps=0;},1500);
-  });
-
-  function add(kind,message){
-    const stamp=new Date().toLocaleTimeString();
-    const line='['+stamp+'] '+kind+': '+String(message);
-    entries.push(line); if(entries.length>100)entries.shift();
-    if(kind==='ERROR'||kind==='REJECTION'){errorCount++;launch.hidden=false;}
-    log.textContent=entries.join('\n');
-    launch.textContent='Diagnostics \u00b7 '+errorCount+' error(s)';
-  }
-  window.addEventListener('error',function(e){add('ERROR',(e.message||'Script error')+(e.filename?' \u2014 '+e.filename.split('/').pop():'')+(e.lineno?':'+e.lineno:''));});
-  window.addEventListener('unhandledrejection',function(e){let reason=e.reason;add('REJECTION',reason&&(reason.stack||reason.message)||reason||'Unknown rejected promise');});
-  document.addEventListener('click',function(e){
-    const target=e.target&&e.target.closest?e.target.closest('button,[role="button"],input[type="button"],input[type="submit"]'):null;
-    if(target && !target.closest('#diagPanel') && target.id!=='diagLauncher'){
-      add('TAP','id="'+(target.id||'(no id)')+'" text="'+((target.innerText||target.value||'').trim().replace(/\s+/g,' ').slice(0,90))+'"');
-    }
-  },true);
-  launch.addEventListener('click',function(){panel.hidden=!panel.hidden;});
-  document.getElementById('diagClose').addEventListener('click',function(){panel.hidden=true;});
-  document.getElementById('diagClear').addEventListener('click',function(){entries.length=0;errorCount=0;log.textContent='Log cleared. Tap a button to test it.';launch.textContent='Diagnostics \u00b7 0 error(s)';});
-  document.getElementById('diagCopy').addEventListener('click',async function(){
-    const report='Training & Weather Hub diagnostics\nURL: '+location.href+'\nUser agent: '+navigator.userAgent+'\nTime: '+new Date().toISOString()+'\n\n'+entries.join('\n');
-    try{await navigator.clipboard.writeText(report);this.textContent='Copied!';}
-    catch(e){log.textContent=report+'\n\n(Clipboard not available. Long-press the text to select and copy.)';}
-  });
-  add('INFO','Diagnostics installed. Page: '+location.pathname);
-  window.addEventListener('load',function(){add('INFO','Page load completed. If a button does nothing, tap it and check for its TAP entry and any errors above.');});
-})();
 </script>
 
 </body>
