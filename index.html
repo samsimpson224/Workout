@@ -1159,6 +1159,18 @@ function creatureRig(g, pal, fill, stage){
       ${stage >= 2 ? `<path class="fx-bolt" d="M62,92 L118,95 L182,115 L212,72" stroke="${pal.s}" stroke-width="2" fill="none"/>` : ""}`;
   } 
 
+  // Week 1: Glacier Yeti (Proper Shaggy Gentle Giant)
+  if(w === 1){
+    return `
+      <ellipse cx="160" cy="115" rx="42" ry="30" fill="${fill}" stroke="${pal.p}" stroke-width="1.8"/>
+      <circle cx="160" cy="80" r="24" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
+      <circle cx="144" cy="65" r="9" fill="${fill}" stroke="${pal.s}" stroke-width="1.2"/>
+      <circle cx="176" cy="65" r="9" fill="${fill}" stroke="${pal.s}" stroke-width="1.2"/>
+      <circle cx="152" cy="78" r="3" fill="${pal.s}"/>
+      <circle cx="168" cy="78" r="3" fill="${pal.s}"/>
+      <ellipse cx="160" cy="86" rx="5" ry="3" fill="${pal.p}"/>`;
+  }
+
   // 2. Heavy Golems, Tortoises, Treants & Monoliths
   if(k === "golem" || [3,5,6,16,20,28,32,37,41,42,51].includes(w)){
     return `
@@ -1169,14 +1181,14 @@ function creatureRig(g, pal, fill, stage){
       <polygon points="160,58 140,85 160,115 180,85" fill="${pal.p}" stroke="${pal.s}" stroke-width="1.2"/>`;
   } 
 
-  // 3. Mammoths, Yetis & Massive Beasts
-  if([1, 9, 12].includes(w)){
+  // 3. Mammoths & Massive Beasts (Weeks 9, 12)
+  if([9, 12].includes(w)){
     return `
       <ellipse cx="160" cy="115" rx="46" ry="32" fill="${fill}" stroke="${pal.p}" stroke-width="2"/>
       <circle cx="135" cy="95" r="22" fill="${fill}" stroke="${pal.s}" stroke-width="1.8"/>
       ${w === 9 ? `<path d="M115,105 Q90,125 95,142" stroke="${pal.s}" stroke-width="5" stroke-linecap="round" fill="none"/>
                    <path d="M120,100 Q95,120 100,137" stroke="${pal.s}" stroke-width="4" stroke-linecap="round" fill="none"/>` : ""}
-      <polygon points="110,75 95,50 125,70" fill="${fill}" stroke="${pal.s}" stroke-width="1"/>`;
+      <circle cx="120" cy="85" r="6" fill="${fill}" stroke="${pal.s}" stroke-width="1"/>`;
   } 
 
   // 4. Owls, Falcons, Griffins & Birds
