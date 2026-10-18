@@ -309,11 +309,11 @@ body{color-scheme:dark}
     <div id="clanSubLeaderboard">
     <button id="kGuideBtn" class="alt" style="padding:8px;font-size:.85rem">? Setup guide (iPhone &amp; Android)</button>
     <div id="kGuide" class="info-panel" hidden>
-      <b>A. Friends: join in 3 steps</b>
+    <b>A. Friends: join in 3 steps</b>
       <ol>
         <li><b>Install the app.</b> Open the link your clan creator sent.<br><i>iPhone:</i> in Safari tap Share &rarr; Add to Home Screen &rarr; Add.<br><i>Android:</i> in Chrome tap the &#8942; menu &rarr; Add to Home screen (or Install app) &rarr; Add. Open it from the new icon.</li>
         <li><b>Paste the invite code.</b> Tap the Clan tab &rarr; Join a clan. Copy the long code starting <code>CLAN1.</code> from your creator's message, then press and hold in the code box and tap Paste. Type a display name (and optionally choose a division).</li>
-        <li><b>Tap Join.</b> Log a workout and your name appears on the board. That's it. No accounts or passwords for you.</li>
+        <li><b>Tap Join &amp; Bond with the Sanctuary.</b> Log a workout and your name appears on the leaderboard. Every hard set you log contributes to bonding with the clan's weekly Sanctuary companion (capturing standard beasts at 85% target completion and epic bosses at 100%!).</li>
       </ol>
       <b>B. Clan creator: one-time setup (about 10 minutes, free)</b>
       <p>Easiest on a computer. On a phone, switch the page to desktop view first:<br><i>iPhone Safari:</i> tap <b>aA</b> in the address bar &rarr; Request Desktop Website.<br><i>Android Chrome:</i> tap &#8942; &rarr; tick Desktop site. Pinch to zoom as needed. On a phone, open Firebase's &#9776; menu to see Build.</p>
@@ -398,6 +398,7 @@ body{color-scheme:dark}
       <div id="kCust"></div>
       <div id="kManage"></div>
       <button id="kSync">Sync my logs &amp; refresh</button>
+      <label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-weight:normal;font-size:.85rem"><input type="checkbox" id="kNudgeInvite" style="width:auto;margin:0"> Include clan invite link in nudge message</label>
       <button id="kNudge" class="alt">Send a nudge by message</button>
       <button id="kInvite" class="alt">Share invite code</button>
       <button id="kLinkDevice" class="alt">Copy my personal device-link code (PC/Phone sync)</button>
@@ -1485,7 +1486,7 @@ async function renderClan(){
   // Single declaration for admin status
   const admin=Boolean(tokA.t&&tokA.exp>Date.now());
 
-  $("kTitle").textContent="Signed in as "+c.name+(c.owner?" (clan creator)":"")+(admin?" â€” Admin Unlocked í ½í±‘":"");
+  $("kTitle").textContent="Signed in as "+c.name+(c.owner?" (clan creator)":"")+(admin?" â€” Admin Unlocked \ud83d\udc51":"");
   $("kAdminToggle").hidden=admin;
   if(admin)$("kAdminBox").hidden=true;
   $("kShareVol").checked=c.shareVol!==false;
@@ -1985,9 +1986,14 @@ async function checkPokes(){
 }
 $("pokeBar").addEventListener("click",e=>{if(e.target.closest("button"))$("pokeBar").hidden=true});
 $("kNudge").addEventListener("click",async()=>{
-  const t="\u{1F4AA} Time to check in on the training clan! Open the app and log your session.";
+  const c=get("clan2",null);
+  const includeLink=$("kNudgeInvite")&&$("kNudgeInvite").checked;
+  let t="\u{1F4AA} Time to check in on the training clan! Open the app and log your session.";
+  if(includeLink&&c&&c.code){
+    t+="\n\nJoin our training clan here:\n"+c.code;
+  }
   try{if(navigator.share){await navigator.share({text:t});return}}catch(e){if(e.name==="AbortError")return}
-  try{await navigator.clipboard.writeText(t);msg("kMsg","Copied. Paste it into a message.",true)}catch(e){msg("kMsg","Couldn't copy the message.",false)}
+  try{await navigator.clipboard.writeText(t);msg("kMsg",includeLink?"Nudge & invite link copied!":"Nudge copied. Paste it into a message.",true)}catch(e){msg("kMsg","Couldn't copy the message.",false)}
 });
 setInterval(checkPokes,45000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkPokes()});
