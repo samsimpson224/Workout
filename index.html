@@ -1481,12 +1481,13 @@ async function renderClan(){
   if(c.g===undefined&&bg){c.g=bg;set("clan2",c)}
   $("kMyGen").value=c.g||"";
   $("kAdminUser").value="m-"+c.clan+MAIL;
+
+  // Single declaration for admin status
   const admin=Boolean(tokA.t&&tokA.exp>Date.now());
-const admin=Boolean(tokA.t&&tokA.exp>Date.now());
+
   $("kTitle").textContent="Signed in as "+c.name+(c.owner?" (clan creator)":"")+(admin?" â€” Admin Unlocked í ½í±‘":"");
   $("kAdminToggle").hidden=admin;
   if(admin)$("kAdminBox").hidden=true;
-  // Removed the auto-unhide so it stays tucked away behind the toggle button for everyone
   $("kShareVol").checked=c.shareVol!==false;
 
   try{
