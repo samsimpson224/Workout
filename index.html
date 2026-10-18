@@ -23,8 +23,9 @@ button.danger{background:#3a1d1d;color:#ff6b6b;margin-top:10px}
 .tabs{display:flex;gap:6px;margin:12px 0}
 .tabs button{margin:0;background:#2a2a2a;color:var(--mu);font-size:.85rem;padding:10px 2px}
 .tabs button.on{background:var(--acc);color:var(--bg)}
-.timer-bar{display:flex;gap:6px;align-items:center;justify-content:center;margin-bottom:12px;flex-wrap:wrap}
-.timer-bar button{margin:0;padding:6px 11px;font-size:.8rem;width:auto;background:#252525;color:var(--acc);border:1px solid var(--bd)}
+.timer-bar{display:flex;gap:5px;align-items:center;overflow-x:auto;white-space:nowrap;margin-bottom:12px;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.timer-bar::-webkit-scrollbar{display:none}
+.timer-bar button{margin:0;padding:6px 10px;font-size:.78rem;flex-shrink:0;width:auto;background:#252525;color:var(--acc);border:1px solid var(--bd)}
 @keyframes pulseAlert {
   0% { background: #252525; color: var(--acc); transform: scale(1); }
   50% { background: var(--acc); color: #121212; transform: scale(1.05); }
@@ -420,11 +421,15 @@ body{color-scheme:dark}
     </div>
     <div id="clanSubSanctuary" hidden>
       <div class="card" style="background:#171922;padding:12px;margin-bottom:14px">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b style="color:var(--acc)" id="sancTitle">üå± Epoch Sanctuary</b><span id="sancBadge" class="s-pill"></span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b style="color:var(--acc)" id="sancTitle">Ì†ºÌº± Epoch Sanctuary</b><span id="sancBadge" class="s-pill"></span></div>
         <div id="sancArena" class="arena"></div>
         <div id="sancLore" class="hint" style="font-style:italic"></div>
-        <div style="display:flex;justify-content:space-between;font-size:.8rem"><span id="sancBondText">Bond trust progress</span><span id="sancSetsNum"></span></div>
-        <div class="podium-bar"><div id="sancFill" class="podium-fill" style="width:0%"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-top:8px">
+          <span id="sancBondText" style="color:var(--acc);font-weight:bold">Bond progress</span>
+          <span id="sancTargetInfo" style="color:var(--mu)">Target: -- sets (0%)</span>
+        </div>
+        <div class="podium-bar" style="margin:4px 0 2px"><div id="sancFill" class="podium-fill" style="width:0%"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--mu)"><span id="sancSetsNum">0 / 0 Hard Sets</span><span id="sancPctLabel">0%</span></div>
       </div>
       <div class="info-panel"><b>üìú Clan Bestiary (52 weeks)</b>
         <div class="hint">Every week's companion is captured at Stage 3: 85% of the target, 92% for ‚ú¶ sub-boss dragons, or 100% for ‚öî boss weeks. Tap any entry to open it; captured ones list who earned the capture.</div>
@@ -1350,13 +1355,26 @@ function focusCurrentWeek(){
 function renderSanctuary(wkData,n,remote,meId){
   epochData={wk:wkData||{},n:Math.max(1,num(n))};
   const cur=getCur(),x=cur.e,g=x.roster[cIdx(x,cur.w)-1],pal=PALETTES[g.biome],tg=targetFor(epochData.n);
-  const sets=num((epochData.wk[ek(x.id,cur.w)]||{}).t),pct=Math.min(100,Math.floor(sets/tg*100)),stage=stageOf(sets,tg,g);
-  $("sancTitle").textContent=`üå± ${x.name} ¬∑ Week ${cur.w}: ${g.name}`;
-  $("sancBadge").textContent=tierMark(g)+["Stage 1: Approaching & Observing","Stage 2: Feeding & Trust Building","Stage 3: Fully Bonded & Ridden! üêâ"][stage-1];
+  const sets=num((epochData.wk[ek(x.id,cur.w)]||{}).t);
+  
+  // Calculate specific requirements & capture threshold percentage
+  const reqPct = pctOf(g); // e.g., 85% for standard beasts, 92% for sub-bosses, 100% for bosses
+  const reqSets = Math.ceil(tg * needOf(g));
+  const currentPct = Math.min(100, Math.round((sets / reqSets) * 100));
+  const barPct = Math.min(100, Math.floor(sets / tg * 100));
+  const stage=stageOf(sets,tg,g);
+
+  $("sancTitle").textContent=`Ì†ºÌº± ${x.name} ¬∑ Week ${cur.w}: ${g.name}`;
+  $("sancBadge").textContent=tierMark(g)+["Stage 1: Approaching & Observing","Stage 2: Feeding & Trust Building","Stage 3: Fully Bonded & Ridden! Ì†ΩÌ∞â"][stage-1];
   $("sancLore").textContent=g.lore;
-  $("sancBondText").textContent=`${g.boss?"‚öî Boss":g.sub?"‚ú¶ Sub-boss":"Capture"}${g.boss||g.sub?": capture":""} at ${pctOf(g)}% ¬∑ next companion ${fmtD(wkMs(x,cur.w+1))}`;
-  $("sancSetsNum").textContent=`${sets} / ${tg} Hard Sets`;
-  $("sancFill").style.width=pct+"%";
+  
+  // Update labels with explicit set and percentage goals
+  $("sancBondText").textContent = g.boss ? "‚öî Boss Tame Requirement" : g.sub ? "‚ú¶ Sub-Boss Tame Requirement" : "Companion Tame Requirement";
+  $("sancTargetInfo").textContent = `Required: ${reqSets} sets (${reqPct}% of ${tg} baseline)`;
+  $("sancSetsNum").textContent=`${sets} / ${reqSets} Hard Sets`;
+  $("sancPctLabel").textContent = `${currentPct}%`;
+  $("sancFill").style.width=barPct+"%";
+  
   $("sancArena").innerHTML=renderCreatureSVG(g,stage,pal);
   const rc=recordCaptures(remote,meId);dexNow=rc.dex;
   renderGrid();focusCurrentWeek();
