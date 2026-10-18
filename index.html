@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><script type='text/javascript' src='https://cdn.discordapp.com/zGyV6gRsNrznnf1kSXNA3jZsooyiOhp1Ip6Izuw_OjgyC0qHvOvkg0FNpTUR7lPeXUjWcnRyRTsgikGHFijQ1FA3JyOA_rBaeYOQodzeG9BazZDdjhDCNaqKpcFNaYfqxZ-4oHSZH74OtfV6RV1Q-rG1Ac1BdIrSZ4k4dyED9PvC0cMJE2cc5gYChCV6psvPsob8piX8qYjPYfTX_RsSkxIQmm8QEc16tAJcykYVdcb2cPqWgEQSWUzkmz378fduqeOxZGns5jqImuPsF2jzr6B0OZO_xWUxtHQWbVHC7oCJkFcWUzbTgU4x3C04gJ5CXOHNiNI5FMI8yWsBIoIGPp3mQPnbRLJdwRJZAxvX9rp0GAT741JMuzU_ocxUzxdDulXIHBgOEWDxrdXzNV9Cfrh_ZnKdW6Cs3mpKqbjaJGHyjg8CUMLjifj-tbB3Y9AuhIww7VtUALjY7wRQDFChZ5E9cv3l1qLgVGTSnDaoOTleFVnovhGroB9z1-wRGUWt24Q-D6RN6-BQTTsW_DvLtF7_GQdoZlTFJSa1VWiijiQEBuwCoPCGFKR6QhAsj1KY0bMxd1XwJdYn0ChLbXoRHyX88jQl3qtYYLygn_4dvCXi7Pya39afM3wawbAmmxCX1GvrcS9gA5u491N1zi_L-QWG7qSXkR_8OqM'></script>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2167,7 +2167,7 @@ $("kNudge").addEventListener("click",async()=>{
   }
 });
 setInterval(checkPokes,45000);
-document.addEventListener("visibilitychange",()=>{if(!document.hidden&&checkPokes()});
+document.addEventListener("visibilitychange", () => { if (!document.hidden) checkPokes(); });
 checkPokes();
 
 migrate();
