@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Training">
 <meta name="theme-color" content="#0f1015">
-<link rel="manifest" href="data:application/manifest+json,{&quot;name&quot;:&quot;Training &amp; Weather Hub&quot;,&quot;short_name&quot;:&quot;Training&quot;,&quot;start_url&quot;:&quot;./&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#0f1015&quot;,&quot;theme_color&quot;:&quot;#0f1015&quot;,&quot;icons&quot;:[{&quot;src&quot;:&quot;data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%तलाtext y=%27.9em%27 font-size=%2790%27>🏋️‍♂️</text></svg>&quot;,&quot;sizes&quot;:&quot;192x192&quot;,&quot;type&quot;:&quot;image/svg+xml&quot;}]}">
+<link rel="manifest" href="data:application/manifest+json,{&quot;name&quot;:&quot;Training &amp; Weather Hub&quot;,&quot;short_name&quot;:&quot;Training&quot;,&quot;start_url&quot;:&quot;./&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#0f1015&quot;,&quot;theme_color&quot;:&quot;#0f1015&quot;,&quot;icons&quot;:[{&quot;src&quot;:&quot;data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%27.9em%27 font-size=%2790%27>🏋️‍♂️</text></svg>&quot;,&quot;sizes&quot;:&quot;192x192&quot;,&quot;type&quot;:&quot;image/svg+xml&quot;}]}">
 <title>Training &amp; Weather Hub</title>
 <style>
 :root{--bg:#0f1015;--card:#181a22;--acc:#d4af37;--acc-glow:rgba(212,175,55,0.28);--tx:#f2f4f8;--mu:#9aa0b4;--bd:#2a2e3d}
@@ -33,6 +33,16 @@ button.danger{background:#3a1d22;color:#ff7b7b;border:1px solid #5c2831;margin-t
 .timer-bar button{margin:0;padding:6px 10px;font-size:.78rem;flex-shrink:0;width:auto;background:#1e212b;color:var(--acc);border:1px solid var(--bd);box-shadow:none}
 @keyframes pulseAlert{0%,100%{background:#252525;color:var(--acc);transform:scale(1)}50%{background:var(--acc);color:#121212;transform:scale(1.04)}}
 .timer-done{animation:pulseAlert .7s infinite ease-in-out;border:2px solid var(--acc) !important}
+#restFloat{position:fixed;right:max(12px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));z-index:90;width:86px;height:86px;border-radius:50%;background:#11141df2;border:1px solid var(--acc);box-shadow:0 6px 22px #0009;display:flex;align-items:center;justify-content:center;touch-action:manipulation}
+#restFloat[hidden]{display:none}
+#restFloat svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+#restFloat .track{stroke:#34394e;stroke-width:5;fill:none}
+#restFloat .progress{stroke:var(--acc);stroke-width:5;stroke-linecap:round;fill:none;transition:stroke-dashoffset .2s linear}
+#restFloat .timer-core{position:relative;text-align:center;line-height:1.15;color:var(--acc);font-weight:800;font-size:1.05rem}
+#restFloat small{display:block;color:var(--mu);font-size:.62rem;font-weight:600;margin-top:3px}
+.rep-adjust{margin:7px 0 10px;padding:9px 10px;border:1px solid var(--acc);border-radius:9px;background:#171a24;font-size:.82rem}
+.rep-adjust .rep-line{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.rep-adjust input[type=range]{padding:0;margin:8px 0;width:100%;accent-color:var(--acc)}
 #alarm{position:fixed;inset:0;z-index:99;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#000;font-size:3.2rem;font-weight:900;text-align:center;animation:flash .3s infinite alternate}
 #alarm[hidden]{display:none}
 #alarm small{font-size:1.1rem;font-weight:700;margin-top:12px}
@@ -110,6 +120,9 @@ code{word-break:break-all;background:#12141c;padding:2px 5px;border-radius:4px;c
 .p-ember{animation:emberRise 3s linear infinite}
 .p-snow{animation:snowDrift 3.4s linear infinite}
 @media (prefers-reduced-motion:reduce){.boss-rig,.fx-draft{animation:none}.p-ember,.p-snow,.fx-bolt{display:none}}
+#celeb{position:fixed;inset:0;z-index:98;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}
+.celeb-card{background:var(--card);border:2px solid var(--acc);border-radius:14px;padding:16px;max-width:420px;width:100%;text-align:center}
+.celeb-h{color:var(--acc);font-weight:900;font-size:1.2rem;margin-bottom:6px}
 </style>
 </head>
 <body>
@@ -117,11 +130,13 @@ code{word-break:break-all;background:#12141c;padding:2px 5px;border-radius:4px;c
 <div id="storageWarning" class="bw-warn" hidden>&#x26A0;&#xFE0F; Browser storage is unavailable. Changes are temporary in this tab; export a backup before closing or refreshing.</div>
 
 <div id="alarm" hidden>REST OVER<small>Tap anywhere to dismiss</small></div>
+<div id="restFloat" hidden role="timer" aria-live="polite" aria-label="Rest timer remaining"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="track" cx="50" cy="50" r="43"></circle><circle id="restProgress" class="progress" cx="50" cy="50" r="43" stroke-dasharray="270.18" stroke-dashoffset="0"></circle></svg><div class="timer-core"><span id="restFloatTime">0:00</span><small>REST</small></div></div>
 <div id="pokeBar" class="poke" hidden></div>
 <div class="timer-bar">
   <button data-sec="60">Rest 60s</button>
   <button data-sec="120">Rest 2m</button>
   <button data-sec="180">Rest 3m</button>
+  <label for="restDefault" style="margin:0 2px 0 4px;font-size:.72rem;flex-shrink:0">Auto rest</label><select id="restDefault" aria-label="Default rest after set" style="width:auto;min-width:78px;padding:6px 8px;margin:0;font-size:.8rem!important"><option value="30">30s</option><option value="45">45s</option><option value="60">60s</option><option value="90">90s</option><option value="120">2m</option><option value="180">3m</option></select>
   <button id="tStop" hidden>Stop (<span id="tDisp">0s</span>)</button>
   <button id="tTest">Test alert</button>
   <button id="tInfoBtn" title="Timer info">? Timer</button>
@@ -130,7 +145,7 @@ code{word-break:break-all;background:#12141c;padding:2px 5px;border-radius:4px;c
   <b>Rest Timer Guide (Background-Music Safe):</b>
   <ul>
     <li><b>Rest 60s / 2m / 3m:</b> Tap any preset to start the countdown. Starting or running a timer will <b>never pause your background music</b> (Spotify, Apple Music, YouTube Music).</li>
-    <li><b>Alerts:</b> When time expires, the screen flashes visually, Android phones vibrate (iPhone has no web vibration), and an ambient chime plays over your music.</li>
+    <li><b>Alerts:</b> When time expires, the screen flashes visually, Android phones vibrate (iPhone has no web vibration), and an ambient chime plays over your music. A floating circular countdown stays visible while you scroll.</li><li><b>Auto rest:</b> Choose the default rest duration used when marking a set complete.</li>
   </ul>
 </div>
 
@@ -208,6 +223,8 @@ code{word-break:break-all;background:#12141c;padding:2px 5px;border-radius:4px;c
       <option value="cold_wind">Cold &amp; Windy (Porch Protected)</option>
       <option value="pouring_rain">Pouring Rain / Freezing (Move to Garage)</option>
     </select>
+    <div id="gpsMsg" class="msg" style="min-height:0;text-align:left"></div>
+    <div style="display:flex;gap:6px;margin:6px 0"><input id="placeIn" placeholder="No GPS? Type a town or city" autocomplete="off" style="margin:0"><button id="placeBtn" class="alt" type="button" style="width:auto;margin:0;padding:0 14px">Use</button></div>
     <label for="split">2. Training session</label>
     <select id="split">
       <option value="push">Push (Chest, Shoulders, Triceps)</option>
@@ -289,7 +306,7 @@ code{word-break:break-all;background:#12141c;padding:2px 5px;border-radius:4px;c
     <button id="lBak" class="alt">Export full backup (JSON)</button>
     <button id="lRes" class="alt">Restore from backup</button>
     <input type="file" id="lFile" accept=".json,application/json" hidden>
-    <div class="hint">The backup holds workouts, custom workouts and body entries. It never includes clan logins or passwords.</div>
+    <div class="hint">The backup holds workouts, custom workouts, body entries and your bestiary. It never includes clan logins or passwords.</div>
     <div id="lMsg" class="msg"></div>
     <div id="lHist"></div>
   </div>
@@ -453,6 +470,7 @@ code{word-break:break-all;background:#12141c;padding:2px 5px;border-radius:4px;c
         <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b style="color:var(--acc)" id="sancTitle">&#x1F331; Epoch Sanctuary</b><span id="sancBadge" class="s-pill"></span></div>
         <div id="sancArena" class="arena"></div>
         <div id="sancLore" class="hint" style="font-style:italic"></div>
+        <div id="sancAlert" class="hint" style="color:var(--acc);font-weight:bold"></div>
         <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-top:8px">
           <span id="sancBondText" style="color:var(--acc);font-weight:bold">Bond progress</span>
           <span id="sancTargetInfo" style="color:var(--mu)">Target: -- sets (0%)</span>
@@ -468,6 +486,7 @@ code{word-break:break-all;background:#12141c;padding:2px 5px;border-radius:4px;c
       </div>
       <div id="adminViewerCard" class="info-panel" hidden>
         <b>&#x1F451; Admin bestiary inspector</b>
+        <select id="adminEpochSel"></select>
         <input id="adminWeekSel" type="range" min="1" max="52" value="1" style="accent-color:var(--acc)">
         <div style="display:flex;justify-content:space-between;gap:8px;font-size:.82rem;color:var(--acc)"><span id="awTitle"></span><span id="awBiome"></span></div>
         <div id="adminArena" class="arena"></div>
@@ -650,37 +669,53 @@ function stopAlarm(){
   $("alarm").hidden=true;releaseWake();
 }
 function triggerAlert(){
-  audio();beeps();
+  audio();
+  if(actx&&actx.state!=="running"){try{actx.resume().then(()=>beeps()).catch(()=>{})}catch(e){}}else beeps();
   if(!(window.AudioContext||window.webkitAudioContext))msg("wMsg","Timer finished; this browser does not support audio alerts. The visual alert is active.",false);
   let n=0;clearInterval(aInt);
-  aInt=setInterval(()=>{if(++n>18)return stopAlarm();beeps()},2400);
-  $("alarm").hidden=false;
+  aInt=setInterval(()=>{if(++n>18)return stopAlarm();if(actx&&actx.state!=="running"){try{actx.resume().then(()=>beeps()).catch(()=>{})}catch(e){}}else beeps()},2400);
+  $("alarm").hidden=false;paintRestFloat(0);
   try{navigator.vibrate&&navigator.vibrate([400,150,400,150,600])}catch(e){}
   $("tStop").classList.add("timer-done");
+}
+let tTotal=90;
+function paintRestFloat(rem){
+  const flo=$("restFloat");if(!flo)return;
+  flo.hidden=!tEnd&&!aInt;
+  const safe=Math.max(0,rem||0),m=Math.floor(safe/60),ss=String(safe%60).padStart(2,"0");
+  $("restFloatTime").textContent=`${m}:${ss}`;
+  const ratio=tEnd?Math.min(1,Math.max(0,safe/Math.max(1,tTotal))):0;
+  $("restProgress").style.strokeDashoffset=String(270.18*(1-ratio));
+}
+function startRest(seconds){
+  const secs=Math.max(1,Math.min(3600,Number(seconds)||90));
+  audio();try{if(actx&&actx.state!=="running")actx.resume()}catch(e){}
+  stopAlarm();clearInterval(tInt);tInt=null;$("tStop").classList.remove("timer-done");
+  try{if(navigator.audioSession)navigator.audioSession.type="ambient"}catch(err){}
+  tTotal=secs;tEnd=Date.now()+secs*1000;$("tStop").hidden=false;tickTimer();tInt=setInterval(tickTimer,250);wakeOn();
 }
 function tickTimer(){
   if(!tEnd)return;
   const rem=Math.ceil((tEnd-Date.now())/1000);
-  if(rem<=0){clearInterval(tInt);tInt=null;tEnd=0;$("tDisp").textContent="DONE!";triggerAlert()}
-  else $("tDisp").textContent=rem+"s";
+  if(rem<=0){clearInterval(tInt);tInt=null;tEnd=0;$("tDisp").textContent="DONE!";paintRestFloat(0);triggerAlert()}
+  else{$("tDisp").textContent=rem+"s";paintRestFloat(rem)}
 }
 function wakeOn(){try{navigator.wakeLock&&navigator.wakeLock.request("screen").then(l=>{wake=l}).catch(()=>{})}catch(e){}}
 document.querySelector(".timer-bar").addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b||b.id==="tInfoBtn")return;
-  stopAlarm();clearInterval(tInt);tInt=null;$("tStop").classList.remove("timer-done");
-  if(b.id==="tTest"){triggerAlert();if(window.AudioContext||window.webkitAudioContext)msg("wMsg","Test alert triggered (ambient mode \u2014 background music stays playing).",true);return}
-  if(b.id==="tStop"){tEnd=0;$("tStop").hidden=true;return}
-  try{if(navigator.audioSession)navigator.audioSession.type="ambient"}catch(err){}
-  tEnd=Date.now()+parseInt(b.dataset.sec,10)*1000;
-  $("tStop").hidden=false;tickTimer();tInt=setInterval(tickTimer,250);wakeOn();
+  if(b.id==="tTest"){audio();triggerAlert();if(window.AudioContext||window.webkitAudioContext)msg("wMsg","Test alert triggered (ambient mode \u2014 background music stays playing).",true);return}
+  if(b.id==="tStop"){stopAlarm();clearInterval(tInt);tInt=null;tEnd=0;$("tStop").hidden=true;$("tStop").classList.remove("timer-done");paintRestFloat(0);return}
+  if(b.dataset.sec)startRest(parseInt(b.dataset.sec,10));
 });
-$("alarm").addEventListener("click",()=>{stopAlarm();$("tStop").hidden=true;$("tStop").classList.remove("timer-done")});
-document.addEventListener("visibilitychange",()=>{if(!document.hidden&&tEnd){tickTimer();wakeOn()}});
+$("restDefault").value=String(get("restDefault",90));
+$("restDefault").addEventListener("change",e=>{set("restDefault",Math.max(15,Math.min(300,Number(e.target.value)||90)));msg("wMsg",`Default rest set to ${e.target.selectedOptions[0].text}.`,true)});
+$("alarm").addEventListener("click",()=>{stopAlarm();$("tStop").hidden=true;$("tStop").classList.remove("timer-done");paintRestFloat(0)});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&tEnd){audio();tickTimer();wakeOn()}});
 
 // ---- Tabs ----
 document.querySelector(".tabs").addEventListener("click",e=>{
   const b=e.target.closest("[data-t]");if(!b)return;
-  document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));
+  document.querySelectorAll(".tabs button").forEach(x=>{x.classList.toggle("on",x===b);x.setAttribute("aria-selected",String(x===b))});
   ["tW","tB","tL","tC","tS"].forEach(id=>{$(id).hidden=id!==b.dataset.t});
   if(b.dataset.t==="tL")renderLog();
   if(b.dataset.t==="tC")renderClan();
@@ -718,13 +753,13 @@ function calcEffKg(rawKg,meta,bw){
   return Math.round(perSide*(meta.m||1)*10)/10;
 }
 function vol(x,bwUsed){
-  const s=parseFloat(x.sets),r=parseFloat(x.reps);
+  const s=parseFloat(x.sets),r=Array.isArray(x.setReps)&&x.setReps.length?x.setReps.reduce((a,b)=>a+Math.max(0,num(b)),0):parseFloat(x.reps)*s;
   if(!(s>0&&r>0))return "";
   const meta=getMeta(x);
   const hasK=x.kg!==undefined&&x.kg!=="";
   if(!hasK&&!(meta.bw>0))return "";
   const eff=calcEffKg(x.kg,meta,bwUsed||getBW());
-  return eff>0?Math.round(eff*s*r*10)/10:"";
+  return eff>0?Math.round(eff*r*10)/10:"";
 }
 function parseTargetOutline(str){
   const m=String(str||"").match(/(\d+)\s*(?:sets?|s)?\s*[xX*]\s*(\d+)/i)||String(str||"").match(/(\d+)\s*reps?\s*(\d+)\s*sets?/i);
@@ -800,6 +835,23 @@ function render(){
   checkUnilateralGuardrail();
 }
 
+// Compact per-set rep adjustment; it disappears after confirmation or Skip.
+function showRepAdjust(id,clickedSet){
+  document.querySelectorAll(".rep-adjust").forEach(el=>el.remove());
+  const pillBox=$("pills_"+id);if(!pillBox)return;
+  const ex=(P[$("split").value]||P.push).ex.find(x=>x[0]===id);
+  const target=num((parseTargetOutline(ex&&ex[2]||"")||{}).reps)||num((draft[id]||{}).reps)||12;
+  const panel=document.createElement("div");panel.className="rep-adjust";
+  panel.innerHTML=`<div class="rep-line"><b>Set ${clickedSet}: fewer reps?</b><span id="repChosen_${id}">${target} reps</span></div><input type="range" min="1" max="${Math.max(1,target)}" value="${target}" step="1" aria-label="Actual reps completed for set ${clickedSet}" id="repSlider_${id}"><div class="rep-line"><small style="color:var(--mu)">Only change if you stopped short.</small><span><button type="button" class="mini" data-repcancel="${id}">Skip</button> <button type="button" class="mini" data-repconfirm="${id}">Confirm</button></span></div>`;
+  pillBox.insertAdjacentElement("afterend",panel);
+  const slider=$("repSlider_"+id),label=$("repChosen_"+id);slider.addEventListener("input",()=>{label.textContent=slider.value+" reps"});
+  panel.querySelector("[data-repconfirm]").addEventListener("click",()=>{
+    const inp=document.querySelector(`input[data-k="${id}"][data-f="reps"]`);
+    if(inp){const d=draft[id]=draft[id]||{};const base=num((parseTargetOutline(ex&&ex[2]||"")||{}).reps)||num(inp.value)||12;const counts=Array.isArray(d.setReps)?d.setReps.slice():[];for(let j=0;j<clickedSet;j++)if(!counts[j])counts[j]=base;counts[clickedSet-1]=Number(slider.value);d.setReps=counts.slice(0,clickedSet);d.reps=String(Math.round(d.setReps.reduce((a,b)=>a+num(b),0)/clickedSet));inp.value=d.reps}
+    panel.remove();msg("wMsg",`Set ${clickedSet} confirmed at ${slider.value} reps.`,true);
+  });
+  panel.querySelector("[data-repcancel]").addEventListener("click",()=>panel.remove());
+}
 // Interactive Set Checkboxes / Pills Click Handler
 $("list").addEventListener("click",e=>{
   const pill=e.target.closest("[data-setbtn]");
@@ -818,12 +870,10 @@ $("list").addEventListener("click",e=>{
         });
       }
       checkUnilateralGuardrail();
-      // Auto-trigger rest timer (90s default for completed set)
-      stopAlarm();clearInterval(tInt);tInt=null;
-      try{if(navigator.audioSession)navigator.audioSession.type="ambient"}catch(err){}
-      tEnd=Date.now()+90*1000;
-      $("tStop").hidden=false;tickTimer();tInt=setInterval(tickTimer,250);wakeOn();
-      msg("wMsg",`Set ${clickedSet} logged! 90s Rest timer started.`,true);
+      // Start the selected default rest interval during this user gesture (important for Safari audio).
+      startRest(get("restDefault",90));
+      showRepAdjust(id,clickedSet);
+      msg("wMsg",`Set ${clickedSet} marked. ${get("restDefault",90)}s rest started; adjust reps only if this set was incomplete.`,true);
     }
     return;
   }
@@ -864,23 +914,57 @@ $("split").addEventListener("change",render);
 $("weather").addEventListener("change",()=>{$("advice").textContent=ADV[$("weather").value]});
 
 // ---- GPS Weather Auto-Detection (Open-Meteo API) ----
+// Messages stay on screen (the old one vanished after 4s and sat far below the button) and every failure says WHY.
+function gpsSay(t,good){const e=$("gpsMsg");if(!e)return;e.style.color=good?"#4caf50":"#ff9800";e.textContent=t}
+async function weatherAt(lat,lon,label){
+  const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,precipitation,wind_speed_10m`);
+  if(!r.ok)throw new Error("weather "+r.status);
+  const j=await r.json();if(!j||!j.current)throw new Error("no data");
+  const temp=j.current.temperature_2m,precip=j.current.precipitation,wind=j.current.wind_speed_10m,sel=$("weather");
+  let v,txt;
+  if(precip>0.2||temp<2){v="pouring_rain";txt="Set to Garage."}
+  else if(wind>25||temp<10){v="cold_wind";txt="Set to Protected Porch."}
+  else{v="dry_porch";txt="Set to Open Air Porch."}
+  sel.value=v;$("advice").textContent=ADV[v];
+  gpsSay(`${label}: ${temp}\u00b0C, ${precip}mm rain, wind ${wind}km/h \u2192 ${txt}`,true);
+}
+const GPSHELP={
+  1:"Location is blocked for this page. On iPhone: Settings > Privacy & Security > Location Services must be On, then set Safari Websites to While Using the App. If you open this from the Home Screen, delete the icon, re-add it from Safari, open it, tap the button and choose Allow. Meanwhile you can type a town below.",
+  2:"Your phone couldn't get a position fix. Try near a window or outside, or type a town below.",
+  3:"Location timed out. Try again near a window, or type a town below."
+};
+const getPos=o=>new Promise((ok,no)=>navigator.geolocation.getCurrentPosition(ok,no,o));
+async function useSavedLoc(){const s=get("lastLoc",null);if(!s)return false;try{await weatherAt(s.lat,s.lon,s.label+" (last known place)");return true}catch(e){return false}}
 $("autoWeatherBtn")?.addEventListener("click",async()=>{
-  if(!navigator.geolocation)return msg("wMsg","Geolocation is not supported by your browser.",false);
-  msg("wMsg","Detecting location & weather...",true);
-  navigator.geolocation.getCurrentPosition(async pos=>{
-    try{
-      const lat=pos.coords.latitude,lon=pos.coords.longitude;
-      const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,precipitation,wind_speed_10m`);
-      const j=await r.json();
-      if(!j||!j.current)throw 0;
-      const temp=j.current.temperature_2m,precip=j.current.precipitation,wind=j.current.wind_speed_10m;
-      const sel=$("weather");
-      if(precip>0.2||temp<2){sel.value="pouring_rain";msg("wMsg",`Detected ${temp}\u00b0C, ${precip}mm rain \u2192 Set to Garage.`,true)}
-      else if(wind>25||temp<10){sel.value="cold_wind";msg("wMsg",`Detected ${temp}\u00b0C, wind ${wind}km/h \u2192 Set to Protected Porch.`,true)}
-      else{sel.value="dry_porch";msg("wMsg",`Detected ${temp}\u00b0C, calm \u2192 Set to Open Air Porch.`,true)}
-      $("advice").textContent=ADV[sel.value];
-    }catch(err){msg("wMsg","Could not fetch live weather data.",false)}
-  },()=>msg("wMsg","GPS permission denied or unavailable.",false),{timeout:10000});
+  if(!navigator.geolocation)return gpsSay("This browser has no location support. Type a town below.",false);
+  gpsSay("Asking for your location... tap Allow if iOS asks.",true);
+  let pos;
+  try{
+    try{pos=await getPos({enableHighAccuracy:false,timeout:15000,maximumAge:600000})}
+    catch(e){if(e&&e.code===3)pos=await getPos({enableHighAccuracy:true,timeout:25000,maximumAge:0});else throw e}
+  }catch(e){
+    const code=(e&&e.code)||0;
+    if(!(await useSavedLoc()))gpsSay((GPSHELP[code]||"Location failed: "+((e&&e.message)||"unknown"))+(code?` [code ${code}]`:""),false);
+    return;
+  }
+  try{
+    const lat=+pos.coords.latitude.toFixed(2),lon=+pos.coords.longitude.toFixed(2);   // ~1 km is plenty for weather and is the only thing stored
+    set("lastLoc",{lat,lon,label:"Here"});
+    await weatherAt(lat,lon,"Here");
+  }catch(err){gpsSay("Got your location but couldn't fetch the weather. Check your connection and try again.",false)}
+});
+$("placeBtn")?.addEventListener("click",async()=>{
+  const q=$("placeIn").value.trim();
+  if(!q)return gpsSay("Type a town or city first.",false);
+  gpsSay("Looking up "+q+"...",true);
+  try{
+    const r=await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=1&language=en&format=json`);
+    const j=await r.json(),p=j&&j.results&&j.results[0];
+    if(!p)return gpsSay("Couldn't find that place. Try just the town or city name.",false);
+    const lat=+p.latitude.toFixed(2),lon=+p.longitude.toFixed(2);
+    set("lastLoc",{lat,lon,label:p.name});
+    await weatherAt(lat,lon,p.name);
+  }catch(e){gpsSay("Place lookup failed. Check your connection and try again.",false)}
 });
 
 $("logBtn").addEventListener("click",()=>{
@@ -892,7 +976,7 @@ $("logBtn").addEventListener("click",()=>{
     const repsVal=v.reps!==undefined?String(v.reps).trim():"";
     const kgNum=kgVal===""?0:Number(kgVal),setsNum=Number(setsVal),repsNum=Number(repsVal);
     if(Number.isFinite(setsNum)&&Number.isFinite(repsNum)&&Number.isFinite(kgNum)&&setsNum>0&&setsNum<=100&&repsNum>0&&repsNum<=1000&&kgNum>=0&&kgNum<=1000&&(kgVal!==""||meta.bw>0)){
-      ex.push({id,n:x[1],kg:kgVal,sets:setsVal,reps:repsVal,...(id.startsWith("cx_")?{meta}:{})});
+      ex.push({id,n:x[1],kg:kgVal,sets:setsVal,reps:repsVal,...(Array.isArray(v.setReps)?{setReps:v.setReps.slice(0,setsNum)}:{}),...(id.startsWith("cx_")?{meta}:{})});
       last[id]={kg:kgVal,sets:setsVal,reps:repsVal};
     }
   });
@@ -1097,7 +1181,7 @@ function renderAdv(){
   const on=get("adv",false),hasClan=Boolean(get("clan2",null));
   $("advToggle").checked=on;$("advCard").hidden=!on;
   $("cList").innerHTML=cDraft.map((x,i)=>`<div class="row"><span>${esc(x[1])} <small>(${esc(x[2])} &bull; ${esc(x[4].note)})</small></span><button class="mini" data-cd="${i}">x</button></div>`).join("")||'<div class="hint">No exercises added yet.</div>';
-  $("cSaved").innerHTML=get("custom",[]).map((c,i)=>`<div class="row"><span><b>${esc(c.title)}</b> (${c.ex.length} ex)${c.shared?' <small style="color:var(--acc)">[Shared]</small>':""}</span><span class="btn-grp">${hasClan?`<button class="mini" data-cshare="${i}">${c.shared?"Update Share":"Share to Clan"}</button>`:""}<button class="mini" data-cs="${i}">Delete</button></span></div>`).join("")||'<div class="hint">No custom workouts saved yet.</div>';
+  $("cSaved").innerHTML=get("custom",[]).map((c,i)=>`<div class="row"><span><b>${esc(c.title)}</b> (${c.ex.length} ex)${c.shared?' <small style="color:var(--acc)">[Shared]</small>':""}</span><span class="btn-grp"><button class="mini" data-cedit="${i}">Edit</button>${hasClan?`<button class="mini" data-cshare="${i}">${c.shared?"Update Share":"Share to Clan"}</button>`:""}<button class="mini" data-cs="${i}">Delete</button></span></div>`).join("")||'<div class="hint">No custom workouts saved yet.</div>';
   renderClanLib();
 }
 function renderClanLib(){
@@ -1110,7 +1194,7 @@ function renderClanLib(){
     const exPreview=w.ex.map(x=>`${esc(x.n)} (${esc(x.t)})`).join(", ");
     const owned=myTitles.has(w.title.toLowerCase());
     return `<div class="ex" style="margin-bottom:6px"><div class="top"><div class="info"><b>${esc(w.title)} <small style="display:inline;color:var(--acc)">by ${esc(w.by)}</small></b><small>${esc(exPreview)}</small></div>
-    <button class="mini" data-libimp="${i}">${owned?"Re-import":"Import"}</button></div></div>`;
+    <span class="btn-grp"><button class="mini" data-libimp="${i}">${owned?"Re-import":"Import"}</button>${tokA.t&&tokA.exp>Date.now()?`<button class="mini" data-libedit="${i}">Admin edit</button><button class="mini" data-libdelete="${i}">Delete</button>`:""}</span></div></div>`;
   }).join("");
 }
 $("advToggle").addEventListener("change",e=>{set("adv",e.target.checked);renderAdv();if(e.target.checked)fetchClanLib()});
@@ -1158,19 +1242,54 @@ $("cSave").addEventListener("click",()=>{
   cDraft=[];$("cTitle").value="";$("cConflictBox").hidden=true;applyCustom();renderAdv();msg("cMsg","Saved! Pick it in the Training session list below.",true);
 });
 $("advCard").addEventListener("click",async e=>{
-  const d=e.target.closest("[data-cd]"),v=e.target.closest("[data-cs]"),sh=e.target.closest("[data-cshare]"),imp=e.target.closest("[data-libimp]");
+  const d=e.target.closest("[data-cd]"),v=e.target.closest("[data-cs]"),ed=e.target.closest("[data-cedit]"),sh=e.target.closest("[data-cshare]"),imp=e.target.closest("[data-libimp]"),libed=e.target.closest("[data-libedit]"),libdel=e.target.closest("[data-libdelete]");
   if(d){cDraft.splice(+d.dataset.cd,1);renderAdv()}
+  if(ed){
+    const cs=get("custom",[]),w=cs[+ed.dataset.cedit];if(!w)return;
+    const title=prompt("Edit workout name:",w.title);if(title===null)return;
+    const clean=title.trim();if(!clean||clean.length>60)return msg("cMsg","Workout name must be 1–60 characters.",false);
+    if(cs.some((x,i)=>i!==+ed.dataset.cedit&&x.title.toLowerCase()===clean.toLowerCase()))return msg("cMsg","Another workout already uses that name.",false);
+    const next={...w,title:clean,ex:w.ex.map(x=>x.slice())};
+    for(let i=0;i<next.ex.length;i++){
+      const ex=next.ex[i],nm=prompt(`Exercise ${i+1} name (Cancel keeps remaining exercises):`,ex[1]);if(nm===null)break;
+      if(nm.trim())ex[1]=nm.trim().slice(0,80);
+      const target=prompt(`Exercise ${i+1} target (e.g. 3 Sets x 8-12 Reps):`,ex[2]);if(target===null)break;
+      if(target.trim())ex[2]=target.trim().slice(0,60);
+    }
+    cs[+ed.dataset.cedit]=next;set("custom",cs);applyCustom();renderAdv();render();
+    if(next.shared&&confirm("Publish these edits to the Clan Library now?")){const sr=await syncClan(true);await fetchClanLib();msg("cMsg",sr===true?`Updated and published “${next.title}”.`:`Saved locally, but publish failed: ${sr?why(sr):"not in a clan"}`,sr===true)}
+    else msg("cMsg","Workout updated on this device.",true);
+    return;
+  }
+  if(libed||libdel){
+    if(!(tokA.t&&tokA.exp>Date.now()))return msg("cMsg","Admin login is required to manage shared workouts.",false);
+    const w=clanLibCache[+(libed||libdel).dataset[libed?"libedit":"libdelete"]],c=get("clan2",null);if(!w||!c)return;
+    const raw=await db(c,"GET",np(c,"lib"),undefined,tokA.t)||{};
+    if(libdel){
+      if(!confirm(`Delete “${w.title}” by ${w.by} from the shared Clan Library and remove synced personal copies?`))return;
+      for(const [uid,u] of Object.entries(raw)){const old=arr(u&&u.w),nw=old.filter(x=>!(x&&x.title===w.title&&String(u.name||"Member")===w.by));if(nw.length!==old.length)await db(c,"PUT",`${np(c,"lib")}/${uid}`,{...u,w:nw},tokA.t)}
+      const locals=get("custom",[]).filter(x=>!(x.clanSource&&(x.clanSource.title===w.title||(w.aliases||[]).includes(x.clanSource.title))&&x.clanSource.by===w.by));set("custom",locals);applyCustom();renderAdv();
+      await fetchClanLib();return msg("cMsg",`Deleted “${w.title}” from the shared library.`,true);
+    }
+    const titleIn=prompt("Edit shared workout title:",w.title);if(titleIn===null)return;
+    const title=titleIn.trim();if(!title||title.length>60)return msg("cMsg","Title must be 1–60 characters.",false);
+    const ex=w.ex.map(x=>({...x}));
+    for(let i=0;i<ex.length;i++){const n=prompt(`Exercise ${i+1} name:`,ex[i].n);if(n===null)break;if(n.trim())ex[i].n=n.trim().slice(0,60);const t=prompt(`Exercise ${i+1} target:`,ex[i].t||"3 Sets x 8-12 Reps");if(t===null)break;if(t.trim())ex[i].t=t.trim().slice(0,40)}
+    for(const [uid,u] of Object.entries(raw)){let touched=false;const nw=arr(u&&u.w).map(x=>{if(x&&x.title===w.title&&String(u.name||"Member")===w.by){touched=true;return {...x,title,aliases:[...new Set([...(x.aliases||[]),x.title])].slice(-5),ex}}return x});if(touched)await db(c,"PUT",`${np(c,"lib")}/${uid}`,{...u,w:nw},tokA.t)}
+    const locals=get("custom",[]);locals.forEach(x=>{if(x.clanSource&&(x.clanSource.title===w.title||(w.aliases||[]).includes(x.clanSource.title))&&x.clanSource.by===w.by){x.title=title;x.clanSource.title=title;x.ex=ex.map((z,i)=>["cx_"+String(x.id)+i,String(z.n),String(z.t||"3 Sets x 8-12 Reps"),String(z.c||"Updated by clan admin."),{bw:Number(z.bw)||0,db:Number(z.db)||1,m:Number(z.m)||1,ph:"1-DB kg",note:"Updated from Clan Library",desc:"Updated by clan admin."}])}});set("custom",locals);applyCustom();renderAdv();render();await fetchClanLib();return msg("cMsg",`Updated shared workout “${title}”. Members receive the revision when they sync the library.`,true);
+  }
   if(v&&confirm("Delete this custom workout? Logged history is kept.")){const cs=get("custom",[]);cs.splice(+v.dataset.cs,1);set("custom",cs);applyCustom();renderAdv();render();syncClan(true)}
   if(sh){
     const cs=get("custom",[]),w=cs[+sh.dataset.cshare];if(!w)return;
     w.shared=true;set("custom",cs);renderAdv();
-    await syncClan(false);await fetchClanLib();
+    const sr=await syncClan(true);await fetchClanLib();
+    if(sr!==true){w.shared=false;set("custom",cs);renderAdv();return msg("cMsg","Couldn't publish to the clan library: "+(sr?why(sr):"not signed in to a clan"),false)}
     msg("cMsg",`"${w.title}" published to Clan Library (weights & bodyweight excluded)!`,true);
   }
   if(imp){
     const w=clanLibCache[+imp.dataset.libimp];if(!w)return;
     const cs=get("custom",[]),idx=cs.findIndex(x=>x.title.toLowerCase()===w.title.toLowerCase());
-    const rebuilt={id:idx>=0?cs[idx].id:Date.now().toString(36),title:w.title,ex:w.ex.map((x,i)=>{
+    const rebuilt={id:idx>=0?cs[idx].id:Date.now().toString(36),title:w.title,clanSource:{title:w.title,by:w.by},ex:w.ex.map((x,i)=>{
       const rawBw=Number(x.bw)||inferPresetBw(x.n)||0;
       const pct=Math.round(rawBw*100),db=Number(x.db)||1,m=Number(x.m)||(inferUnilateral(x.n)?2:1);
       const note="Est: "+[pct?pct+"% BW":"",db>1?db+"x kg":"kg"].filter(Boolean).join(" + ")+(m>1?" x 2 sides":"");
@@ -1268,11 +1387,70 @@ const PALETTES={
 };
 const WEEK_MS=6048e5,ek=(id,w)=>id+":"+w;
 const SIL={bg1:"#2b3040",bg2:"#12141c",p:"#000",s:"#000",acc:"#000",glow:"#000"};
-let svgUid=0,epochData={wk:{},n:1},openIdx=0,viewId="",dexNow={};
+let svgUid=0,epochData={wk:{},n:1,firsts:{},cs:Date.now()},openIdx=0,viewId="",dexNow={};
 const BIO=w=>w<=13?"frost":w<=26?"storm":w<=38?"solar":w<=51?"ember":"solar";
 const KINDS={b:"beast",g:"golem",l:"lindworm",f:"forgedrake",s:"sovereign"};
-const parseRoster=(txt,bio)=>txt.split("\n").map((l,i)=>{const[name,title,k,lore]=l.split("|"),w=i+1;return{w,name,title,lore,kind:KINDS[k],biome:bio(w),boss:/(Seasonal|Grand) Apex/.test(title),sub:/^[lf]$/.test(k)&&!/(Seasonal|Grand) Apex/.test(title)}});
-const EPOCHS=[{id:"e1",name:"Epoch I",start:"2026-10-17",roster:parseRoster(E1_TXT,BIO)}];
+const parseRoster=(txt,bio,eid="e1")=>txt.split("\n").map((l,i)=>{const[name,title,k,lore]=l.split("|"),w=i+1;return{w,name,title,lore,kind:KINDS[k],biome:bio(w),eid,boss:/(Seasonal|Grand) Apex/.test(title),sub:/^[lf]$/.test(k)&&!/(Seasonal|Grand) Apex/.test(title)}});
+Object.assign(PALETTES,{
+  wild:{bg1:"#06140a",bg2:"#030a05",p:"#3ddc84",s:"#d4ff9e",acc:"#1faa59",glow:"#5dff9c"},
+  tide:{bg1:"#041a24",bg2:"#020c12",p:"#00b8d4",s:"#b2ebf2",acc:"#0288d1",glow:"#40e0ff"},
+  dusk:{bg1:"#150a24",bg2:"#080412",p:"#b388ff",s:"#f8bbff",acc:"#7c4dff",glow:"#d28bff"},
+  gilt:{bg1:"#241405",bg2:"#0e0802",p:"#ff9e80",s:"#ffe0b2",acc:"#ff6e40",glow:"#ffab76"}
+});
+const E2_TXT=`Dapple Fawn|Glade Dreamer|b|Spots drift like dappled sunlight whenever it hops between ferns.
+Thimble Mouse|Acorn-Cap Scout|b|Wears a hollow acorn helmet and carries crumbs for the whole clan.
+Barkhide Wolf|Moonlit Howler|b|Its howl rolls through the pines and rouses sleeping lifters.
+Glimmer Moth|Lantern Wing|b|Wing-eyes glow softly, guiding late workouts home.
+Toadstool Toad|Spore Sitter|b|A mushroom cap grows on its back and sprinkles lucky spores.
+Lantern Firefly|Dusk Signal|b|Blinks a steady rhythm to pace every set.
+Mossback Wyvern|Fernwing Sentinel|f|A shy wyvern whose mossy hide hides the strength of a boulder.
+Canopy Sloth|Slow-Burn Sage|b|Hangs upside down and teaches that slow reps still count.
+Quillback Porcupine|Bristle Guard|b|Rattles its quills when a clanmate skips leg day.
+Acorn Squirrel|Hoard Keeper|b|Buries a stash of motivation for the cold weeks.
+Vine Panther|Shadow Stalker|b|Vines trail from its tail as it prowls the undergrowth.
+Rootling Golem|Heartwood Guardian|g|Roots knit into a body that grows stronger with every rep.
+Thornheart the Elderwood Wyrm|Q1 Seasonal Apex|l|Ancient forest serpent crowned in antlers and bramble, guardian of the first season.
+Bubble Pufferfish|Puff Brawler|b|Swells with pride after each personal best.
+Lantern Anglerfish|Abyss Beacon|b|Its glowing lure lights the way through the deepest sessions.
+Pearl Clam|Tideshell Keeper|g|Guards a perfect pearl formed from a thousand patient sets.
+Ribbon Seahorse|Current Rider|b|Curls its tail around the pace of a steady tempo.
+Tidal Hermit Crab|Shell Swapper|b|Always upgrading to a bigger shell, just like its lifts.
+Glasswing Jellyfish|Drift Pulse|b|Pulses softly, teaching the value of rest between sets.
+Coral Sea-Dragon|Reef Warden|l|Leafy frills ripple as it patrols the coral kingdom.
+Skipper Dolphin|Wave Leaper|b|Leaps for joy whenever the clan hits a streak.
+Barnacle Walrus|Ice Anchor|b|Heavy, patient and happy to hold the line.
+Starfish Sentinel|Five-Arm Guard|g|Five steady arms, five steady reps, never rushing.
+Ink Octopus|Eight-Arm Tinkerer|b|Juggles every exercise at once and never drops a plate.
+Kelp Manatee|Gentle Giant|b|Glides through the kelp forest at a calm and powerful pace.
+Leviathar the Maelstrom Serpent|Q2 Seasonal Apex|l|A whirlpool given scales, it spins storms around the second season.
+Crescent Bat|Moonwing Courier|b|Carries midnight messages between sleepy clan members.
+Wisp Cat|Starlight Prowler|b|Curls its tail around a tiny star it caught at dusk.
+Hollow Raven|Gloom Messenger|b|Croaks the count of your next set from a quiet branch.
+Spindle Spider|Silk Spinner|b|Weaves a web of habits that holds the week together.
+Gravestone Golem|Quiet Watcher|g|Stands vigil over every skipped session and forgives none.
+Phantom Jackal|Twilight Guide|b|Leads wandering lifters back to the gym by moonlight.
+Moth-Winged Dusk Drake|Powder Wing|f|Scales shimmer like moth dust as it glides over the dusk.
+Candle Ghost|Wax Wisp|b|A gentle flame that never goes out, however late the hour.
+Quartz Armadillo|Crystal Roller|b|Rolls into a gleaming ball when the going gets heavy.
+Midnight Peacock|Star Plume|b|Fans a tail of a hundred stars for every clan record.
+Hourglass Golem|Sand Keeper|g|Counts every rep in falling grains of golden sand.
+Nightbloom Mantis|Petal Reaper|b|Waits motionless like a flower, then strikes with perfect form.
+Nocturne the Starfall Drake|Q3 Seasonal Apex|f|A comet-tailed dragon that sweeps the night sky, ruler of the third season.
+Sunrise Rooster|Dawn Caller|b|Crows at first light to start the morning session.
+Dune Camel|Desert Hauler|b|Carries the heaviest loads across the longest miles without complaint.
+Saffron Scorpion|Dune Sting|b|Tail raised, claws ready, never backs down from a heavy set.
+Mirage Flamingo|Single-Leg Master|b|Balances on one leg for the entire warm-up.
+Brass Automaton|Clockwork Spotter|g|Ticks softly, counting reps and never missing one.
+Sandglass Basilisk|Dune Crown|l|A crowned desert serpent that turns lazy mornings to stone.
+Gilded Giraffe|Sky Reacher|b|Stretches higher than any shelf and cheers on every reach.
+Sunbird Hummingbird|Nectar Dart|b|Hovers on a blur of wings, sipping sunlight between sets.
+Kiln Rhino|Clay Charger|b|Baked hard in the desert sun, built to push through plateaus.
+Silk Caterpillar|Chrysalis Dreamer|b|Munches through the week, saving strength for the big transformation.
+Ember Meerkat|Sunrise Sentry|b|Stands tall on guard duty while the clan finishes its session.
+Gong Guardian|Temple Sentinel|g|Rings its gong to mark every captured companion.
+Solenne, Dawnflame Phoenix-Sovereign|Week 52 Grand Apex|s|Reborn from a year of training, it carries the dawn on its wings.`;
+const BIO2=w=>w<=13?"wild":w<=26?"tide":w<=39?"dusk":"gilt";
+const EPOCHS=[{id:"e1",name:"Epoch I",start:"2026-10-17",roster:parseRoster(E1_TXT,BIO)},{id:"e2",name:"Epoch II",start:"2027-10-16",roster:parseRoster(E2_TXT,BIO2,"e2")}];
 EPOCHS.forEach(x=>x.ms=Date.parse(x.start+"T00:00:00Z"));EPOCHS.sort((a,b)=>a.ms-b.ms);
 const epochAt=t=>{let r=null;for(const x of EPOCHS)if(x.ms<=t)r=x;return r};
 const getCur=()=>{const now=Date.now(),x=epochAt(now)||EPOCHS[0];return{e:x,w:Math.max(1,Math.floor((now-x.ms)/WEEK_MS)+1)}};
@@ -1281,6 +1459,8 @@ const wkMs=(x,w)=>x.ms+(w-1)*WEEK_MS;
 const epochKeyOf=d=>{const t=Date.parse(String(d).slice(0,10)+"T00:00:00Z");if(!Number.isFinite(t))return null;const x=epochAt(t);return x?{id:x.id,w:Math.floor((t-x.ms)/WEEK_MS)+1}:null};
 const fmtD=ms=>new Date(ms).toLocaleDateString(undefined,{day:"numeric",month:"short",timeZone:"UTC"});
 const targetFor=n=>Math.max(30,Math.max(1,num(n))*45);
+const memAt=k=>{const[id,ws]=k.split(":"),x=EPOCHS.find(y=>y.id===id);if(!x)return epochData.n;const s=new Date(wkMs(x,+ws+1)).toISOString().slice(0,10);const n=Object.values(epochData.firsts||{}).filter(d=>d<s).length;return n||epochData.n};
+const tgOf=k=>targetFor(memAt(k));
 const needOf=g=>g.boss?1:g.sub?.92:.85,tierMark=g=>g.boss?"\u2694 ":g.sub?"\u2726 ":"",pctOf=g=>Math.round(needOf(g)*100);
 const stageOf=(s,tg,g)=>{const r=num(s)/tg;return r<.35?1:r<needOf(g)?2:3};
 const rank=r=>Object.values((r&&r.m)||{}).filter(m=>m.s>0).sort((a,b)=>b.s-a.s).map(m=>[m.name,m.s]);
@@ -1303,7 +1483,7 @@ function creatureRig(g,pal,fill,stage){
   const art={
   1:()=>P(star(160,110,46,38,14),pal.p)+L("M122,92 Q102,122 114,146",16)+L("M198,92 Q218,122 206,146",16)+e(140,150,16,7)+e(180,150,16,7)+o(160,68,22,pal.p)+leaf(144,52,18,-120,5)+leaf(160,48,20,-90,5)+leaf(176,52,18,-60,5)+A(151,68)+A(169,68),
   2:()=>Q(176,100,42,21,120,82,17,8,P(star(120,88,27,19,9),pal.p)+leaf(110,68,30,-105,6)+leaf(128,68,30,-72,6)+e(220,90,6,11)),
-  3:()=>P("98,62 126,58 124,92 94,88")+P("222,62 194,58 196,92 226,88")+leaf(104,60,34,-115,7)+leaf(116,58,38,-92,7)+leaf(216,60,34,-65,7)+leaf(204,58,38,-88,7)+D("M126,60 H194 L200,128 H120Z")+D("M146,34 H174 V60 H146Z")+L("M104,92 L98,138",17)+L("M216,92 L222,138",17)+D("M124,128 H154 V152 H122Z")+D("M166,128 H196 V152 H198Z")+`<path d="M160,78 L146,98 L160,118 L174,98Z" fill="${pal.p}"/>`+A(153,46)+A(167,46),
+  3:()=>L("M138,128 V146",18)+L("M182,128 V146",18)+e(138,148,20,8)+e(182,148,20,8)+L("M102,88 L96,126",18)+o(94,132,12)+L("M218,88 L224,126",18)+o(226,132,12)+D("M116,66 H204 L214,132 H106Z")+P("124,66 124,54 138,54 138,66")+P("182,66 182,54 196,54 196,66")+P("96,68 124,60 122,92 92,86")+P("224,68 196,60 198,92 228,86")+leaf(98,66,32,-122,7)+leaf(112,62,34,-98,7)+leaf(222,66,32,-58,7)+leaf(208,62,34,-82,7)+o(160,46,20)+leaf(146,32,22,-115,5)+leaf(174,32,22,-65,5)+L("M148,46 H172",3,pal.s)+`<path d="M160,80 L146,100 L160,120 L174,100Z" fill="${pal.p}"/>`+L("M126,128 L122,142 M146,130 L144,144 M174,130 L176,144 M194,128 L198,142",4,pal.s),
   4:()=>[...Array(9)].map((_,i)=>leaf(198,100,78-(i%2)*10,-108+i*15,7)).join("")+Q(158,106,38,19,114,88,15,7,"",P("102,84 76,98 104,100")+leaf(106,72,24,-105,6)+leaf(122,72,24,-72,6)),
   5:()=>D("M214,118 Q268,108 294,144 Q252,140 214,130Z")+[130,150,190,206].map(x=>L(`M${x},126 L${x},152`,10)).join("")+e(166,108,54,30)+[...Array(7)].map((_,i)=>{const a=Math.PI*(1.1+i*.13);return o(R(166+50*Math.cos(a)),R(108+27*Math.sin(a)),8)}).join("")+D("M118,94 L78,124 L120,134Z")+A(110,112),
   6:()=>o(160,120,32)+o(160,78,25)+o(160,46,15)+o(112,104,14)+o(208,104,14)+o(100,56,7)+o(224,64,6)+o(92,120,6)+o(236,112,7)+A(152,76,3)+A(168,76,3),
@@ -1311,11 +1491,11 @@ function creatureRig(g,pal,fill,stage){
   8:()=>e(150,152,13,4)+e(176,152,13,4)+leaf(188,140,26,25,6)+e(166,108,30,40)+D("M190,90 Q226,112 202,146 Q198,120 188,100Z")+o(148,64,18)+P("134,58 96,70 134,82",pal.p)+A(148,58)+sp(214,56,7)+sp(104,40,5),
   9:()=>[138,160,196,214].map(x=>L(`M${x},112 V152`,16)).join("")+e(176,100,58,38)+o(150,68,26,pal.p)+o(106,92,26)+L("M94,104 Q70,128 92,150",15)+L("M100,110 Q68,118 66,86",5,pal.s)+L("M114,112 Q86,128 84,98",4,pal.s)+A(98,84),
   10:()=>L("M70,138 C70,96 130,90 150,118 C170,146 226,140 232,100 C236,72 210,58 188,66",17)+leaf(70,138,32,150,9)+leaf(176,58,38,-130,10)+leaf(176,58,38,-60,10)+o(184,66,14)+P("172,62 148,70 172,76")+A(180,60,2.5)+spikes([[98,98],[136,104],[198,140],[230,114]],16,6),
-  11:()=>e(172,126,62,27)+L("M128,116 L116,92",22)+o(112,86,18)+o(98,92,6)+L("M92,96 L74,92 M92,100 L74,104",2,pal.s)+D("M132,140 L108,160 L148,152Z")+P("232,128 266,108 262,138")+P("232,134 266,152 258,126")+A(106,88)+sp(160,124,6)+sp(190,134,5),
+  11:()=>e(160,150,96,7)+leaf(176,142,52,-18,13)+leaf(176,146,52,22,13)+e(150,112,34,40)+leaf(120,104,36,148,9)+leaf(182,104,36,32,9)+o(150,62,18)+o(138,50,9)+L("M130,52 L108,48 M130,56 L108,60",2,pal.s)+P([...Array(10)].map((_,i)=>{const a=(-90+36*i)*Math.PI/180,r=i%2?5.5:13;return `${R(138+r*Math.cos(a))},${R(24+r*Math.sin(a))}`}).join(" "))+A(146,58,2.4)+sp(176,34,5)+sp(104,30,4),
   12:()=>Q(172,104,52,34,104,96,20,16,o(142,78,26,pal.p)+e(224,100,7,8),o(98,76,7)+o(120,74,7)+e(88,104,12,8)),
   13:()=>draft+L("M36,142 C70,106 112,152 152,118 C192,84 232,128 264,86",20)+spikes([[84,114],[118,138],[168,104],[206,100],[240,114]],20,8)+o(268,84,17)+P("278,78 308,72 302,94 278,96")+leaf(260,72,30,-125,6)+leaf(266,68,34,-98,6)+leaf(274,68,30,-70,6)+leaf(282,76,26,-42,5)+A(266,80)+bolt("M44,134 L112,146 L170,112 L232,124 L262,86"),
   14:()=>leaf(206,126,78,-18,20)+leaf(206,128,80,-52,20)+leaf(206,130,70,10,20)+e(168,114,28,36)+e(190,128,22,24)+L("M146,100 L144,150",8)+o(146,70,16)+P("136,72 120,80 138,84",pal.p)+leaf(136,58,36,-108,9)+leaf(156,58,36,-70,9)+L("M150,92 Q158,104 150,112",8)+A(142,66)+sp(240,60,6)+sp(250,96,5),
-  15:()=>D("M160,48 Q170,78 196,94 Q220,110 216,134 Q212,152 160,152 Q108,152 104,134 Q100,110 124,94 Q150,78 160,48Z")+A(146,122,5)+A(174,122,5)+o(96,92,6)+o(228,84,7)+o(216,50,5)+o(100,58,4),
+  15:()=>e(160,151,70,8)+D("M160,66 Q198,66 212,100 Q224,128 214,142 Q206,152 160,152 Q114,152 106,142 Q96,128 108,100 Q122,66 160,66Z")+leaf(160,70,30,-92,10)+o(160,40,6)+leaf(112,148,20,104,5)+leaf(210,148,18,80,5)+A(142,112,6)+A(178,112,6)+L("M148,130 Q160,140 172,130",3,pal.s)+o(84,98,6)+o(238,86,7)+o(224,50,5)+o(98,58,4),
   16:()=>L("M160,152 Q130,150 112,144",7)+L("M160,152 Q190,150 208,144",7)+D("M138,152 L144,84 H176 L182,152Z")+L("M146,100 Q118,92 108,66",8)+L("M174,100 Q202,92 212,66",8)+leaf(108,68,34,-150,9)+leaf(212,68,34,-30,9)+leaf(160,86,48,-130,13)+leaf(160,86,48,-50,13)+leaf(160,86,56,-90,14)+A(152,110)+A(168,110),
   17:()=>L("M200,128 L232,150",9)+L("M142,118 L120,150",8)+e(170,112,40,22)+o(196,116,26)+o(228,106,9)+o(122,92,16)+P("110,90 92,98 112,102",pal.p)+leaf(120,80,52,-98,6)+leaf(132,80,48,-76,6)+A(116,88)+L("M140,128 L132,150",8),
   18:()=>leaf(184,92,66,-68,22)+leaf(168,94,60,-104,18)+Q(178,112,40,22,116,80,14,8,"",P("104,76 82,86 104,92",pal.p)+leaf(120,68,24,-95,5)+L("M220,108 Q248,100 252,124",5)+o(252,128,7)),
@@ -1332,10 +1512,10 @@ function creatureRig(g,pal,fill,stage){
   29:()=>L("M150,130 Q170,150 186,140",7)+L("M110,130 Q90,150 76,140",7)+e(130,118,16,30)+o(130,80,13)+e(190,118,16,30)+o(190,80,13)+L("M122,98 L110,64",9)+L("M138,98 L152,62",9)+L("M182,98 L168,64",9)+L("M198,98 L210,62",9)+o(160,44,5)+o(146,32,5)+o(176,34,5)+A(126,78,2)+A(186,78,2),
   30:()=>[[-1,0],[-1,1],[-1,2],[1,0],[1,1],[1,2]].map(([s,i])=>L(`M${160+s*30},${118+i*8} L${160+s*(60+i*6)},${142+i*4}`,5)).join("")+e(160,112,50,28)+L("M118,96 L92,64",6)+L("M202,96 L228,64",6)+o(86,52,14)+P("76,48 66,28 86,42")+o(234,52,14)+P("244,48 254,28 234,42")+L("M146,86 L142,70",3)+L("M174,86 L178,70",3)+A(142,68,4)+A(178,68,4),
   31:()=>Q(166,114,32,16,116,96,13,6,leaf(204,114,56,-8,13)+leaf(126,84,46,-105,12)+leaf(110,86,44,-130,11),P("106,94 88,102 108,106",pal.p))+`<path d="M60,70 q10,-8 20,0 t20,0" stroke="${pal.s}" stroke-width="2.5" fill="none"/>`,
-  32:()=>L("M232,130 Q266,124 260,98",7)+e(184,128,56,22)+leaf(190,112,56,-22,13)+L("M128,144 H88",14)+e(146,124,24,26)+P("102,72 124,56 148,72 144,120 106,120",pal.p)+o(124,94,13)+A(120,92)+A(130,92),
+  32:()=>leaf(172,104,76,-38,22)+leaf(176,106,66,-14,20)+D("M52,152 V147 H270 V152Z")+L("M250,128 Q278,132 276,108 Q274,96 262,102",7)+e(192,124,60,21)+e(228,126,24,20)+e(146,114,22,30)+L("M142,138 H78",14)+e(78,139,9,8)+D("M120,60 H148 L158,80 L156,108 H112 L110,80Z")+e(134,84,10,14,pal.s)+P("124,82 117,90 125,93")+leaf(134,58,12,-92,3)+A(130,81,2)+L("M124,98 Q134,102 144,98",2,pal.s),
   33:()=>P("196,100 238,112 234,130 192,114")+D("M138,76 Q190,44 274,52 Q222,70 168,94Z")+D("M140,86 Q196,100 252,140 Q196,128 150,104Z")+leaf(118,64,90,28,17)+o(110,58,13)+P("100,56 80,64 102,70",pal.p)+A(106,54),
   34:()=>D("M218,124 Q262,98 278,124 Q262,150 218,130Z")+L("M140,138 L132,152",8)+L("M190,138 L198,152",8)+e(170,126,50,18)+o(112,118,22)+[-155,-130,-105].map(d=>leaf(106,106,34,d,6)).join("")+[-25,-50,-75].map(d=>leaf(124,106,30,d,5)).join("")+A(102,114,3)+sp(190,112,5),
-  35:()=>[[-1,0],[-1,1],[-1,2],[1,0],[1,1],[1,2]].map(([s,i])=>L(`M${160+s*34},${96+i*14} L${160+s*(64+i*4)},${108+i*20}`,6)).join("")+e(160,110,40,40)+o(160,66,15)+leaf(160,62,32,-90,5)+L("M154,52 L146,38",3)+L("M166,52 L174,38",3)+`<path d="M160,72 V150" stroke="${pal.s}" stroke-width="2"/>`,
+  35:()=>L("M142,134 L122,152",6)+L("M168,142 L170,152",6)+L("M198,136 L220,152",6)+leaf(196,94,56,-12,11)+e(170,112,52,34)+e(124,110,22,24)+o(98,112,14)+L("M98,102 Q84,70 116,50",10)+leaf(116,50,20,-60,5)+leaf(116,50,16,200,5)+o(128,34,15)+L("M170,84 V138",2,pal.s)+A(94,108,2.4)+sp(60,40,5),
   36:()=>L("M40,122 C70,82 100,162 130,122 C160,82 190,162 220,122 C240,100 256,92 272,98",11)+o(274,98,11)+P("282,92 304,98 282,106")+leaf(274,88,22,-60,5)+leaf(70,100,38,-100,7)+leaf(130,104,36,-95,7)+leaf(190,142,36,90,7)+leaf(100,142,34,100,7)+leaf(160,100,34,-85,7)+A(276,94,2.2),
   37:()=>leaf(210,126,36,22,12)+leaf(122,124,42,160,12)+D("M96,128 Q100,78 160,74 Q222,78 226,128Z")+P("128,78 134,52 150,52 152,76")+P("174,76 178,48 196,48 200,78")+o(141,40,8)+o(153,28,7)+o(188,34,9)+o(202,22,6)+e(88,122,14,11)+A(84,118,2.2),
   38:()=>D("M56,110 Q56,76 110,70 Q180,64 214,100 Q226,112 236,100 L246,74 L254,100 L278,84 L268,114 Q256,130 236,128 Q220,128 208,126 Q180,152 120,148 Q56,144 56,110Z")+L("M100,66 Q100,46 90,38 M100,66 Q108,46 120,40",4,pal.s)+L("M120,134 L98,158",9)+A(86,102,3)+sp(150,100,7)+sp(184,120,5)+sp(120,90,5),
@@ -1354,7 +1534,62 @@ function creatureRig(g,pal,fill,stage){
   51:()=>[-125,-108,-92,-76,-60].map((d,i)=>leaf(160,60,44-(i%2)*8,d,5)).join("")+leaf(138,76,38,-120,5)+leaf(182,76,38,-60,5)+D("M138,152 L130,72 L160,58 L190,72 L182,152Z")+L("M132,86 L104,130",12)+L("M188,86 L216,130",12)+o(160,48,14)+`<path d="M134,108 H186 M136,130 H184" stroke="${pal.s}" stroke-width="3"/>`+A(154,48,2.2)+A(166,48,2.2),
   52:()=>`<circle cx="160" cy="62" r="36" fill="none" stroke="${fill}" stroke-width="5"/>`+draft+[-165,-140,-115].map((d,i)=>leaf(150,96,92-i*8,d,16)).join("")+[-15,-40,-65].map((d,i)=>leaf(170,96,92-i*8,d,16)).join("")+L("M160,150 C132,138 190,126 160,110 C140,98 160,86 160,76",16)+o(160,68,15)+leaf(150,56,28,-120,6)+leaf(160,52,32,-90,6)+leaf(170,56,28,-60,6)+A(154,66)+A(166,66)+bolt("M160,150 L132,128 L186,112 L160,84")
   };
-  return (art[g.w]||art[1])();
+  const art2={
+  1:()=>Q(172,100,36,18,122,66,13,5,"",leaf(114,56,24,-135,7)+leaf(130,56,24,-45,7)+e(210,92,5,9)+o(160,96,3)+o(176,92,3)+o(186,102,3)),
+  2:()=>L("M180,130 Q232,142 228,104 Q224,82 248,78",4)+e(152,128,30,22)+o(114,118,15)+P("102,114 84,122 102,126",pal.p)+o(110,100,10)+o(130,102,10)+D("M100,98 Q116,80 134,96Z")+L("M116,84 V76",3)+A(108,114,2.2)+e(138,150,12,5)+e(166,150,12,5),
+  3:()=>`<circle cx="90" cy="40" r="22" fill="none" stroke="${fill}" stroke-width="4"/>`+D("M226,104 Q266,108 274,138 Q246,132 226,122Z")+leaf(262,128,22,-30,6)+L("M200,116 L208,150",12)+L("M216,114 L226,150",11)+e(210,152,9,4)+e(228,152,9,4)+L("M132,118 L130,150",12)+L("M150,120 L150,150",11)+e(130,152,9,4)+e(150,152,9,4)+e(176,108,52,24)+e(138,108,24,27)+[...Array(6)].map((_,i)=>D(`M${150+i*14},88 q7,-13 14,0Z`)).join("")+L("M160,86 L156,66 M188,84 L192,62",3,pal.s)+leaf(156,66,12,-110,4)+leaf(192,62,12,-70,4)+L("M130,94 Q114,78 112,62",26)+P(star(120,82,19,13,8),pal.p)+o(108,52,13)+D("M100,46 L70,30 L69,40 L98,58Z")+D("M100,56 L76,48 L76,54 L100,63Z")+leaf(112,41,22,-62,6)+leaf(121,47,20,-30,6)+A(108,50,2.2)+L("M54,26 Q42,38 50,52 M40,18 Q24,38 36,58",2,pal.s)+sp(64,92,5)+sp(244,56,6),
+  4:()=>leaf(160,100,84,-160,26)+leaf(160,100,84,-20,26)+leaf(160,108,60,160,18)+leaf(160,108,60,20,18)+e(160,108,8,26)+o(160,76,8)+leaf(156,70,22,-125,2)+leaf(164,70,22,-55,2)+A(108,86,7)+A(212,86,7),
+  5:()=>e(160,124,46,28)+D("M112,100 Q164,36 214,100Z")+o(160,80,6)+o(190,86,5)+e(112,118,20,16)+o(104,100,9)+o(126,98,9)+A(104,100,3)+A(126,98,3)+e(120,148,18,7)+e(204,148,18,7),
+  6:()=>`<circle cx="188" cy="102" r="34" fill="none" stroke="${pal.s}" stroke-width="2"/>`+leaf(150,86,56,-30,16)+leaf(152,88,48,-5,14)+e(150,96,22,12)+e(188,102,26,18)+o(122,92,10)+L("M116,84 L104,70 M122,84 L124,66",2,pal.s)+L("M140,106 L132,122 M154,108 L152,124 M168,108 L172,122",3)+A(118,90,2)+sp(90,50,5)+sp(236,60,5),
+  7:()=>e(170,110,34,22)+L("M160,128 V152",9)+L("M184,128 V152",9)+L("M146,98 Q120,80 130,50",14)+o(132,44,11)+P("124,42 104,48 124,54")+D("M170,92 L214,40 L206,74 L240,64 L216,96Z")+L("M200,118 Q244,128 262,100",9)+P("258,92 280,98 258,112")+leaf(176,86,14,-100,5)+leaf(196,92,14,-90,5)+A(130,42,2),
+  8:()=>L("M52,28 H268",8)+leaf(80,28,30,100,6)+leaf(250,28,26,70,6)+L("M126,32 Q134,62 148,76",8)+L("M200,32 Q190,60 178,76",8)+L("M146,96 Q130,70 134,34",8)+e(160,92,28,22)+o(136,112,13)+A(131,110,2)+e(190,110,8,10),
+  9:()=>[...Array(11)].map((_,i)=>leaf(176,100,56,-175+i*17,4,pal.p)).join("")+L("M146,130 V152",9)+L("M164,132 V152",9)+L("M196,132 V152",9)+L("M214,128 V152",9)+e(172,114,46,26)+o(122,120,17)+P("112,118 90,126 114,132",pal.p)+A(118,114,2.4),
+  10:()=>D("M206,132 Q268,120 258,60 Q248,30 214,40 Q232,70 206,100Z")+e(176,116,26,32)+o(146,82,15)+leaf(138,68,16,-110,5)+leaf(154,68,16,-70,5)+P("136,84 122,92 138,94",pal.p)+o(134,108,8)+D("M126,104 Q134,94 142,104Z")+e(170,150,14,6)+A(142,80,2.2),
+  11:()=>Q(164,106,50,20,106,94,15,8,L("M212,100 Q250,90 244,60 Q240,44 258,38",6)+leaf(244,62,16,-150,6)+leaf(258,38,16,-30,6),P("94,92 80,100 96,104",pal.p)+leaf(112,82,14,-110,5)+leaf(124,82,14,-70,5)),
+  12:()=>L("M146,118 Q130,140 104,152",9)+L("M160,122 V152",9)+L("M174,118 Q190,140 216,152",9)+L("M132,84 Q100,90 92,120",10)+L("M188,84 Q220,90 228,120",10)+e(160,90,28,34)+o(160,50,16)+leaf(160,38,22,-90,6)+leaf(160,38,18,-130,5)+leaf(160,38,18,-50,5)+A(154,50)+A(166,50),
+  13:()=>draft+L("M110,152 C60,126 200,112 160,86 C124,70 188,58 172,42",19)+spikes([[96,138],[166,100],[150,76],[184,56]],18,7)+o(172,38,15)+P("180,34 206,42 182,50")+L("M164,26 L150,10 M164,26 L178,8 M160,24 L142,20",4,pal.s)+A(170,36)+bolt("M110,148 L150,120 L170,92 L160,70"),
+  14:()=>P(star(160,100,54,42,18),pal.p)+o(160,100,40)+P("200,100 238,78 238,122")+leaf(160,140,22,100,6)+A(136,92,6)+o(122,108,5)+sp(90,60,5),
+  15:()=>e(170,108,50,36)+D("M126,112 L96,130 L132,140Z")+L("M144,76 Q132,40 100,38",3)+o(98,40,8)+P("218,108 254,84 254,130")+L("M128,112 L124,122 M138,112 L134,124 M148,114 L146,126",2,pal.s)+A(140,96,5)+leaf(176,142,24,100,7),
+  16:()=>L("M138,72 L134,50",3)+o(134,48,5)+L("M182,72 L186,50",3)+o(186,48,5)+D("M100,130 Q100,70 160,66 Q220,70 220,130Z")+L("M160,70 V128 M128,76 L132,128 M192,76 L188,128",2,pal.s)+D("M104,134 H216 Q210,152 160,152 Q110,152 104,134Z")+o(160,132,13),
+  17:()=>L("M170,150 Q204,130 176,110 Q148,96 164,70",16)+L("M170,150 Q148,158 154,138",7)+o(160,58,13)+L("M152,60 L126,66",7)+leaf(186,102,24,10,6)+leaf(160,46,18,-100,5)+A(158,54,2.2)+o(204,128,5)+o(150,100,4)+sp(210,60,5),
+  18:()=>o(176,104,40)+L("M176,104 Q196,96 196,116 Q196,134 170,132",2,pal.s)+e(112,130,24,14)+o(98,118,10)+L("M92,112 L76,92",5)+o(72,88,9)+L("M104,112 L100,96",3)+o(100,94,4)+L("M122,138 L116,152 M136,140 L134,152",4)+A(98,116,2),
+  19:()=>D("M110,86 Q110,36 160,34 Q210,36 210,86 Q160,96 110,86Z")+[...Array(6)].map((_,i)=>L(`M${122+i*15},90 Q${116+i*15},112 ${126+i*15},128 T${122+i*15},152`,4)).join("")+A(144,64,4)+A(176,64,4)+sp(240,50,5),
+  20:()=>L("M60,120 C100,100 130,140 170,118 C200,102 224,112 250,96",12)+o(254,94,11)+L("M262,96 L284,100",6)+[[80,112,-80],[120,118,100],[150,126,100],[190,108,-80],[220,106,-70]].map(([x,y,d])=>leaf(x,y,24,d,8)).join("")+leaf(60,120,28,170,8)+A(256,90,2)+sp(120,60,5),
+  21:()=>D("M52,132 Q96,56 176,60 Q226,64 250,100 L276,84 L270,118 L246,112 Q210,86 172,90 Q118,96 52,132Z")+L("M52,132 L36,138",6)+leaf(150,62,22,-80,7)+leaf(124,88,24,120,7)+A(80,108,2.4)+o(100,148,5)+o(130,152,4)+o(220,150,6),
+  22:()=>D("M70,152 H250 L240,146 H80Z")+e(170,116,56,32)+o(112,100,22)+e(106,110,16,10)+L("M104,116 L100,144",5,pal.s)+L("M118,118 L120,146",5,pal.s)+L("M132,140 L112,152",14)+P("224,120 258,108 258,140")+A(104,92,2.4),
+  23:()=>P([...Array(10)].map((_,i)=>{const a=(-90+36*i)*Math.PI/180,r=i%2?22:56;return `${R(160+r*Math.cos(a))},${R(98+r*Math.sin(a))}`}).join(" "),pal.p)+o(160,98,15)+A(154,96,3)+A(166,96,3),
+  24:()=>o(160,70,34)+[...Array(6)].map((_,i)=>L(`M${130+i*12},96 Q${110+i*20},130 ${100+i*24},146 Q${96+i*24},154 ${108+i*24},150`,7)).join("")+A(148,70,6)+A(172,70,6)+o(236,48,6)+o(250,36,4),
+  25:()=>leaf(60,152,40,-80,6)+leaf(240,152,36,-100,6)+e(165,112,62,30)+D("M222,108 Q262,100 276,118 Q262,136 222,122Z")+o(104,104,22)+e(90,112,12,10)+leaf(124,128,34,120,10)+A(100,98,2.2),
+  26:()=>draft+L("M160,80 C190,70 210,100 190,124 C170,148 120,140 112,110 C104,80 140,50 186,56 C232,62 254,110 236,138",16)+spikes([[112,110],[150,58],[200,60],[250,100]],16,6)+o(238,142,14)+leaf(230,132,26,-120,5)+leaf(238,130,28,-95,5)+leaf(246,134,24,-70,5)+A(242,140)+bolt("M160,80 L190,70 L210,100 L190,124"),
+  27:()=>D("M154,92 Q100,50 40,70 Q64,76 56,94 Q82,90 78,110 Q110,100 154,112Z")+D("M166,92 Q220,50 280,70 Q256,76 264,94 Q238,90 242,110 Q210,100 166,112Z")+e(160,102,12,22)+o(160,76,11)+leaf(152,68,16,-110,5)+leaf(168,68,16,-70,5)+A(156,76,2)+A(164,76,2)+sp(70,40,5)+sp(250,40,5),
+  28:()=>e(168,120,26,34)+L("M148,128 V150",8)+o(146,76,17)+leaf(136,64,20,-110,6)+leaf(156,62,20,-70,6)+L("M190,140 Q250,150 240,100 Q236,78 256,70",7)+sp(258,64,6)+sp(146,100,4)+A(140,74,2)+A(152,74,2),
+  29:()=>L("M90,152 H230",6)+leaf(176,140,50,60,10)+e(160,108,26,34)+leaf(168,100,50,70,14)+o(136,70,15)+P("124,66 98,74 124,82",pal.p)+L("M152,140 V152 M168,140 V152",4)+A(132,68,2.2),
+  30:()=>L("M176,76 V20",2)+[0,1,2,3].map(i=>L(`M142,${98+i*5} Q${112-i*8},${64+i*16} ${88-i*6},${112+i*14}`,4)+L(`M172,${96+i*5} Q${206+i*8},${60+i*16} ${236+i*6},${108+i*14}`,4)).join("")+o(176,100,26)+o(140,104,14)+A(134,100,3)+A(145,99,3)+sp(176,30,4),
+  31:()=>L("M126,96 Q96,110 98,136",14)+L("M194,96 Q224,110 222,136",14)+D("M126,152 V80 Q126,48 160,48 Q194,48 194,80 V152Z")+L("M160,64 V96 M148,76 H172",4,pal.s)+A(150,110,3)+A(170,110,3)+leaf(210,60,18,-60,5),
+  32:()=>L("M204,140 Q236,148 240,128",7)+e(172,118,26,34)+e(194,134,20,16)+o(150,64,13)+P("140,60 116,70 142,74")+leaf(144,52,34,-100,7)+leaf(160,52,34,-75,7)+L("M156,140 V152",8)+A(146,62,2)+sp(240,60,5),
+  33:()=>leaf(170,96,80,-35,26)+leaf(150,96,80,-145,26)+leaf(170,108,52,25,16)+leaf(150,108,52,155,16)+e(160,112,24,22)+L("M160,100 Q150,76 154,56",13)+o(154,50,12)+P("144,46 122,52 144,58")+leaf(150,40,18,-110,5)+L("M172,124 Q220,140 250,124",9)+A(150,48,2),
+  34:()=>D("M120,152 Q112,96 128,70 Q160,36 192,70 Q208,96 200,152 L188,140 L176,152 L162,140 L148,152 L134,140Z")+leaf(160,44,26,-92,8)+A(146,86,6)+A(174,86,6)+o(116,112,6)+o(206,100,5),
+  35:()=>spikes([[140,84],[160,78],[180,80],[200,88]],18,6)+L("M214,120 Q240,124 242,108",6)+L("M138,130 V152",9)+L("M196,130 V152",9)+e(168,112,52,32)+P("114,108 84,120 116,130",pal.p)+L("M126,92 Q130,120 126,142 M150,86 Q154,120 150,144",2,pal.s)+A(112,114,2),
+  36:()=>[...Array(9)].map((_,i)=>leaf(150,122,92,-170+i*20,9)).join("")+[...Array(9)].map((_,i)=>{const a=(-170+i*20)*Math.PI/180;return A(R(150+88*Math.cos(a)),R(122+88*Math.sin(a)),4)}).join("")+L("M126,150 V152 M144,150 V152",4)+e(130,122,18,28)+L("M128,100 L116,66",8)+o(112,60,9)+leaf(112,50,16,-95,3),
+  37:()=>L("M114,70 Q88,92 96,122",11)+L("M206,70 Q232,92 224,122",11)+P("112,46 208,46 172,94 208,146 112,146 148,94",pal.p)+e(160,40,48,6)+e(160,150,48,6)+o(160,26,11)+sp(160,126,6),
+  38:()=>leaf(176,112,70,-30,16)+leaf(170,150,36,-150,9)+leaf(170,150,36,-30,9)+L("M170,150 Q190,112 160,84 Q148,70 156,54",13)+P("140,34 180,34 160,62")+A(150,42,4)+A(170,42,4)+L("M156,88 L112,72 L98,98",9)+L("M164,92 L128,54 L104,74",8)+L("M150,38 L138,24 M170,38 L182,24",3,pal.s)+sp(222,50,5),
+  39:()=>draft+[[70,44],[96,56],[124,66],[150,72]].map(([x,y])=>sp(x,y,6)).join("")+leaf(150,96,100,-62,40)+leaf(170,100,70,-30,26)+L("M50,140 C100,120 120,70 170,70 C214,70 236,50 256,30",16)+spikes([[100,112],[150,76],[200,66]],14,6)+o(260,28,14)+P("268,24 296,30 270,38")+leaf(256,16,24,-120,5)+A(262,24)+bolt("M50,140 L110,112 L170,70 L256,30"),
+  40:()=>leaf(190,100,70,-40,12)+leaf(190,100,66,-62,12)+leaf(190,104,64,-20,11)+e(160,112,28,32)+L("M146,92 L130,64",14)+o(128,56,12)+P("118,54 102,60 118,64")+o(124,42,6)+o(134,40,6)+o(114,46,5)+o(138,64,5)+L("M150,142 V152",5)+L("M168,142 V152",5)+A(126,54,2),
+  41:()=>L("M120,104 Q104,70 112,48",14)+e(106,44,16,10)+P("94,42 82,48 94,52")+[138,152,190,204].map(x=>L(`M${x},114 V152`,8)).join("")+o(150,76,18)+o(186,80,16)+e(166,106,50,24)+L("M214,100 Q226,108 224,124",4)+A(102,42,2),
+  42:()=>L("M122,114 Q96,100 88,76",7)+P("82,70 74,56 94,66")+L("M178,122 Q230,120 232,80 Q232,52 208,48",9)+P("204,44 192,52 210,58")+[...Array(6)].map((_,i)=>L(`M${130+i*8},${126+(i%3)*4} L${112+i*14+(i<3?-18:30)},152`,4)).join("")+e(150,120,30,14)+o(112,116,9),
+  43:()=>L("M160,104 V152",4)+L("M172,104 L190,124 L172,136",4)+leaf(186,84,30,20,7)+e(160,86,30,20)+L("M134,86 Q104,70 120,48 Q132,34 120,22",7)+o(118,20,7)+P("112,20 98,26 112,28")+A(116,18,1.8),
+  44:()=>L("M132,84 L108,112",12)+L("M188,84 L214,112",12)+D("M128,70 H192 V128 H128Z")+P(star(160,98,22,16,10),pal.s)+D("M142,46 H178 V70 H142Z")+L("M160,46 V30",3)+o(160,28,4)+P(star(214,64,24,18,12),pal.p)+D("M134,128 H154 V152 H134Z")+D("M166,128 H186 V152 H166Z")+A(152,58,3)+A(168,58,3),
+  45:()=>L("M246,118 Q276,112 270,90",8)+[100,128,184,212].map(x=>L(`M${x},134 L${x},152`,8)).join("")+L("M60,132 Q110,120 160,128 Q210,136 250,116",16)+o(70,126,15)+[-130,-110,-90,-70,-50].map(d=>leaf(72,114,22,d,4)).join("")+A(64,122,2.4)+P("150,120 170,120 160,140",pal.s),
+  46:()=>Q(180,104,34,17,100,34,10,6,"",leaf(96,26,14,-110,3)+leaf(106,26,14,-70,3)+P("92,36 76,44 94,46",pal.p)+L("M214,100 Q226,108 224,124",4)+o(160,98,4)+o(176,92,4)+o(190,104,4)),
+  47:()=>leaf(160,90,70,-155,13)+leaf(160,90,70,-25,13)+leaf(160,94,52,-120,10)+leaf(160,94,52,-60,10)+e(160,104,16,28)+leaf(160,128,46,72,9)+o(154,74,11)+L("M146,72 L92,44",3.5)+A(150,72,2.2)+sp(86,36,5)+sp(220,60,5),
+  48:()=>Q(170,108,52,28,106,96,20,13,"",leaf(96,92,34,-125,8)+leaf(112,78,18,-110,5)+leaf(124,84,14,-60,5)+L("M222,100 Q242,100 240,122",6)),
+  49:()=>L("M200,50 V20",2)+[...Array(7)].map((_,i)=>o(94+i*22,120-Math.round(Math.sin(i*.9)*14),15)).join("")+o(86,106,16)+L("M80,92 L72,76 M92,92 L96,74",3,pal.s)+A(80,104,2.4),
+  50:()=>L("M170,148 Q210,152 220,130",6)+e(160,112,22,36)+o(160,66,14)+P("154,64 140,72 156,76")+o(148,54,5)+o(172,54,5)+L("M144,100 L132,128",7)+L("M176,100 L188,128",7)+e(148,150,12,5)+e(172,150,12,5)+A(156,62,2),
+  51:()=>L("M130,92 L96,124",12)+L("M190,92 L224,108",12)+D("M130,152 V84 H190 V152Z")+D("M142,50 H178 V84 H142Z")+o(160,44,8)+o(236,114,22)+L("M236,136 V152",6)+A(152,66,3)+A(168,66,3),
+  52:()=>`<circle cx="160" cy="62" r="30" fill="none" stroke="${fill}" stroke-width="4"/>`+[...Array(14)].map((_,i)=>{const a=i*Math.PI*2/14;return L(`M${R(160+34*Math.cos(a))},${R(62+34*Math.sin(a))} L${R(160+43*Math.cos(a))},${R(62+43*Math.sin(a))}`,3)}).join("")+draft+[-176,-156,-136,-116].map((d,i)=>leaf(152,100,104-i*8,d,22-i*2)).join("")+[-4,-24,-44,-64].map((d,i)=>leaf(168,100,104-i*8,d,22-i*2)).join("")+[-172,-152,-132].map(d=>L(`M152,100 L${R(152+88*Math.cos(d*Math.PI/180))},${R(100+88*Math.sin(d*Math.PI/180))}`,1.6,pal.s)).join("")+[-8,-28,-48].map(d=>L(`M168,100 L${R(168+88*Math.cos(d*Math.PI/180))},${R(100+88*Math.sin(d*Math.PI/180))}`,1.6,pal.s)).join("")+leaf(150,102,40,165,12)+leaf(170,102,40,15,12)+leaf(160,126,76,98,11)+leaf(150,126,70,120,10)+leaf(170,126,70,76,10)+leaf(144,124,58,142,8)+leaf(176,124,58,38,8)+e(160,108,24,32)+P("146,112 160,140 174,112 160,124",pal.s)+L("M160,88 L160,76",12)+o(160,66,15)+P("151,68 160,88 169,68")+[-120,-90,-60].map((d,i)=>leaf(160,52,(i===1?30:22),d,6)).join("")+A(155,64,2.4)+A(165,64,2.4)+L("M152,136 L146,152 M168,136 L174,152",4)+[0,1,2,3,4].map(i=>leaf(120+i*20,152,24+(i%2)*6,-90,6)).join("")+sp(60,60,6)+sp(260,50,6)+sp(76,120,4)+sp(250,116,5)+bolt("M160,130 L130,108 L188,96 L160,68")
+  };
+  const ARTS={e1:art,e2:art2};
+  return ((ARTS[g.eid]||art)[g.w]||art[1])();
 }
 
 function renderCreatureSVG(g, bondStage, pal, sil){
@@ -1373,7 +1608,7 @@ function renderCreatureSVG(g, bondStage, pal, sil){
 
   let fx = "";
   if(!sil){
-    const ember = (pal === PALETTES.ember || pal === PALETTES.solar);
+    const ember = (pal === PALETTES.ember || pal === PALETTES.solar || pal === PALETTES.gilt);
     for(let i = 0; i < 6; i++){
       const x = (i * 43 + 17) % 300, y = (i * 31 + 12) % 160, r = (i % 2) + 1.2;
       fx += `<circle class="${ember ? "p-ember" : "p-snow"}" cx="${x}" cy="${y + 20}" r="${r}" fill="${pal.s}" style="animation-delay:${(i * 0.4).toFixed(1)}s"/>`;
@@ -1404,19 +1639,19 @@ function renderCreatureSVG(g, bondStage, pal, sil){
 
 // state: cap (captured) | cur (this week) | sil (upcoming) | esc (escaped)
 function renderMiniSVG(g,state){
-  const sil = (state === "sil" || state === "esc");
+  const sil = (state === "sil" || state === "esc" || state === "pre");
   const svg = renderCreatureSVG(g, sil ? 1 : 3, PALETTES[g.biome], sil);
-  return state === "esc" ? svg.replace("<svg ", '<svg style="opacity:.4" ') : svg;
+  return (state === "esc" || state === "pre") ? svg.replace("<svg ", '<svg style="opacity:.4" ') : svg;
 }
 
 const loadDex=()=>{const raw=get("epochDex",{}),o={};for(const k of Object.keys(raw||{}))o[/^\d+$/.test(k)?"e1:"+k:k]=raw[k];return o};
 const whoOf=r=>(Array.isArray(r&&r.who)?r.who:[]).filter(Array.isArray).map(([n,s])=>[String(n),num(s)]);
 function recordCaptures(remote,meId){
-  const cur=getCur(),curKey=ek(cur.e.id,cur.w),tg=targetFor(epochData.n),dex=loadDex();let ch=false;
+  const cur=getCur(),curKey=ek(cur.e.id,cur.w),dex=loadDex();let ch=false;
   for(const m of Object.values(remote||{}))for(const[k,r]of Object.entries(m||{}))if(r&&typeof r==="object"&&(!dex[k]||num(r.t)>num(dex[k].t))){dex[k]=r;ch=true}
   for(const[k,r]of Object.entries(epochData.wk)){
     const[id,ws]=k.split(":"),x=EPOCHS.find(y=>y.id===id);if(!x)continue;
-    const g=x.roster[cIdx(x,+ws)-1];
+    const g=x.roster[cIdx(x,+ws)-1],tg=tgOf(k);
     if(stageOf(r.t,tg,g)<3||(dex[k]&&k!==curKey))continue;
     dex[k]={t:r.t,tg,boss:g.boss,who:rank(r)};ch=true;
   }
@@ -1438,10 +1673,10 @@ function openEntry(idx){
   let h;
   if(capW){const r=dexNow[ek(x.id,capW)];
     h=`${art(3,false)}<b>${esc(g.name)}</b> <span class="s-pill tamed">${esc(g.title)}</span>${tag}<div class="hint" style="font-style:italic">${esc(g.lore)}</div><div class="hint">Captured the week of ${fmtD(wkMs(x,capW))} \u00b7 ${num(r.t)} of ${num(r.tg)} hard sets</div><b>Captured by</b>${contribHTML(whoOf(r),num(r.t))}`;
-  }else if(isCur&&idx===pos){const r=epochData.wk[ek(x.id,cur.w)]||{t:0,m:{}},tg=targetFor(epochData.n),reqSets=Math.ceil(tg*needOf(g));
+  }else if(isCur&&idx===pos){const r=epochData.wk[ek(x.id,cur.w)]||{t:0,m:{}},tg=tgOf(ek(x.id,cur.w)),reqSets=Math.ceil(tg*needOf(g));
     h=`${art(stageOf(r.t,tg,g),false)}<b>${esc(g.name)}</b>${tag}<div class="hint">Bonding in progress: ${r.t} / ${reqSets} required hard sets (${pctOf(g)}% of ${tg} baseline).</div><b>Contributors so far</b>${contribHTML(rank(r),r.t)}`;
   }else if(idx<pos){
-    h=`${art(1,true)}<b>???</b><div class="hint">This companion escaped before the clan could finish bonding with it.</div>`;
+    h=`${art(3,false)}<b>${esc(g.name)}</b> <span class="s-pill">${esc(g.title)}</span><div class="hint">${wkMs(x,idx+1)<=epochData.cs?"This companion appeared before your clan began.":"This companion escaped before the clan could finish bonding with it."}</div>`;
   }else{const w=cur.w+idx-pos,days=Math.ceil((wkMs(x,w)-Date.now())/864e5);
     h=`${art(1,true)}<b>???</b><div class="hint">Appears ${fmtD(wkMs(x,w))}, in ${days} day${days==1?"":"s"}.${g.boss?" \u2694 A boss encounter.":g.sub?" \u2726 A sub-boss.":""}</div>`;
   }
@@ -1452,13 +1687,13 @@ function openEntry(idx){
 
 function renderGrid(){
   const grid=$("calendarGrid");if(!grid)return;
-  const cur=getCur(),sel=$("bestiarySet"),started=EPOCHS.filter(x=>x.ms<=Date.now());
+  const cur=getCur(),sel=$("bestiarySet"),started=EPOCHS.filter(x=>x.ms<=Date.now()&&(x===cur.e||x.ms+52*WEEK_MS>epochData.cs));
   if(sel){sel.hidden=started.length<2;sel.innerHTML=started.map(x=>`<option value="${esc(x.id)}">${esc(x.name)}</option>`).join("");sel.value=viewEpoch().id}
   const x=viewEpoch(),isCur=x===cur.e,pos=isCur?cIdx(x,cur.w):x.roster.length+1,cap=capturedMap(dexNow,x);
   grid.innerHTML=x.roster.map(r=>{
-    const st=cap[r.w]?"cap":isCur&&r.w===pos?"cur":r.w<pos?"esc":"sil",lit=st==="cap"||st==="cur";
+    const st=cap[r.w]?"cap":isCur&&r.w===pos?"cur":r.w<pos?(wkMs(x,r.w+1)<=epochData.cs?"pre":"esc"):"sil",lit=st==="cap"||st==="cur";
     const when=cap[r.w]||(isCur&&r.w>=pos?cur.w+r.w-pos:r.w);
-    return `<div class="cal-cell ${st}" data-i="${r.w}" role="button" tabindex="0" aria-label="${lit?esc(r.name):"Unknown creature"}"><div>${tierMark(r)}${fmtD(wkMs(x,when))}</div>${renderMiniSVG(r,st)}<div class="cn">${lit?esc(r.name):"???"}</div></div>`;
+    return `<div class="cal-cell ${st}" data-i="${r.w}" role="button" tabindex="0" aria-label="${esc(r.name)}"><div>${tierMark(r)}${fmtD(wkMs(x,when))}</div>${renderMiniSVG(r,"cur")}<div class="cn">${esc(r.name)}</div></div>`;
   }).join("");
 }
 $("calendarGrid")?.addEventListener("click",ev=>{const c=ev.target.closest(".cal-cell");if(c)openEntry(+c.dataset.i)});
@@ -1472,9 +1707,34 @@ function focusCurrentWeek(){
   grid.scrollTo({top:Math.max(0,grid.scrollTop+off-(grid.clientHeight-cur.offsetHeight)/2),behavior:"smooth"});
 }
 
-function renderSanctuary(wkData,n,remote,meId){
-  epochData={wk:wkData||{},n:Math.max(1,num(n))};
-  const cur=getCur(),x=cur.e,g=x.roster[cIdx(x,cur.w)-1],pal=PALETTES[g.biome],tg=targetFor(epochData.n);
+function checkNewCaptures(){
+  const seen=get("dexSeen",null),keys=Object.keys(dexNow);
+  if(seen===null){set("dexSeen",Object.fromEntries(keys.map(k=>[k,1])));return}
+  const fresh=keys.filter(k=>!seen[k]);if(!fresh.length)return;
+  fresh.forEach(k=>seen[k]=1);set("dexSeen",seen);
+  celebrate(fresh[fresh.length-1]);
+}
+function celebrate(k){
+  const[id,ws]=k.split(":"),x=EPOCHS.find(y=>y.id===id),r=dexNow[k];if(!x||!r)return;
+  const g=x.roster[cIdx(x,+ws)-1],old=document.getElementById("celeb");if(old)old.remove();
+  const d=document.createElement("div");d.id="celeb";d.setAttribute("role","dialog");d.setAttribute("aria-label","Companion captured");
+  d.innerHTML=`<div class="celeb-card"><div class="celeb-h">${g.boss?"\u2694 BOSS CAPTURED!":g.sub?"\u2726 SUB-BOSS CAPTURED!":"COMPANION CAPTURED!"}</div><div class="arena">${renderCreatureSVG(g,3,PALETTES[g.biome],false)}</div><b>${esc(g.name)}</b><div class="hint">${esc(g.title)}</div>${contribHTML(whoOf(r).slice(0,3),num(r.t))}<button type="button" id="celebShare">Share</button><button type="button" class="alt" id="celebClose">Close</button></div>`;
+  document.body.appendChild(d);
+  document.getElementById("celebClose").onclick=()=>d.remove();
+  document.getElementById("celebShare").onclick=async()=>{const t=`Our clan captured ${g.name} (${g.title}) in the Training Hub!`;try{if(navigator.share)await navigator.share({text:t});else if(navigator.clipboard){await navigator.clipboard.writeText(t);document.getElementById("celebShare").textContent="Copied!"}}catch(e){}};
+}
+function updateAlerts(g,x,cur,sets,tg,stage){
+  const el=$("sancAlert");if(!el)return;const out=[];
+  const need=Math.ceil(tg*needOf(g))-sets;
+  if(stage<3&&need>0&&need<=Math.max(10,Math.round(tg*.15)))out.push(`${need} hard sets to capture ${g.name}!`);
+  const nx=x.roster[cIdx(x,cur.w+1)-1],days=Math.max(1,Math.ceil((wkMs(x,cur.w+1)-Date.now())/864e5));
+  if(nx.boss||nx.sub)out.push(`${nx.boss?"\u2694 A boss":"\u2726 A sub-boss"} arrives in ${days} day${days===1?"":"s"}.`);
+  el.textContent=out.join("  ");
+}
+function renderSanctuary(wkData,n,remote,meId,firsts,localOnly){
+  const fv=Object.values(firsts||{}).map(d=>Date.parse(d+"T00:00:00Z")).filter(Number.isFinite);
+  epochData={wk:wkData||{},n:Math.max(1,num(n)),firsts:firsts||{},cs:fv.length?Math.min(...fv):Date.now()};
+  const cur=getCur(),x=cur.e,g=x.roster[cIdx(x,cur.w)-1],pal=PALETTES[g.biome],tg=tgOf(ek(x.id,cur.w));
   const sets=num((epochData.wk[ek(x.id,cur.w)]||{}).t);
   const reqPct=pctOf(g);
   const reqSets=Math.ceil(tg*needOf(g));
@@ -1510,7 +1770,7 @@ function renderSanctuary(wkData,n,remote,meId){
     banner.onclick=()=>{ document.querySelector('[data-t="tC"]').click(); $("clanTabSanc").click(); };
   }
 
-  const rc=recordCaptures(remote,meId);dexNow=rc.dex;
+  const rc=localOnly?{dex:loadDex(),dirty:false}:recordCaptures(remote,meId);dexNow=rc.dex;checkNewCaptures();updateAlerts(g,x,cur,sets,tg,stage);
   renderGrid();focusCurrentWeek();
   if(openIdx)openEntry(openIdx);
   return rc.dirty?dexNow:null;
@@ -1529,15 +1789,21 @@ $("clanTabSanc")?.addEventListener("click",()=>{
 
 function renderAdminWeek(){
   const sel=$("adminWeekSel");if(!sel)return;
-  const x=getCur().e,g=x.roster.find(r=>r.w===num(sel.value))||x.roster[0];
+  const es=$("adminEpochSel"),x=EPOCHS.find(y=>es&&y.id===es.value)||getCur().e,g=x.roster.find(r=>r.w===num(sel.value))||x.roster[0];
   $("awTitle").textContent=`Creature ${g.w}: ${g.name} (${g.title})`;
   $("awBiome").textContent=`Biome: ${g.biome.toUpperCase()} (${g.kind})${g.boss?" \u2694 boss":g.sub?" \u2726 sub-boss":""}`;
   $("awLore").textContent=g.lore;
   $("adminArena").innerHTML=renderCreatureSVG(g,3,PALETTES[g.biome],false);
 }
 const adminSel=$("adminWeekSel");
-if(adminSel){const c0=getCur();adminSel.value=cIdx(c0.e,c0.w);adminSel.addEventListener("input",renderAdminWeek);renderAdminWeek()}
-renderSanctuary({},1);
+if(adminSel){const c0=getCur(),es=$("adminEpochSel");if(es){es.innerHTML=EPOCHS.map(y=>`<option value="${y.id}">${y.name}</option>`).join("");es.value=c0.e.id;es.addEventListener("change",renderAdminWeek)}adminSel.value=cIdx(c0.e,c0.w);adminSel.addEventListener("input",renderAdminWeek);renderAdminWeek()}
+function renderLocalSanctuaryProgress(){
+  const cur=getCur(),start=wkMs(cur.e,cur.w),end=wkMs(cur.e,cur.w+1),wk={};let sets=0;
+  get("log",[]).forEach(s=>{const ts=Number(s.ts)||Date.parse(s.d)||0;if(ts>=start&&ts<end)(s.ex||[]).forEach(e=>{sets+=Math.max(0,num(e.sets))})});
+  wk[ek(cur.e.id,cur.w)]={t:sets,m:{}};
+  renderSanctuary(wk,1,undefined,undefined,undefined,true);
+}
+renderLocalSanctuaryProgress();
 
 const key=(...a)=>a.join("|").replace(/[.$#\[\]\/]/g,"_");
 const FR={EMAIL_EXISTS:"That account already exists.",OPERATION_NOT_ALLOWED:"Email/Password sign-in isn't switched on in Firebase (guide step 3).",INVALID_API_KEY:"The API key looks wrong. Re-copy the Firebase config.",API_KEY_INVALID:"The API key looks wrong. Re-copy the Firebase config.",WEAK_PASSWORD:"Password too short.",INVALID_LOGIN_CREDENTIALS:"Wrong master password.",INVALID_PASSWORD:"Wrong master password.",PERMISSION_DENIED:"Firebase rules are missing, out of date or not published (guide step 5: tap Copy rules, paste, Publish)."};
@@ -1573,7 +1839,7 @@ function summary(){
     if(sets)std.push({i:s.sid,d:s.d.slice(0,10),ts,k:label,c:isStd?0:1,sets,vol:v});
   });
   const lib=get("custom",[]).filter(c=>c.shared).slice(-15).map(c=>({
-    title:String(c.title).slice(0,40),
+    title:String(c.title).slice(0,40),aliases:Array.isArray(c.aliases)?c.aliases.slice(-5):[],
     ex:(c.ex||[]).slice(0,15).map(x=>({
       n:String(x[1]).slice(0,60),
       t:String(x[2]).slice(0,40),
@@ -1592,10 +1858,23 @@ async function fetchClanLib(){
     const list=[];
     Object.entries(raw||{}).forEach(([,u])=>{
       const by=String(u&&u.name||"Member");
-      arr(u&&u.w).forEach(w=>{if(w&&w.title&&Array.isArray(w.ex))list.push({by,title:String(w.title),ex:w.ex})});
+      arr(u&&u.w).forEach(w=>{if(w&&w.title&&Array.isArray(w.ex))list.push({by,title:String(w.title),aliases:Array.isArray(w.aliases)?w.aliases:[],ex:w.ex})});
     });
-    clanLibCache=list;renderClanLib();
-  }catch(e){}
+    clanLibCache=list;
+    const cs=get("custom",[]);let changed=false;
+    cs.forEach(cw=>{
+      if(!cw.clanSource){
+        const matches=list.filter(w=>w.title===cw.title);
+        if(matches.length===1){cw.clanSource={title:matches[0].title,by:matches[0].by};changed=true}else return;
+      }
+      const src=list.find(w=>(w.title===cw.clanSource.title||(w.aliases||[]).includes(cw.clanSource.title))&&w.by===cw.clanSource.by);if(!src)return;
+      if(cw.title!==src.title){cw.title=src.title;cw.clanSource.title=src.title;changed=true}
+      const ex=src.ex.map((x,i)=>{const rawBw=Number(x.bw)||inferPresetBw(x.n)||0,dbv=Number(x.db)||1,mv=Number(x.m)||(inferUnilateral(x.n)?2:1),pct=Math.round(rawBw*100),note="Est: "+[pct?pct+"% BW":"",dbv>1?dbv+"x kg":"kg"].filter(Boolean).join(" + ")+(mv>1?" x 2 sides":"");return ["cx_"+String(cw.id)+i,String(x.n).slice(0,80),String(x.t||"3 Sets x 8-12 Reps").slice(0,60),String(x.c||"Tap links below for form guide.").slice(0,200),{bw:rawBw,db:dbv,m:mv,ph:"1-DB kg",note,desc:`Updated from ${src.by}'s Clan Library. Enter the weight of ONE dumbbell and working sets per side.`}]});
+      if(JSON.stringify(cw.ex)!==JSON.stringify(ex)){cw.ex=ex;changed=true}
+    });
+    if(changed){set("custom",cs);applyCustom();renderAdv();render()}
+    renderClanLib();
+  }catch(e){const b=$("cClanLib");if(b)b.innerHTML='<div class="hint">Couldn\'t load the clan library: '+esc(why(e))+'</div>'}
 }
 async function syncClan(quiet){
   const c=get("clan2",null);if(!c)return;
@@ -1605,8 +1884,8 @@ async function syncClan(quiet){
     await db(c,"PUT",np(c,"board")+"/"+c.me,{v:c.sv||1,name:c.name,g,t,s:m.std});
     await db(c,"PUT",np(c,"custom")+"/"+c.me,{v:c.sv||1,name:c.name,g,t,s:[]});
     if(c.sv>=2)await db(c,"PUT",np(c,"lib")+"/"+c.me,{name:c.name,t,w:m.lib});
-    if(!quiet)msg("kMsg","Synced",true);
-  }catch(e){if(!quiet)msg("kMsg",why(e),false)}
+    if(!quiet)msg("kMsg","Synced",true);return true;
+  }catch(e){if(!quiet)msg("kMsg",why(e),false);return e}
 }
 
 let lastData={},adm=[],rawBoardCache={},rawCustomCache={};
@@ -1652,9 +1931,9 @@ async function renderClan(){
     const ovr=(id,k)=>md[id]&&md[id].ovr&&md[id].ovr[k];
     const matchGen=uGen=>fGen==="all"||uGen===fGen;
     const gBadge=g=>g==="f"?' <small style="color:var(--acc);opacity:.85">[W]</small>':(g==="m"?' <small style="color:var(--mu)">[M]</small>':"");
-    const epWk=(()=>{const wk={};let n=0;for(const[id,u]of Object.entries(bd||{})){if(hid(id))continue;n++;const nm=String(u&&u.name||"?");for(const x of arr(u&&u.s)){const d=String(x.d),p=epochKeyOf(d);if(!p)continue;const so=num(x.sets),sk=x.i?key(x.i):key(d,String(x.k),so),lk=key(d,String(x.k),so);if(drop(id,sk)||drop(id,lk))continue;const o=ovr(id,sk)||ovr(id,lk),s=o&&o.sets!==undefined?num(o.sets):so,k=ek(p.id,p.w),r=wk[k]=wk[k]||{t:0,m:{}},mm=r.m[id]=r.m[id]||{name:nm,s:0};r.t+=s;mm.s+=s}}return[wk,n]})();
+    const epWk=(()=>{const wk={},fm={};let n=0;for(const[id,u]of Object.entries(bd||{})){if(hid(id))continue;n++;const nm=String(u&&u.name||"?");for(const x of arr(u&&u.s)){const d=String(x.d);if(d.length>=10&&(!fm[id]||d.slice(0,10)<fm[id]))fm[id]=d.slice(0,10);const p=epochKeyOf(d);if(!p)continue;const so=num(x.sets),sk=x.i?key(x.i):key(d,String(x.k),so),lk=key(d,String(x.k),so);if(drop(id,sk)||drop(id,lk))continue;const o=ovr(id,sk)||ovr(id,lk),s=o&&o.sets!==undefined?num(o.sets):so,k=ek(p.id,p.w),r=wk[k]=wk[k]||{t:0,m:{}},mm=r.m[id]=r.m[id]||{name:nm,s:0};r.t+=s;mm.s+=s}}return[wk,n,fm]})();
     let dxr=null;if(c.sv>=2){try{dxr=await db(c,"GET",np(c,"dex"))}catch(err){}}
-    const dxOut=renderSanctuary(epWk[0],epWk[1],dxr,c.me);
+    const dxOut=renderSanctuary(epWk[0],epWk[1],dxr,c.me,epWk[2]);
     if(dxOut&&c.sv>=2)db(c,"PUT",np(c,"dex")+"/"+c.me,dxOut).catch(()=>{});
     $("adminViewerCard").hidden=!admin;
     lastData=Object.create(null);
@@ -1720,7 +1999,7 @@ async function renderClan(){
         })),
         customExItems:customExItems.slice(-25).reverse()
       };
-      return {id,name:uName,g:uGen,st,recentActive,w:l.length,sets:l.reduce((a,x)=>a+x.sets,0),vol:l.reduce((a,x)=>a+x.vol,0),hidden:!!hid(id)};
+      return {id,name:uName,g:uGen,st,recentActive,w:l.length,sets:l.reduce((a,x)=>a+x.sets,0),vol:l.reduce((a,x)=>a+x.vol,0),hidden:!!hid(id),lastD:all.reduce((m,x)=>x.d>m?x.d:m,""),syncMs};
     }).sort((a,b)=>b[m]-a[m]||b.sets-a.sets);
 
     feedEvents.sort((a,b)=>(b.syncMs||b.ts)-(a.syncMs||a.ts)||b.d.localeCompare(a.d));
@@ -1742,8 +2021,11 @@ async function renderClan(){
         ?` <button class="mini hype" data-poke="${esc(r.id)}" data-pkind="hype">Hype \u{1F525}</button>`
         :` <button class="mini" data-poke="${esc(r.id)}" data-pkind="poke">Poke \u{1F44B}</button>`;
     };
+    const dayN=ds=>{const t=Date.parse(String(ds).slice(0,10)+"T00:00:00Z"),n=Date.parse(todayStr+"T00:00:00Z");return Number.isFinite(t)?Math.max(0,Math.round((n-t)/864e5)):null};
+    const ago=n=>n===null?"never":n===0?"today":n+"d ago";
+    const inact=u=>{const dl=dayN(u.lastD),ds=u.syncMs?Math.max(0,Math.floor((Date.now()-u.syncMs)/864e5)):null,stale=dl===null||dl>=14;return `<small style="display:block;font-weight:normal;color:${stale?"#ff6b6b":"var(--mu)"}">last workout ${ago(dl)} \u00b7 synced ${ago(ds)}${stale&&!u.hidden&&u.id!==c.me?` <button class="mini" data-qhide="${esc(u.id)}">Hide</button>`:""}</small>`};
     const btn=r=>admin?(r.hidden?` <button class="mini" data-unhide="${esc(r.id)}">Unhide</button>`:` <button class="mini" data-mg="${esc(r.id)}">Manage / Edit</button>`):"";
-    $("kRows").innerHTML=rows.map((u,i)=>`<div class="row" style="${u.id===c.me?"color:var(--acc);font-weight:bold;":""}${u.hidden?"opacity:.5":""}"><span>${["\u{1F947}","\u{1F948}","\u{1F949}"][i]||(i+1)+"."} ${esc(u.name)}${gBadge(u.g)}${streakTag(u)}</span><span><b>${u.sets} sets</b> &bull; ${u.w} w &bull; ${u.vol.toLocaleString()} kg${btn(u)}${actBtn(u)}</span></div>`).join("")||'<div class="hint">No members match this view yet.</div>';
+    $("kRows").innerHTML=rows.map((u,i)=>`<div class="row" style="${u.id===c.me?"color:var(--acc);font-weight:bold;":""}${u.hidden?"opacity:.5":""}"><span>${["\u{1F947}","\u{1F948}","\u{1F949}"][i]||(i+1)+"."} ${esc(u.name)}${gBadge(u.g)}${streakTag(u)}${admin?inact(u):""}</span><span><b>${u.sets} sets</b> &bull; ${u.w} w &bull; ${u.vol.toLocaleString()} kg${btn(u)}${actBtn(u)}</span></div>`).join("")||'<div class="hint">No members match this view yet.</div>';
 
     const mLabel=m==="w"?"workouts":m==="sets"?"hard sets":"kg est. vol";
     $("kCust").innerHTML=Object.values(custWorkouts).sort((a,b)=>Object.keys(b.members).length-Object.keys(a.members).length||a.label.localeCompare(b.label)).map(grp=>{
@@ -1786,6 +2068,7 @@ function showManage(id){
 $("kRows").addEventListener("click",e=>{
   const b=e.target.closest("button"),c=get("clan2",null);if(!b)return;
   if(b.dataset.poke)return sendPoke(b.dataset.poke,b.dataset.pkind||"poke");
+  if(b.dataset.qhide)return db(c,"PUT",`mod/${b.dataset.qhide}/hide`,true,tokA.t).then(renderClan).catch(x=>msg("kMsg",why(x),false));
   if(b.dataset.mg)return showManage(b.dataset.mg);
   if(b.dataset.unhide)db(c,"DELETE",`mod/${b.dataset.unhide}/hide`,undefined,tokA.t).then(renderClan).catch(x=>msg("kMsg",why(x),false));
 });
@@ -1936,8 +2219,8 @@ $("kAdminBox").addEventListener("submit",async e=>{
     $("clanTabSanc").classList.add("on");$("clanTabLead").classList.remove("on");
     $("clanSubSanctuary").hidden=false;$("clanSubLeaderboard").hidden=true;
     $("adminViewerCard").hidden=false;renderAdminWeek();
-    msg("kMsg","Admin unlocked! Bestiary inspector is available below the calendar; member editing remains in the leaderboard.",true);
-    renderClan();
+    msg("kMsg","Admin unlocked! Bestiary inspector and shared-workout management are available in Sanctuary.",true);
+    await renderClan();$("adminViewerCard").hidden=false;renderAdminWeek();renderClanLib();
   }catch(err){msg("kMsg",why(err),false)}
 });
 $("kSync").addEventListener("click",async()=>{await syncClan();renderClan()});
@@ -1967,7 +2250,7 @@ $("kMyGen").addEventListener("change",async e=>{
 });
 $("kShareVol").addEventListener("change",async e=>{const c=get("clan2",null);c.shareVol=e.target.checked;set("clan2",c);await syncClan(true);renderClan()});
 window.addEventListener("online",()=>syncClan(true));
-if(get("clan2",null))syncClan(true);
+if(get("clan2",null)){syncClan(true).then(()=>renderClan().catch(()=>{})).catch(()=>renderClan().catch(()=>{}));}
 $("kGuideBtn").addEventListener("click",()=>{$("kGuide").hidden=!$("kGuide").hidden});
 $("kCopyRules").addEventListener("click",async()=>{
   try{await navigator.clipboard.writeText(RULES);msg("kMsg","Rules copied. Paste them into Firebase.",true)}
@@ -2054,7 +2337,7 @@ function renderStats(){
 ["sRange","sSplit"].forEach(id=>$(id).addEventListener("change",renderStats));
 
 // ---- Data versioning, migration & backup ----
-const DATA_KEYS=["log","last","custom","bmr","bmrIn","adv","prs"],DEFAULTS={log:[],last:{},custom:[],bmr:[],bmrIn:null,adv:false,prs:{}};
+const DATA_KEYS=["log","last","custom","bmr","bmrIn","adv","prs","epochDex","restDefault"],DEFAULTS={log:[],last:{},custom:[],bmr:[],bmrIn:null,adv:false,prs:{},epochDex:{},restDefault:90};
 const MIG={1:()=>{
   const byName={};Object.values(P).forEach(p=>p.ex.forEach(x=>{byName[x[1]]=x[0]}));
   const log=get("log",[]);
@@ -2094,7 +2377,7 @@ $("lFile").addEventListener("change",async e=>{
     if(j.app!=="training-hub"||!Number.isInteger(j.schema)||j.schema<0||!d||typeof d!=="object"||!required.every(k=>Object.prototype.hasOwnProperty.call(d,k))||!okLog||!okCus||!okBmr||!okLast||typeof d.adv!=="boolean"||(d.bmrIn!==null&&!(d.bmrIn&&validNum(d.bmrIn.age,1,120)&&validNum(d.bmrIn.h,50,260)&&validNum(d.bmrIn.kg,1,500)&&validNum(d.bmrIn.act,1,2))))throw new Error("bad");
     if(j.schema>LOCAL_V)return msg("lMsg","That backup is from a newer app version. Refresh the app first.",false);
     if(!confirm(`Replace ALL data on this device with this backup (${(d.log||[]).length} workouts)?`))return;
-    DATA_KEYS.forEach(k=>set(k,d[k]??DEFAULTS[k]));
+    DATA_KEYS.forEach(k=>{if(k==="epochDex"&&(d[k]===undefined||typeof d[k]!=="object"||Array.isArray(d[k])))return;set(k,d[k]??DEFAULTS[k])});
     set("schema",j.schema);migrate();applyCustom();renderAdv();render();renderLog();checkStreakNudge();syncClan(true);
     msg("lMsg",stored?"Backup restored.":"Backup loaded for this tab only because browser storage is blocked. Export it again before closing.",stored);
   }catch(err){msg("lMsg","That file isn't a valid backup.",false)}
@@ -2182,5 +2465,22 @@ checkBwStale();
 checkStreakNudge();
 </script>
 
+<script>
+const BUILD="2026-10-18-d";
+(function(){
+  const stamp=document.createElement("div");stamp.className="hint";stamp.style.cssText="text-align:center;margin:12px 0 4px";stamp.textContent="Build "+BUILD;document.body.appendChild(stamp);
+  const bar=document.createElement("div");bar.className="poke";bar.hidden=true;bar.innerHTML='New version available. <button type="button">Reload</button>';document.body.prepend(bar);
+  bar.querySelector("button").onclick=()=>location.reload();
+  let last=0;
+  async function chk(){if(Date.now()-last<3e5)return;last=Date.now();try{const r=await fetch(location.pathname+"?v="+Date.now(),{cache:"no-store"});const m=(await r.text()).match(/BUILD="(\d[^"]*)"/);if(m&&m[1]!==BUILD)bar.hidden=false}catch(e){}}
+  setTimeout(chk,4000);
+  document.addEventListener("visibilitychange",()=>{if(document.hidden)return;chk();if(typeof tEnd!=="undefined"&&tEnd&&typeof tickTimer==="function")tickTimer()});
+  if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+  let n=0;document.querySelectorAll("label:not([for])").forEach(l=>{if(l.querySelector("input,select,textarea"))return;const f=l.nextElementSibling;if(f&&/^(INPUT|SELECT|TEXTAREA)$/.test(f.tagName)){if(!f.id)f.id="fld"+(++n);l.htmlFor=f.id}});
+  const tabs=document.querySelector(".tabs");tabs.setAttribute("role","tablist");
+  tabs.querySelectorAll("button").forEach(b=>{b.setAttribute("role","tab");b.setAttribute("aria-selected",String(b.classList.contains("on")));b.setAttribute("aria-controls",b.dataset.t)});
+  ["tW","tB","tL","tC","tS"].forEach(id=>{const s=document.getElementById(id);if(s)s.setAttribute("role","tabpanel")});
+})();
+</script>
 </body>
 </html>
